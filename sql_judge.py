@@ -168,7 +168,8 @@ if __name__ == "__main__":
                 #### RUN SOLUTION QUERY
                 try:
                     with open(config.solution_sql) as sql_file:
-                        cursor.execute(sql_file.read())
+                        solution_query = sql_file.read()
+                        cursor.execute(query_cleanup(solution_query))
                 except Exception as err:
                     raise ValueError(f"Solution is not working: {err}")
 
@@ -181,7 +182,8 @@ if __name__ == "__main__":
                 #### RUN SUBMISSION QUERY
                 try:
                     with open(config.source) as sql_file:
-                        cursor.execute(sql_file.read())
+                        submission_query = sql_file.read()
+                        cursor.execute(query_cleanup(submission_query))
                 except Exception as err:
                     testcase.accepted = False
                     judgement.accepted = False
