@@ -157,7 +157,7 @@ if __name__ == "__main__":
             if not filename.endswith(".sqlite"):
                 continue
 
-            with Context(), TestCase(f"sqlite3 {filename} < user_query.sql"):
+            with Context(), TestCase(f"sqlite3 {filename} < user_query.sql") as testcase:
                 expected_output, generated_output = None, None
 
                 db_file = f"{config.database_dir}/{filename}"
@@ -178,24 +178,21 @@ if __name__ == "__main__":
                 if not config.solution_is_select:
                     raise ValueError(f"Non-select queries not yet supported.")
 
-                with Test("Executing query", "success") as test:
-                    #### RUN SUBMISSION QUERY
-                    try:
-                        with open(config.source) as sql_file:
-                            cursor.execute(sql_file.read())
-                    except Exception as err:
-                        test.generated = "fail"
-                        test.status = {"enum": "compilation error"}
-                        with Message(f"Error: {err}"):
-                            pass
+                #### RUN SUBMISSION QUERY
+                try:
+                    with open(config.source) as sql_file:
+                        cursor.execute(sql_file.read())
+                except Exception as err:
+                    testcase.accepted = False
+                    judgement.accepted = False
+                    judgement.status = {"enum": "compilation error"}
+                    with Message(f"Error: {err}"):
+                        pass
 
-                        continue
+                    continue
 
-                    #### RENDER SUBMISSION QUERY OUTPUT
-                    generated_output = render_query_output(config, cursor)
-
-                    test.generated = "success"
-                    test.status = {"enum": "correct"}
+                #### RENDER SUBMISSION QUERY OUTPUT
+                generated_output = render_query_output(config, cursor)
 
                 with Test(
                     "Comparing query output csv content", expected_output[0]
