@@ -64,10 +64,23 @@ class Message(DodonaCommand):
         super().__init__(message=message, **kwargs)
 
     def start_msg(self) -> dict:
-        return {
-            "command": "append-message",
-            "message": self.start_args.message,
-        }
+        return {"command": "append-message", **self.start_args.__dict__}
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException],
+        exc_val: BaseException,
+        exc_tb: TracebackType,
+    ) -> None:
+        pass
+
+
+class Annotation(DodonaCommand):
+    def __init__(self, row: str, text: str, **kwargs):
+        super().__init__(row=row, text=text, **kwargs)
+
+    def start_msg(self) -> dict:
+        return {"command": "annotate-code", **self.start_args.__dict__}
 
     def __exit__(
         self,
