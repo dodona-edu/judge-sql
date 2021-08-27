@@ -162,7 +162,7 @@ if __name__ == "__main__":
                 with Annotation(
                     row=submission_query.strip().count("\n"),
                     type="warning",
-                    text='Add a semicolon ";" at the end of the SQL query.',
+                    text='Add a semicolon ";" at the end of each SQL query.',
                 ):
                     pass
 
