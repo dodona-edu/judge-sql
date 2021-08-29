@@ -16,24 +16,24 @@
 
 ````
 +-- README.md                            # Optional: Describes the repository
-+-- public                               # Optional: Contains files that belong to the course or series
++-- 📂public                            # Optional: Contains files that belong to the course or series
 |   +-- database_diagram.png             # Optional: An database diagram image to reuse throughout the course
 +-- dirconfig.json                       # Shared config for all exercises in subdirs
-+-- sql-exercises                        # We could group exercises in a folder
-|   +-- first_select_query               # Folder name for the exercise
++-- 📂sql-exercises                     # We could group exercises in a folder
+|   +-- 📂first_select_query            # Folder name for the exercise
 |   |   +-- config.json                  # configuration of the exercise
-|   |   +-- evaluation                   # -- ↓️ADD YOUR DATABASE AND SOLUTION HERE ↓ --
-|   |   |   +-- databases                #
+|   |   +-- 📂evaluation                # -- ↓️ADD YOUR DATABASE AND SOLUTION HERE ↓ --
+|   |   |   +-- 📂databases             #
 |   |   |   |   +-- my_database.sqlite   # The database file
 |   |   |   +-- solution.sql             # The SQL model solution file
-|   |   +-- solution                     # Optional: This will be visible in Dodona
+|   |   +-- 📂solution                  # Optional: This will be visible in Dodona
 |   |   |   +-- solution.sql             # Optional: the SQL model solution file
-|   |   +-- description                  #
+|   |   +-- 📂description               #
 |   |       +-- description.nl.md        # The description in Dutch
 |   |       +-- description.en.md        # Optional: The description in English
-|   |       +-- media                    # Optional folder
+|   |       +-- 📂media                 # Optional folder
 |   |       |   +-- some_image.png       # Optional: An image used in the description
-|   |       +-- boilerplate              # Optional folder
+|   |       +-- 📂boilerplate           # Optional folder
 |   |           +-- boilerplate          # Optional: loaded automatically in submission text area
 |   :
 :
