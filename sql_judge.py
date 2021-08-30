@@ -9,6 +9,14 @@ from dodona_command import Judgement, Tab, Context, TestCase, Test, Message, Ann
 from sql_query import SQLQuery
 from os import path
 
+python_type_to_sqlite_type = {
+    None: "NULL",
+    int: "INTEGER",
+    float: "REAL",
+    str: "TEXT",
+    bytes: "BLOB",
+}
+
 
 def render_query_output(is_ordered: bool, cur: Cursor) -> tuple[str, str]:
     csv_output = io.StringIO()
@@ -26,8 +34,8 @@ def render_query_output(is_ordered: bool, cur: Cursor) -> tuple[str, str]:
 
     type_description = ""
     if len(rows) > 0:
-        types = [type(x).__name__ for x in rows[0]]
-        type_description = ", ".join(f"{c} [{t}]" for (c, t) in zip(columns, types))
+        types = [python_type_to_sqlite_type[type(x)] for x in rows[0]]
+        type_description = "\n".join(f"{c} [{t}]" for (c, t) in zip(columns, types))
 
     return csv_output.getvalue(), type_description
 
