@@ -8,6 +8,7 @@
 * Support for read and write operations
 * Automatic distinction between read and write operations
 * Option to execute same queries on multiple databases
+* Support for multiple queries in one exercise
 
 ## Recommended exercise directory structure
 
