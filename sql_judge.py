@@ -65,7 +65,9 @@ if __name__ == "__main__":
     config.semicolon_warning = bool(getattr(config, "semicolon_warning", True))
 
     # Set 'strict_identical_order_by' to True if not set
-    config.strict_identical_order_by = bool(getattr(config, "strict_identical_order_by", True))
+    config.strict_identical_order_by = bool(
+        getattr(config, "strict_identical_order_by", True)
+    )
 
     # Set 'database_dir' to "./databases" if not set
     config.database_dir = str(getattr(config, "database_dir", "./databases"))
@@ -225,15 +227,30 @@ if __name__ == "__main__":
                                 test.status = {"enum": "correct"}
                             else:
                                 test.status = {"enum": "wrong"}
-                        
-                        if config.strict_identical_order_by:
-                            with Test(
-                                "Query should return ordered rows." if solution_query.is_ordered() else "No explicit row ordering should be enforced in query.",
-                                "rows are being ordered" if solution_query.is_ordered() else "rows are not being ordered"
-                            ) as test:
-                                test.generated = "rows are being ordered" if submission_query.is_ordered() else "rows are not being ordered"
 
-                                if solution_query.is_ordered() == solution_query.is_ordered():
+                        if (
+                            config.strict_identical_order_by
+                            and submission_query.is_ordered()
+                            != solution_query.is_ordered()
+                        ):
+                            with Test(
+                                "Query should return ordered rows."
+                                if solution_query.is_ordered()
+                                else "No explicit row ordering should be enforced in query.",
+                                "rows are being ordered"
+                                if solution_query.is_ordered()
+                                else "rows are not being ordered",
+                            ) as test:
+                                test.generated = (
+                                    "rows are being ordered"
+                                    if submission_query.is_ordered()
+                                    else "rows are not being ordered"
+                                )
+
+                                if (
+                                    solution_query.is_ordered()
+                                    == solution_query.is_ordered()
+                                ):
                                     test.status = {"enum": "correct"}
                                 else:
                                     test.status = {"enum": "wrong"}
