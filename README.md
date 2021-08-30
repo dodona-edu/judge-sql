@@ -7,6 +7,7 @@
 * Automatic detection if order needs to be checked
 * Support for read and write operations
 * Automatic distinction between read and write operations
+* Option to execute same queries on multiple databases
 
 ## Recommended exercise directory structure
 
