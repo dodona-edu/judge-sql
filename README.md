@@ -101,7 +101,7 @@ Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the `eval
   "evaluation": {
     "solution_sql": "./mijn_oplossing.sql",
     "database_dir": ".",
-    "max_rows": 100,
+    "max_rows": 80,
     "semicolon_warning": false
   }
 }
