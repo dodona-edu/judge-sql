@@ -5,17 +5,13 @@ from sql_query import SQLQuery
 class TestSQLQuery(unittest.TestCase):
     def test_from_raw_input_1(self):
         queries = SQLQuery.from_raw_input(
-            """
-            -- First query:
-            SELECT * FROM USERS WHERE ";#" = 1;
-            -- 2nd query:
-            SELECT 1 # random comment
-        """
+            """-- First query:
+        SELECT * from Users Where ";#" = 1;
+        -- 2nd query:
+        SELECT 1 # random comment"""
         )
 
-        self.assertEqual(
-            queries[0].canonical, 'SELECT *\nFROM USERS\nWHERE ";#" = 1'
-        )
+        self.assertEqual(queries[0].canonical, 'SELECT *\nFROM users\nWHERE ";#" = 1')
         self.assertEqual(queries[0].has_ending_semicolon(), True)
         self.assertEqual(queries[1].canonical, "SELECT 1")
         self.assertEqual(queries[1].has_ending_semicolon(), False)
@@ -25,11 +21,11 @@ class TestSQLQuery(unittest.TestCase):
         self.assertEqual(len(queries), 0)
 
     def test_SQLQuery_1(self):
-        query = SQLQuery('SELECT * FROM USERS WHERE ";" = 1 ORDER BY NAME ASC;')
+        query = SQLQuery('SELECT * from Users Where ";" = 1 ORDER BY Name ASC;')
 
         self.assertEqual(
             query.canonical,
-            'SELECT *\nFROM USERS\nWHERE ";" = 1\nORDER BY NAME ASC',
+            'SELECT *\nFROM users\nWHERE ";" = 1\nORDER BY name ASC',
         )
         self.assertEqual(query.has_ending_semicolon(), True)
         self.assertEqual(query.is_select(), True)
@@ -37,74 +33,63 @@ class TestSQLQuery(unittest.TestCase):
 
     def test_SQLQuery_2(self):
         query = SQLQuery(
-            '--SELECT\n   INSERT INTO TABLE2 /**/  SELECT * FROM Users WHERE ";#ORDER BY" = 1;'
+            '--SELECT\n   INSERT INTO table2 /**/  SELECT * FROM Users Where ";#ORDER BY" = 1;'
         )
 
         self.assertEqual(
             query.canonical,
-            'INSERT INTO TABLE2\nSELECT *\nFROM USERS\nWHERE ";#ORDER BY" = 1',
+            'INSERT INTO table2\nSELECT *\nFROM users\nWHERE ";#ORDER BY" = 1',
         )
         self.assertEqual(query.has_ending_semicolon(), True)
         self.assertEqual(query.is_select(), False)
         self.assertEqual(query.is_ordered(), False)
 
     def test_canonical(self):
-        query = SQLQuery("\n  SELECT\n*\tFROM   USERS  \n\r")
-        self.assertEqual(query.canonical, "SELECT *\nFROM USERS")
+        query = SQLQuery("\n  SELeCT\n*\tFROm   USERS  \n\r")
+        self.assertEqual(query.canonical, "SELECT *\nFROM users")
 
         query = SQLQuery(
             """
         SELECT *
-            FROM USERS
+            from users
         """
         )
-        self.assertEqual(query.canonical, "SELECT *\nFROM USERS")
+        self.assertEqual(query.canonical, "SELECT *\nFROM users")
 
         query = SQLQuery(
-            """
-        --SELECT ALL:
-        SELECT * FROM CUSTOMERS;
-        """
+            """--Select all:
+        SELECT * FROM Customers;"""
         )
-        self.assertEqual(query.canonical, "SELECT *\nFROM CUSTOMERS")
+        self.assertEqual(query.canonical, "SELECT *\nFROM customers")
+
+        query = SQLQuery("""SELECT * FROM Customers; --Select all:""")
+        self.assertEqual(query.canonical, "SELECT *\nFROM customers")
 
         query = SQLQuery(
-            """
-        SELECT * FROM CUSTOMERS; --SELECT ALL:"""
+            """# Select all:
+        Select * FROM Customers;"""
         )
-        self.assertEqual(query.canonical, "SELECT *\nFROM CUSTOMERS")
+        self.assertEqual(query.canonical, "SELECT *\nFROM customers")
+
+        query = SQLQuery("""SELECT * FROM Customers; # Select all:""")
+        self.assertEqual(query.canonical, "SELECT *\nFROM customers")
 
         query = SQLQuery(
-            """
-        # Select all:
-        SELECT * FROM CUSTOMERS;"""
-        )
-        self.assertEqual(query.canonical, "SELECT *\nFROM CUSTOMERS")
-
-        query = SQLQuery(
-            """
-        SELECT * FROM CUSTOMERS; # Select all:"""
-        )
-        self.assertEqual(query.canonical, "SELECT *\nFROM CUSTOMERS")
-
-        query = SQLQuery(
-            """
-        /* Select all employees whose compensation is
+            """/* Select all employees whose compensation is
         greater than that of Pataballa. */
-        SELECT * FROM CUSTOMERS; # Select all:"""
+        SELECT * FROM Customers; # Select all:"""
         )
-        self.assertEqual(query.canonical, "SELECT *\nFROM CUSTOMERS")
+        self.assertEqual(query.canonical, "SELECT *\nFROM customers")
 
         query = SQLQuery(
-            """
-        /* Select all employees whose compensation is
+            """/* Select all employees whose compensation is
         greater than that of Pataballa. */
-        SELECT * FROM CUSTOMERS; # Select all:"""
+        SELECT * FROM Customers; # Select all:"""
         )
-        self.assertEqual(query.canonical, "SELECT *\nFROM CUSTOMERS")
+        self.assertEqual(query.canonical, "SELECT *\nFROM customers")
 
     def test_is_select(self):
-        query = SQLQuery("  SELECT\n*\tFROM   USERS  \n\r")
+        query = SQLQuery("  SELeCT\n*\tFROm   USERS  \n\r")
         self.assertEqual(query.is_select(), True)
 
         query = SQLQuery("\nSELECT *\n    from\\n       users\n")
@@ -112,9 +97,9 @@ class TestSQLQuery(unittest.TestCase):
 
         query = SQLQuery(
             """
-        INSERT INTO TABLE2
-        SELECT * FROM TABLE1
-        WHERE CONDITION;
+        INSERT INTO table2
+        SELECT * FROM table1
+        WHERE condition;
         """
         )
         self.assertEqual(query.is_select(), False)
@@ -122,36 +107,38 @@ class TestSQLQuery(unittest.TestCase):
         query = SQLQuery(
             """
         -- Comment
-        SELECT * FROM TABLE1
-        WHERE CONDITION;
+        SELECT * FROM table1
+        WHERE condition;
         """
         )
         self.assertEqual(query.is_select(), True)
 
     def test_is_ordered(self):
         query = SQLQuery(
-            """
-        SELECT COLUMN1, COLUMN2, ...
-        FROM TABLE_NAME
+            """SELECT column1, column2, ...
+        FROM table_name
         ORDER BY column1, column2, ASC|DESC;
         """
         )
         self.assertEqual(query.is_ordered(), True)
 
         query = SQLQuery(
-            """
-        # ORDER BY
-        SELECT COLUMN1, COLUMN2, ...
-        FROM TABLE_NAME
+            """# ORDER BY
+        SELECT column1, column2, ...
+        FROM table_name
         """
         )
         self.assertEqual(query.is_ordered(), False)
 
-        query = SQLQuery("SELECT * FROM USERS")
+        query = SQLQuery("select * from users")
         self.assertEqual(query.is_ordered(), False)
 
-        query = SQLQuery('SELECT "ORDER BY" FROM USERS')
+        query = SQLQuery('select "ORDER BY" from users')
         self.assertEqual(query.is_ordered(), False)
 
-        query = SQLQuery('SELECT "ORDER BY", (SELECT 1 ORDER BY TEST) FROM USERS')
+        query = SQLQuery('select "ORDER BY", (SELECT 1 ORDER BY test) from users')
         self.assertEqual(query.is_ordered(), False)
+
+
+if __name__ == "__main__":
+    unittest.main()
