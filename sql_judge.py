@@ -148,7 +148,12 @@ if __name__ == "__main__":
                             testcase.accepted = False
                             judgement.accepted = False
                             judgement.status = {"enum": "compilation error"}
-                            with Message(f"Error: {err}"):
+                            with Message(
+                                {
+                                    "format": "html",
+                                    "description": f"<span class=\"code\">{type(err).__name__}:<br/>{'&nbsp;'*4}{err}</span>",
+                                }
+                            ):
                                 pass
 
                             exit()
