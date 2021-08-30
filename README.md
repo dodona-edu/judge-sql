@@ -13,6 +13,7 @@
 
 > [More info about repository directory structure](https://docs.dodona.be/en/references/repository-directory-structure/#example-of-a-valid-repository-structure)
 
+Add your solution (`.sql` file) and de database(s) (`.sqlite`) to the `evaluation` folder. If you add multiple databases, the queries will be excecuted on all databases.
 
 ````
 +-- README.md                            # Optional: Describes the repository
@@ -22,7 +23,7 @@
 +-- 📂sql-exercises                     # We could group exercises in a folder
 |   +-- 📂first_select_query            # Folder name for the exercise
 |   |   +-- config.json                  # configuration of the exercise
-|   |   +-- 📂evaluation                # -- ↓️ADD YOUR DATABASE AND SOLUTION HERE ↓ --
+|   |   +-- 📂evaluation                # -- 🔽️ ADD YOUR DATABASE AND SOLUTION HERE 🔽 --
 |   |   |   +-- 📂databases             #
 |   |   |   |   +-- my_database.sqlite   # The database file
 |   |   |   +-- solution.sql             # The SQL model solution file
