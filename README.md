@@ -93,7 +93,7 @@ Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the `eval
 | `database_dir`              | Relative path to database directory                                                     | path            | `./databases`    |
 | `max_rows`                  | Maximal number of rows shown                                                            | int             | 100              |
 | `semicolon_warning`         | Show warning if there isn't a semicolon at the end of each query                        | `true`/`false`  | `true`           |
-| `strict_identical_order_by` | If solution (doesn't) contain ORDER BY, student query also (doesn't) have to contain it | `true`/`false`  | `true`           |
+| `strict_identical_order_by` | If solution (doesn't) contain `ORDER BY`, student queries also (doesn't) have to contain it | `true`/`false`  | `true`           |
 
 ### Example of modified settings
 
