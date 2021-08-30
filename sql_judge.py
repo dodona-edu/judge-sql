@@ -154,7 +154,7 @@ if __name__ == "__main__":
                         connection = sqlite3.connect(db_file)
                         cursor = connection.cursor()
 
-                        if not solution_query.is_select():
+                        if not solution_query.is_select:
                             # TODO: support non-select queries and copy file + compare db using https://sqlite.org/sqldiff.html
                             raise ValueError(f"Non-select queries not yet supported.")
 
@@ -166,7 +166,7 @@ if __name__ == "__main__":
 
                         #### RENDER SOLUTION QUERY OUTPUT
                         expected_output = render_query_output(
-                            solution_query.is_ordered(), cursor
+                            solution_query.is_ordered, cursor
                         )
 
                         #### RUN SUBMISSION QUERY
@@ -188,7 +188,7 @@ if __name__ == "__main__":
 
                         #### RENDER SUBMISSION QUERY OUTPUT
                         generated_output = render_query_output(
-                            solution_query.is_ordered(), cursor
+                            solution_query.is_ordered, cursor
                         )
 
                         with Test(
@@ -230,26 +230,25 @@ if __name__ == "__main__":
 
                         if (
                             config.strict_identical_order_by
-                            and submission_query.is_ordered()
-                            != solution_query.is_ordered()
+                            and submission_query.is_ordered != solution_query.is_ordered
                         ):
                             with Test(
                                 "Query should return ordered rows."
-                                if solution_query.is_ordered()
+                                if solution_query.is_ordered
                                 else "No explicit row ordering should be enforced in query.",
                                 "rows are being ordered"
-                                if solution_query.is_ordered()
+                                if solution_query.is_ordered
                                 else "rows are not being ordered",
                             ) as test:
                                 test.generated = (
                                     "rows are being ordered"
-                                    if submission_query.is_ordered()
+                                    if submission_query.is_ordered
                                     else "rows are not being ordered"
                                 )
 
                                 if (
-                                    solution_query.is_ordered()
-                                    == solution_query.is_ordered()
+                                    submission_query.is_ordered
+                                    == solution_query.is_ordered
                                 ):
                                     test.status = {"enum": "correct"}
                                 else:
