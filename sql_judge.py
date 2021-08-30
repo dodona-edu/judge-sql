@@ -8,6 +8,7 @@ from dodona_config import DodonaConfig
 from dodona_command import Judgement, Tab, Context, TestCase, Test, Message, Annotation
 from sql_query import SQLQuery
 from os import path
+from dataclasses import dataclass
 
 python_type_to_sqlite_type = {
     None: "NULL",
@@ -16,6 +17,13 @@ python_type_to_sqlite_type = {
     str: "TEXT",
     bytes: "BLOB",
 }
+
+
+@dataclass
+class QueryRender:
+    dataframe: pd.core.frame.DataFrame
+    csv_out: str
+    types_out: str
 
 
 def render_query_output(is_ordered: bool, cur: Cursor) -> tuple[str, str]:
@@ -37,7 +45,11 @@ def render_query_output(is_ordered: bool, cur: Cursor) -> tuple[str, str]:
         types = [python_type_to_sqlite_type[type(x)] for x in rows[0]]
         type_description = "\n".join(f"{c} [{t}]" for (c, t) in zip(columns, types))
 
-    return csv_output.getvalue(), type_description
+    return QueryRender(
+        dataframe=df,
+        csv_out=csv_output.getvalue(),
+        types_out=type_description,
+    )
 
 
 if __name__ == "__main__":
@@ -175,21 +187,38 @@ if __name__ == "__main__":
                         )
 
                         with Test(
-                            "Comparing query output csv content", expected_output[0]
+                            "Comparing query output csv content",
+                            expected_output.csv_out,
                         ) as test:
-                            test.generated = generated_output[0]
+                            test.generated = generated_output.csv_out
 
-                            if expected_output[0] == generated_output[0]:
+                            if len(expected_output.dataframe.index) != len(
+                                generated_output.dataframe.index
+                            ):
+                                with Message(
+                                    f"Expected row count {len(expected_output.dataframe.index)}, your row count was {len(generated_output.dataframe.index)}."
+                                ):
+                                    pass
+
+                            if len(expected_output.dataframe.columns) != len(
+                                generated_output.dataframe.columns
+                            ):
+                                with Message(
+                                    f"Expected column count {len(expected_output.dataframe.columns)}, your column count was {len(generated_output.dataframe.columns)}."
+                                ):
+                                    pass
+
+                            if expected_output.csv_out == generated_output.csv_out:
                                 test.status = {"enum": "correct"}
                             else:
                                 test.status = {"enum": "wrong"}
 
                         with Test(
-                            "Comparing query output types", expected_output[1]
+                            "Comparing query output types", expected_output.types_out
                         ) as test:
-                            test.generated = generated_output[1]
+                            test.generated = generated_output.types_out
 
-                            if expected_output[1] == generated_output[1]:
+                            if expected_output.types_out == generated_output.types_out:
                                 test.status = {"enum": "correct"}
                             else:
                                 test.status = {"enum": "wrong"}
