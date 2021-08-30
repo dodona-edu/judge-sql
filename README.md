@@ -7,13 +7,12 @@
 * Automatic detection if order needs to be checked
 * Support for read and write operations
 * Automatic distinction between read and write operations
-* Support for multiple queries
 
 ## Recommended exercise directory structure
 
 > [More info about repository directory structure](https://docs.dodona.be/en/references/repository-directory-structure/#example-of-a-valid-repository-structure)
 
-Add your solution (`.sql` file) and de database(s) (`.sqlite`) to the `evaluation` folder. If you add multiple databases, the queries will be excecuted on all databases.
+Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the `evaluation` folder. The `solution.sql` file can contain multiple queries. You can define a different name for the solution in the `config.json` file. If you add multiple databases, the queries will be executed on all databases. The names of the databases don't matter.
 
 ````
 +-- README.md                            # Optional: Describes the repository
