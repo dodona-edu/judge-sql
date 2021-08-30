@@ -10,7 +10,7 @@ class SQLQuery:
             reindent=True,
             strip_comments=True,
             keyword_case="upper",
-            identifier_case="lower",
+            identifier_case="lower"
         )
         self.canonical = self.formatted.strip(";")
         self.parsed = sqlparse.parse(self.canonical)[0]
