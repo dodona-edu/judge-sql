@@ -2,6 +2,7 @@ import json
 import sys
 from abc import ABC
 from types import SimpleNamespace, TracebackType
+from typing import Union
 
 
 class DodonaCommand(ABC):
@@ -50,7 +51,7 @@ class Context(DodonaCommand):
 
 
 class TestCase(DodonaCommand):
-    def __init__(self, description: str, **kwargs):
+    def __init__(self, description: Union[str, dict], **kwargs):
         super().__init__(description=description, **kwargs)
 
 
@@ -60,7 +61,7 @@ class Test(DodonaCommand):
 
 
 class Message(DodonaCommand):
-    def __init__(self, message: str, **kwargs):
+    def __init__(self, message: Union[str, dict], **kwargs):
         super().__init__(message=message, **kwargs)
 
     def start_msg(self) -> dict:
