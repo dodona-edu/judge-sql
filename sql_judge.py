@@ -125,7 +125,10 @@ if __name__ == "__main__":
                         continue
 
                     with Context(), TestCase(
-                        f"sqlite3 {filename} < user_query.sql"
+                        {
+                            "format": "sql",
+                            "description": f"-- sqlite3 {filename}\n{submission_query.formatted}",
+                        }
                     ) as testcase:
                         expected_output, generated_output = None, None
 
@@ -140,7 +143,7 @@ if __name__ == "__main__":
 
                         #### RUN SOLUTION QUERY
                         try:
-                            cursor.execute(solution_query.canonical)
+                            cursor.execute(solution_query.formatted)
                         except Exception as err:
                             raise ValueError(f"Solution is not working: {err}")
 
@@ -151,7 +154,7 @@ if __name__ == "__main__":
 
                         #### RUN SUBMISSION QUERY
                         try:
-                            cursor.execute(submission_query.canonical)
+                            cursor.execute(submission_query.formatted)
                         except Exception as err:
                             testcase.accepted = False
                             judgement.accepted = False

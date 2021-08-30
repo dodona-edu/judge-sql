@@ -3,17 +3,12 @@ import sqlparse
 
 class SQLQuery:
     def __init__(self, raw_input: str):
-        self.raw_input = raw_input
-
+        self.raw_input = raw_input.strip()
         self.formatted = sqlparse.format(
-            raw_input.strip(),
-            reindent=True,
+            self.raw_input,
             strip_comments=True,
-            keyword_case="upper",
-            identifier_case="lower",
-        )
-        self.canonical = self.formatted.strip(";")
-        self.parsed = sqlparse.parse(self.canonical)[0]
+        ).strip()
+        self.parsed = sqlparse.parse(self.formatted)[0]
 
     def is_select(self):
         return self.parsed.get_type() == "SELECT"
