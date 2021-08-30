@@ -64,6 +64,9 @@ if __name__ == "__main__":
     # Set 'semicolon_warning' to True if not set
     config.semicolon_warning = bool(getattr(config, "semicolon_warning", True))
 
+    # Set 'strict_identical_order_by' to True if not set
+    config.strict_identical_order_by = bool(getattr(config, "strict_identical_order_by", True))
+
     # Set 'database_dir' to "./databases" if not set
     config.database_dir = str(getattr(config, "database_dir", "./databases"))
     config.database_dir = path.join(config.resources, config.database_dir)
@@ -222,3 +225,15 @@ if __name__ == "__main__":
                                 test.status = {"enum": "correct"}
                             else:
                                 test.status = {"enum": "wrong"}
+                        
+                        if config.strict_identical_order_by:
+                            with Test(
+                                "Query should contain 'ORDER BY'." if solution_query.is_ordered() else "Query should not contain 'ORDER BY'.",
+                                "'ORDER BY' found" if solution_query.is_ordered() else "'ORDER BY' not found"
+                            ) as test:
+                                test.generated = "'ORDER BY' found" if submission_query.is_ordered() else "'ORDER BY' not found"
+
+                                if solution_query.is_ordered() == solution_query.is_ordered():
+                                    test.status = {"enum": "correct"}
+                                else:
+                                    test.status = {"enum": "wrong"}
