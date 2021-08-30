@@ -24,8 +24,8 @@ Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the `eval
 |   |   +-- config.json                  # configuration of the exercise
 |   |   +-- 📂evaluation                # -- 🔽️ ADD YOUR DATABASE AND SOLUTION HERE 🔽 --
 |   |   |   +-- 📂databases             #
-|   |   |   |   +-- my_database.sqlite   # The database file
-|   |   |   +-- solution.sql             # The SQL model solution file
+|   |   |   |   +-- my_database.sqlite   # ▶ The database file
+|   |   |   +-- solution.sql             # ▶ The SQL model solution file
 |   |   +-- 📂solution                  # Optional: This will be visible in Dodona
 |   |   |   +-- solution.sql             # Optional: the SQL model solution file
 |   |   +-- 📂description               #
