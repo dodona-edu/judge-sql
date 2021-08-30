@@ -26,7 +26,7 @@ class QueryRender:
     types_out: str
 
 
-def render_query_output(is_ordered: bool, cur: Cursor) -> tuple[str, str]:
+def render_query_output(is_ordered: bool, cur: Cursor) -> QueryRender:
     csv_output = io.StringIO()
 
     rows = cur.fetchmany(config.max_rows)
