@@ -228,10 +228,10 @@ if __name__ == "__main__":
                         
                         if config.strict_identical_order_by:
                             with Test(
-                                "Query should contain 'ORDER BY'." if solution_query.is_ordered() else "Query should not contain 'ORDER BY'.",
-                                "'ORDER BY' found" if solution_query.is_ordered() else "'ORDER BY' not found"
+                                "Query should return ordered rows." if solution_query.is_ordered() else "No explicit row ordering should be enforced in query.",
+                                "rows are being ordered" if solution_query.is_ordered() else "rows are not being ordered"
                             ) as test:
-                                test.generated = "'ORDER BY' found" if submission_query.is_ordered() else "'ORDER BY' not found"
+                                test.generated = "rows are being ordered" if submission_query.is_ordered() else "rows are not being ordered"
 
                                 if solution_query.is_ordered() == solution_query.is_ordered():
                                     test.status = {"enum": "correct"}
