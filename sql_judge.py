@@ -173,8 +173,8 @@ if __name__ == "__main__":
                             judgement.status = {"enum": "compilation error"}
                             with Message(
                                 {
-                                    "format": "html",
-                                    "description": f"<span class=\"code\">{type(err).__name__}:<br/>{'&nbsp;'*4}{err}</span>",
+                                    "format": "code",
+                                    "description": f"{type(err).__name__}:\n    {err}",
                                 }
                             ):
                                 pass
