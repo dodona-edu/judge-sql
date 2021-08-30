@@ -76,7 +76,7 @@ class Message(DodonaCommand):
 
 
 class Annotation(DodonaCommand):
-    def __init__(self, row: str, text: str, **kwargs):
+    def __init__(self, row: int, text: str, **kwargs):
         super().__init__(row=row, text=text, **kwargs)
 
     def start_msg(self) -> dict:

@@ -1,114 +1,25 @@
 import os
 import io
-import re
 from sqlite3 import Cursor
 import sys
 import sqlite3
 import pandas as pd
 from dodona_config import DodonaConfig
 from dodona_command import Judgement, Tab, Context, TestCase, Test, Message, Annotation
+from sql_query import SQLQuery
 from os import path
 
 
-def query_cleanup(query: str) -> str:
-    """Return cleaned-up version of query
-
-    >>> query_cleanup("  SELeCT\\n*\\tFROm   USERS  \\n\\r")
-    'select * from users'
-    >>> query_cleanup('''
-    ... SELECT *
-    ...    from users
-    ... ''')
-    'select * from users'
-    >>> query_cleanup('''
-    ... --Select all:
-    ... SELECT * FROM Customers;
-    ... ''')
-    'select * from customers;'
-    >>> query_cleanup('''
-    ... SELECT * FROM Customers; --Select all:''')
-    'select * from customers;'
-    >>> query_cleanup('''
-    ... # Select all:
-    ... Select * FROM Customers;''')
-    'select * from customers;'
-    >>> query_cleanup('''
-    ... SELECT * FROM Customers; # Select all:''')
-    'select * from customers;'
-    >>> query_cleanup('''
-    ... /* Select all employees whose compensation is
-    ... greater than that of Pataballa. */
-    ... SELECT * FROM Customers; # Select all:''')
-    'select * from customers;'
-    >>> query_cleanup('''
-    ... /* Select all employees whose compensation is
-    ... greater than that of Pataballa. */
-    ... SELECT * FROM Customers; # Select all:''')
-    'select * from customers;'
-    """
-    # remove comments
-    query = re.sub(r"(--.*)|((/\*)+?[\w\W]*?(\*/)+)|(#.*)", "", query, re.MULTILINE)
-    # lowercase
-    query = query.lower()
-    # de-duplicate whitespace
-    query = " ".join(query.split())
-    return query
-
-
-def detect_is_select(query: str) -> bool:
-    """Return if query is select statement
-
-    >>> detect_is_select("  SELeCT\\n*\\tFROm   USERS  \\n\\r")
-    True
-    >>> detect_is_select("\\nSELECT *\\n    from\\n       users\\n")
-    True
-    >>> detect_is_select('''
-    ... INSERT INTO table2
-    ... SELECT * FROM table1
-    ... WHERE condition;
-    ... ''')
-    False
-    >>> detect_is_select('''
-    ... -- Comment
-    ... SELECT * FROM table1
-    ... WHERE condition;
-    ... ''')
-    True
-    """
-    return query_cleanup(query).startswith("select")
-
-
-def detect_is_ordered(query: str) -> bool:
-    """Return if SELECT query contains ORDER BY
-
-    >>> detect_is_ordered('''
-    ... SELECT column1, column2, ...
-    ... FROM table_name
-    ... ORDER BY column1, column2, ... ASC|DESC;
-    ... ''')
-    True
-    >>> detect_is_ordered('''
-    ... # ORDER BY
-    ... SELECT column1, column2, ...
-    ... FROM table_name
-    ... ''')
-    False
-    >>> detect_is_ordered("select * from users")
-    False
-    """
-    return "order by" in query_cleanup(query)
-
-
-def render_query_output(config: DodonaConfig, cursor: Cursor) -> tuple[str, str]:
+def render_query_output(is_ordered: bool, cur: Cursor) -> tuple[str, str]:
     csv_output = io.StringIO()
 
-    rows = cursor.fetchmany(config.max_rows)
-    columns = [column[0] for column in cursor.description or []]
+    rows = cur.fetchmany(config.max_rows)
+    columns = [column[0] for column in cur.description or []]
 
     df = pd.DataFrame(rows, columns=columns)
 
     # if SELECT is not ordered -> fix ordering by sorting all rows
-    if not config.solution_is_ordered and not df.empty:
+    if not is_ordered and not df.empty:
         df.sort_values(by=df.columns.tolist(), inplace=True)
 
     df.to_csv(csv_output, index=False)
@@ -149,85 +60,120 @@ if __name__ == "__main__":
         # This will cause an Dodona "internal error"
         raise ValueError(f"Could not find solution file: '{config.solution_sql}'.")
 
-    # Extract config default from solution query
+    # Parse solution query
     with open(config.solution_sql) as sql_file:
-        solution_query = sql_file.read()
-        config.solution_is_select = detect_is_select(solution_query)
-        config.solution_is_ordered = detect_is_ordered(solution_query)
+        config.raw_solution_file = sql_file.read()
+        config.solution_queries = SQLQuery.from_raw_input(config.raw_solution_file)
+
+        if len(config.solution_queries) == 0:
+            raise ValueError(f"Solution file seems to be empty.")
+
+    # Parse submission query
+    with open(config.source) as sql_file:
+        config.raw_submission_file = sql_file.read()
+        config.submission_queries = SQLQuery.from_raw_input(config.raw_submission_file)
 
     with Judgement() as judgement:
-        with open(config.source) as sql_file:
-            submission_query = sql_file.read()
-            if config.semicolon_warning and query_cleanup(submission_query)[-1] != ";":
-                with Annotation(
-                    row=submission_query.strip().count("\n"),
-                    type="warning",
-                    text='Add a semicolon ";" at the end of each SQL query.',
-                ):
-                    pass
+        if len(config.submission_queries) > len(config.solution_queries):
+            judgement.accepted = False
+            judgement.status = {"enum": "runtime error"}
+            with Message(
+                f"Error: the submitted solution contains more queries ({len(config.submission_queries)}) "
+                f"than expected ({len(config.solution_queries)}). Make sure that all queries correctly terminate with a semicolon."
+            ):
+                pass
 
-        with Tab("Test results"):
-            for filename in os.listdir(config.database_dir):
-                if not filename.endswith(".sqlite"):
-                    continue
+            exit()
 
-                with Context(), TestCase(
-                    f"sqlite3 {filename} < user_query.sql"
-                ) as testcase:
-                    expected_output, generated_output = None, None
+        if (
+            config.semicolon_warning
+            and config.submission_queries[-1].formatted[-1] != ";"
+        ):
+            with Annotation(
+                row=config.raw_submission_file.rstrip().count("\n"),
+                type="warning",
+                text='Add a semicolon ";" at the end of each SQL query.',
+            ):
+                pass
 
-                    db_file = f"{config.database_dir}/{filename}"
+        for query_nr in range(len(config.solution_queries)):
+            with Tab(f"Query {1 + query_nr}"):
+                if query_nr >= len(config.submission_queries):
+                    judgement.accepted = False
+                    judgement.status = {"enum": "runtime error"}
+                    with Message(
+                        f"Error: the submitted solution contains less queries ({len(config.submission_queries)}) "
+                        f"than expected ({len(config.solution_queries)}). Make sure that all queries correctly terminate with a semicolon."
+                    ):
+                        pass
 
-                    connection = sqlite3.connect(db_file)
-                    cursor = connection.cursor()
+                    exit()
 
-                    #### RUN SOLUTION QUERY
-                    try:
-                        with open(config.solution_sql) as sql_file:
-                            solution_query = sql_file.read()
-                            cursor.execute(query_cleanup(solution_query))
-                    except Exception as err:
-                        raise ValueError(f"Solution is not working: {err}")
+                solution_query = config.solution_queries[query_nr]
+                submission_query = config.submission_queries[query_nr]
 
-                    #### RENDER SOLUTION QUERY OUTPUT
-                    expected_output = render_query_output(config, cursor)
-
-                    if not config.solution_is_select:
-                        raise ValueError(f"Non-select queries not yet supported.")
-
-                    #### RUN SUBMISSION QUERY
-                    try:
-                        with open(config.source) as sql_file:
-                            submission_query = sql_file.read()
-                            cursor.execute(query_cleanup(submission_query))
-                    except Exception as err:
-                        testcase.accepted = False
-                        judgement.accepted = False
-                        judgement.status = {"enum": "compilation error"}
-                        with Message(f"Error: {err}"):
-                            pass
-
+                for filename in os.listdir(config.database_dir):
+                    if not filename.endswith(".sqlite"):
                         continue
 
-                    #### RENDER SUBMISSION QUERY OUTPUT
-                    generated_output = render_query_output(config, cursor)
+                    with Context(), TestCase(
+                        f"sqlite3 {filename} < user_query.sql"
+                    ) as testcase:
+                        expected_output, generated_output = None, None
 
-                    with Test(
-                        "Comparing query output csv content", expected_output[0]
-                    ) as test:
-                        test.generated = generated_output[0]
+                        db_file = f"{config.database_dir}/{filename}"
 
-                        if expected_output[0] == generated_output[0]:
-                            test.status = {"enum": "correct"}
-                        else:
-                            test.status = {"enum": "wrong"}
+                        connection = sqlite3.connect(db_file)
+                        cursor = connection.cursor()
 
-                    with Test(
-                        "Comparing query output types", expected_output[1]
-                    ) as test:
-                        test.generated = generated_output[1]
+                        if not solution_query.is_select():
+                            # TODO: support non-select queries and copy file + compare db using https://sqlite.org/sqldiff.html
+                            raise ValueError(f"Non-select queries not yet supported.")
 
-                        if expected_output[1] == generated_output[1]:
-                            test.status = {"enum": "correct"}
-                        else:
-                            test.status = {"enum": "wrong"}
+                        #### RUN SOLUTION QUERY
+                        try:
+                            cursor.execute(solution_query.canonical)
+                        except Exception as err:
+                            raise ValueError(f"Solution is not working: {err}")
+
+                        #### RENDER SOLUTION QUERY OUTPUT
+                        expected_output = render_query_output(
+                            solution_query.is_ordered(), cursor
+                        )
+
+                        #### RUN SUBMISSION QUERY
+                        try:
+                            cursor.execute(submission_query.canonical)
+                        except Exception as err:
+                            testcase.accepted = False
+                            judgement.accepted = False
+                            judgement.status = {"enum": "compilation error"}
+                            with Message(f"Error: {err}"):
+                                pass
+
+                            exit()
+
+                        #### RENDER SUBMISSION QUERY OUTPUT
+                        generated_output = render_query_output(
+                            solution_query.is_ordered(), cursor
+                        )
+
+                        with Test(
+                            "Comparing query output csv content", expected_output[0]
+                        ) as test:
+                            test.generated = generated_output[0]
+
+                            if expected_output[0] == generated_output[0]:
+                                test.status = {"enum": "correct"}
+                            else:
+                                test.status = {"enum": "wrong"}
+
+                        with Test(
+                            "Comparing query output types", expected_output[1]
+                        ) as test:
+                            test.generated = generated_output[1]
+
+                            if expected_output[1] == generated_output[1]:
+                                test.status = {"enum": "correct"}
+                            else:
+                                test.status = {"enum": "wrong"}
