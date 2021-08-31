@@ -1,61 +1,28 @@
 import os
-import io
-from sqlite3 import Cursor
 import sys
 import sqlite3
-import pandas as pd
 from dodona_config import DodonaConfig
-from dodona_command import Judgement, Tab, Context, TestCase, Test, Message, Annotation
+from dodona_command import (
+    Judgement,
+    Tab,
+    Context,
+    TestCase,
+    Test,
+    Message,
+    Annotation,
+    DodonaException,
+    Permission,
+    ErrorType,
+    Format,
+)
 from sql_query import SQLQuery
+from sql_query_result import SQLQueryResult
 from os import path
-from dataclasses import dataclass
 
-python_type_to_sqlite_type = {
-    None: "NULL",
-    int: "INTEGER",
-    float: "REAL",
-    str: "TEXT",
-    bytes: "BLOB",
-}
+# extract info from exercise configuration
+config = DodonaConfig.from_json(sys.stdin)
 
-
-@dataclass
-class QueryRender:
-    dataframe: pd.core.frame.DataFrame
-    csv_out: str
-    types_out: str
-
-
-def render_query_output(is_ordered: bool, cur: Cursor) -> QueryRender:
-    csv_output = io.StringIO()
-
-    rows = cur.fetchmany(config.max_rows)
-    columns = [column[0] for column in cur.description or []]
-
-    df = pd.DataFrame(rows, columns=columns)
-
-    # if SELECT is not ordered -> fix ordering by sorting all rows
-    if not is_ordered and not df.empty:
-        df.sort_values(by=df.columns.tolist(), inplace=True)
-
-    df.to_csv(csv_output, index=False)
-
-    type_description = ""
-    if len(rows) > 0:
-        types = [python_type_to_sqlite_type[type(x)] for x in rows[0]]
-        type_description = "\n".join(f"{c} [{t}]" for (c, t) in zip(columns, types))
-
-    return QueryRender(
-        dataframe=df,
-        csv_out=csv_output.getvalue(),
-        types_out=type_description,
-    )
-
-
-if __name__ == "__main__":
-    # extract info from exercise configuration
-    config = DodonaConfig.from_json(sys.stdin)
-
+with Judgement() as judgement:
     config.sanity_check()
 
     # Set 'max_rows' to 100 if not set
@@ -69,13 +36,39 @@ if __name__ == "__main__":
         getattr(config, "strict_identical_order_by", True)
     )
 
-    # Set 'database_dir' to "./databases" if not set
-    config.database_dir = str(getattr(config, "database_dir", "./databases"))
-    config.database_dir = path.join(config.resources, config.database_dir)
+    # Set 'allow_different_column_order' to True if not set
+    config.allow_different_column_order = bool(
+        getattr(config, "allow_different_column_order", True)
+    )
 
-    if not path.exists(config.database_dir):
+    if hasattr(config, "database_files"):
+        config.database_files = list(config.database_files)
+    else:
+        # Set 'database_dir' to "." if not set
+        config.database_dir = str(getattr(config, "database_dir", "."))
+        config.database_dir = path.join(config.resources, config.database_dir)
+
+        if not path.exists(config.database_dir):
+            # This will cause an Dodona "internal error"
+            raise DodonaException(
+                ErrorType.INTERNAL_ERROR,
+                Permission.STAFF,
+                f"Could not find database directory: '{config.database_dir}'.",
+            )
+
+        config.database_files = [
+            filename
+            for filename in sorted(os.listdir(config.database_dir))
+            if filename.endswith(".sqlite")
+        ]
+
+    if len(config.database_files) == 0:
         # This will cause an Dodona "internal error"
-        raise ValueError(f"Could not find database directory: '{config.database_dir}'.")
+        raise DodonaException(
+            ErrorType.INTERNAL_ERROR,
+            Permission.STAFF,
+            f"Could not find database files. Make sure that the database directory contains '*.sqlite' files or a valid 'database_files' option is provided.",
+        )
 
     # Set 'solution_sql' to "./solution.sql" if not set
     config.solution_sql = str(getattr(config, "solution_sql", "./solution.sql"))
@@ -83,7 +76,11 @@ if __name__ == "__main__":
 
     if not path.exists(config.solution_sql):
         # This will cause an Dodona "internal error"
-        raise ValueError(f"Could not find solution file: '{config.solution_sql}'.")
+        raise DodonaException(
+            ErrorType.INTERNAL_ERROR,
+            Permission.STAFF,
+            f"Could not find solution file: '{config.solution_sql}'.",
+        )
 
     # Parse solution query
     with open(config.solution_sql) as sql_file:
@@ -91,165 +88,183 @@ if __name__ == "__main__":
         config.solution_queries = SQLQuery.from_raw_input(config.raw_solution_file)
 
         if len(config.solution_queries) == 0:
-            raise ValueError(f"Solution file seems to be empty.")
+            raise DodonaException(
+                ErrorType.INTERNAL_ERROR,
+                Permission.STAFF,
+                f"Solution file is empty.",
+            )
 
     # Parse submission query
     with open(config.source) as sql_file:
         config.raw_submission_file = sql_file.read()
         config.submission_queries = SQLQuery.from_raw_input(config.raw_submission_file)
 
-    with Judgement() as judgement:
-        if len(config.submission_queries) > len(config.solution_queries):
-            judgement.accepted = False
-            judgement.status = {"enum": "runtime error"}
-            with Message(
-                f"Error: the submitted solution contains more queries ({len(config.submission_queries)}) "
-                f"than expected ({len(config.solution_queries)}). Make sure that all queries correctly terminate with a semicolon."
-            ):
-                pass
+    if len(config.submission_queries) > len(config.solution_queries):
+        raise DodonaException(
+            ErrorType.RUNTIME_ERROR,
+            Permission.STUDENT,
+            f"Error: the submitted solution contains more queries ({len(config.submission_queries)}) "
+            f"than expected ({len(config.solution_queries)}). Make sure that all queries correctly terminate with a semicolon.",
+            Format.CALLOUT,
+        )
 
-            exit()
-
-        if (
-            config.semicolon_warning
-            and config.submission_queries[-1].formatted[-1] != ";"
+    if config.semicolon_warning and config.submission_queries[-1].formatted[-1] != ";":
+        with Annotation(
+            row=config.raw_submission_file.rstrip().count("\n"),
+            type="warning",
+            text='Add a semicolon ";" at the end of each SQL query.',
         ):
-            with Annotation(
-                row=config.raw_submission_file.rstrip().count("\n"),
-                type="warning",
-                text='Add a semicolon ";" at the end of each SQL query.',
-            ):
-                pass
+            pass
 
-        for query_nr in range(len(config.solution_queries)):
-            with Tab(f"Query {1 + query_nr}"):
-                if query_nr >= len(config.submission_queries):
-                    judgement.accepted = False
-                    judgement.status = {"enum": "runtime error"}
-                    with Message(
-                        f"Error: the submitted solution contains less queries ({len(config.submission_queries)}) "
-                        f"than expected ({len(config.solution_queries)}). Make sure that all queries correctly terminate with a semicolon."
-                    ):
-                        pass
+    for query_nr in range(len(config.solution_queries)):
+        with Tab(f"Query {1 + query_nr}"):
+            if query_nr >= len(config.submission_queries):
+                raise DodonaException(
+                    ErrorType.RUNTIME_ERROR,
+                    Permission.STUDENT,
+                    f"Error: the submitted solution contains less queries ({len(config.submission_queries)}) "
+                    f"than expected ({len(config.solution_queries)}). Make sure that all queries correctly terminate with a semicolon.",
+                    Format.CALLOUT,
+                )
 
-                    exit()
+            solution_query = config.solution_queries[query_nr]
+            submission_query = config.submission_queries[query_nr]
 
-                solution_query = config.solution_queries[query_nr]
-                submission_query = config.submission_queries[query_nr]
+            for filename in config.database_files:
+                with Context(), TestCase(
+                    {
+                        "format": Format.SQL,
+                        "description": f"-- sqlite3 {filename}\n{submission_query.formatted}",
+                    }
+                ) as testcase:
+                    expected_output, generated_output = None, None
 
-                for filename in os.listdir(config.database_dir):
-                    if not filename.endswith(".sqlite"):
-                        continue
+                    db_file = f"{config.database_dir}/{filename}"
 
-                    with Context(), TestCase(
-                        {
-                            "format": "sql",
-                            "description": f"-- sqlite3 {filename}\n{submission_query.formatted}",
-                        }
-                    ) as testcase:
-                        expected_output, generated_output = None, None
+                    connection = sqlite3.connect(db_file)
+                    cursor = connection.cursor()
 
-                        db_file = f"{config.database_dir}/{filename}"
-
-                        connection = sqlite3.connect(db_file)
-                        cursor = connection.cursor()
-
-                        if not solution_query.is_select:
-                            # TODO: support non-select queries and copy file + compare db using https://sqlite.org/sqldiff.html
-                            raise ValueError(f"Non-select queries not yet supported.")
-
-                        #### RUN SOLUTION QUERY
-                        try:
-                            cursor.execute(solution_query.formatted)
-                        except Exception as err:
-                            raise ValueError(f"Solution is not working: {err}")
-
-                        #### RENDER SOLUTION QUERY OUTPUT
-                        expected_output = render_query_output(
-                            solution_query.is_ordered, cursor
+                    if not solution_query.is_select:
+                        # TODO(#12): support non-select queries and copy file + compare db using https://sqlite.org/sqldiff.html
+                        raise DodonaException(
+                            ErrorType.INTERNAL_ERROR,
+                            Permission.STAFF,
+                            f"Non-select queries not yet supported.",
                         )
 
-                        #### RUN SUBMISSION QUERY
-                        try:
-                            cursor.execute(submission_query.formatted)
-                        except Exception as err:
-                            testcase.accepted = False
-                            judgement.accepted = False
-                            judgement.status = {"enum": "compilation error"}
+                    #### RUN SOLUTION QUERY
+                    try:
+                        cursor.execute(solution_query.formatted)
+                    except Exception as err:
+                        raise DodonaException(
+                            ErrorType.INTERNAL_ERROR,
+                            Permission.STAFF,
+                            f"Solution is not working: {err}",
+                        )
+
+                    #### RENDER SOLUTION QUERY OUTPUT
+                    expected_output = SQLQueryResult.from_cursor(
+                        config.max_rows, cursor
+                    )
+
+                    # if SELECT is not ordered -> fix ordering by sorting all rows
+                    if solution_query.is_ordered:
+                        expected_output.sort_rows()
+
+                    #### RUN SUBMISSION QUERY
+                    try:
+                        cursor.execute(submission_query.formatted)
+                    except Exception as err:
+                        testcase.accepted = False
+                        judgement.accepted = False
+                        judgement.status = {"enum": "compilation error"}
+                        with Message(
+                            {
+                                "format": Format.CODE,
+                                "description": f"{type(err).__name__}:\n    {err}",
+                            }
+                        ):
+                            pass
+
+                        exit()
+
+                    #### RENDER SUBMISSION QUERY OUTPUT
+                    generated_output = SQLQueryResult.from_cursor(
+                        config.max_rows, cursor
+                    )
+
+                    # if SELECT is not ordered -> fix ordering by sorting all rows
+                    if not solution_query.is_ordered:
+                        generated_output.sort_rows()
+
+                    if config.allow_different_column_order:
+                        expected_output.index_columns(generated_output.columns)
+
+                    # TODO(#7): add custom compare function that only compares subsection of columns
+                    with Test(
+                        "Comparing query output csv content",
+                        expected_output.csv_out,
+                    ) as test:
+                        test.generated = generated_output.csv_out
+
+                        if len(expected_output.df.index) != len(
+                            generated_output.df.index
+                        ):
                             with Message(
                                 {
-                                    "format": "code",
-                                    "description": f"{type(err).__name__}:\n    {err}",
+                                    "format": Format.CALLOUT,
+                                    "description": f"Expected row count {len(expected_output.df.index)}, your row count was {len(generated_output.df.index)}.",
                                 }
                             ):
                                 pass
 
-                            exit()
-
-                        #### RENDER SUBMISSION QUERY OUTPUT
-                        generated_output = render_query_output(
-                            solution_query.is_ordered, cursor
-                        )
-
-                        with Test(
-                            "Comparing query output csv content",
-                            expected_output.csv_out,
-                        ) as test:
-                            test.generated = generated_output.csv_out
-
-                            if len(expected_output.dataframe.index) != len(
-                                generated_output.dataframe.index
-                            ):
-                                with Message(
-                                    f"Expected row count {len(expected_output.dataframe.index)}, your row count was {len(generated_output.dataframe.index)}."
-                                ):
-                                    pass
-
-                            if len(expected_output.dataframe.columns) != len(
-                                generated_output.dataframe.columns
-                            ):
-                                with Message(
-                                    f"Expected column count {len(expected_output.dataframe.columns)}, your column count was {len(generated_output.dataframe.columns)}."
-                                ):
-                                    pass
-
-                            if expected_output.csv_out == generated_output.csv_out:
-                                test.status = {"enum": "correct"}
-                            else:
-                                test.status = {"enum": "wrong"}
-
-                        with Test(
-                            "Comparing query output types", expected_output.types_out
-                        ) as test:
-                            test.generated = generated_output.types_out
-
-                            if expected_output.types_out == generated_output.types_out:
-                                test.status = {"enum": "correct"}
-                            else:
-                                test.status = {"enum": "wrong"}
-
-                        if (
-                            config.strict_identical_order_by
-                            and submission_query.is_ordered != solution_query.is_ordered
+                        if len(expected_output.df.columns) != len(
+                            generated_output.df.columns
                         ):
-                            with Test(
-                                "Query should return ordered rows."
-                                if solution_query.is_ordered
-                                else "No explicit row ordering should be enforced in query.",
-                                "rows are being ordered"
-                                if solution_query.is_ordered
-                                else "rows are not being ordered",
-                            ) as test:
-                                test.generated = (
-                                    "rows are being ordered"
-                                    if submission_query.is_ordered
-                                    else "rows are not being ordered"
-                                )
+                            with Message(
+                                {
+                                    "format": Format.CALLOUT,
+                                    "description": f"Expected column count {len(expected_output.df.columns)}, your column count was {len(generated_output.df.columns)}.",
+                                }
+                            ):
+                                pass
 
-                                if (
-                                    submission_query.is_ordered
-                                    == solution_query.is_ordered
-                                ):
-                                    test.status = {"enum": "correct"}
-                                else:
-                                    test.status = {"enum": "wrong"}
+                        if expected_output.csv_out == generated_output.csv_out:
+                            test.status = {"enum": "correct"}
+                        else:
+                            test.status = {"enum": "wrong"}
+                            # TODO(#18): if wrong, and solution_query.is_ordered; try ordering columns and check if result is correct.
+
+                    # TODO(#7): add custom compare function that only compares subsection of columns
+                    with Test(
+                        "Comparing query output types", expected_output.types_out
+                    ) as test:
+                        test.generated = generated_output.types_out
+
+                        if expected_output.types_out == generated_output.types_out:
+                            test.status = {"enum": "correct"}
+                        else:
+                            test.status = {"enum": "wrong"}
+
+                    if (
+                        config.strict_identical_order_by
+                        and submission_query.is_ordered != solution_query.is_ordered
+                    ):
+                        with Test(
+                            "Query should return ordered rows."
+                            if solution_query.is_ordered
+                            else "No explicit row ordering should be enforced in query.",
+                            "rows are being ordered"
+                            if solution_query.is_ordered
+                            else "rows are not being ordered",
+                        ) as test:
+                            test.generated = (
+                                "rows are being ordered"
+                                if submission_query.is_ordered
+                                else "rows are not being ordered"
+                            )
+
+                            if submission_query.is_ordered == solution_query.is_ordered:
+                                test.status = {"enum": "correct"}
+                            else:
+                                test.status = {"enum": "wrong"}

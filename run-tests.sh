@@ -1,3 +1,5 @@
 #!/bin/sh
 
-python sql_query.py
+DIR="$(dirname $0)"
+
+python -m unittest discover $DIR "*_test.py"
