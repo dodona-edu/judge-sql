@@ -3,6 +3,7 @@ import sys
 import sqlite3
 from dodona_config import DodonaConfig
 from dodona_command import (
+    AnnotationSeverity,
     Judgement,
     Tab,
     Context,
@@ -11,12 +12,13 @@ from dodona_command import (
     Message,
     Annotation,
     DodonaException,
-    Permission,
     ErrorType,
-    Format,
+    MessagePermission,
+    MessageFormat,
 )
 from sql_query import SQLQuery
 from sql_query_result import SQLQueryResult
+from translator import Translator
 from os import path
 
 # extract info from exercise configuration
@@ -24,6 +26,9 @@ config = DodonaConfig.from_json(sys.stdin)
 
 with Judgement() as judgement:
     config.sanity_check()
+
+    # Initiate translator
+    config.translator = Translator.from_str(config.natural_language)
 
     # Set 'max_rows' to 100 if not set
     config.max_rows = int(getattr(config, "max_rows", 100))
@@ -49,10 +54,10 @@ with Judgement() as judgement:
         config.database_dir = path.join(config.resources, config.database_dir)
 
         if not path.exists(config.database_dir):
-            # This will cause an Dodona "internal error"
+            # This will cause a Dodona "internal error"
             raise DodonaException(
                 ErrorType.INTERNAL_ERROR,
-                Permission.STAFF,
+                MessagePermission.STAFF,
                 f"Could not find database directory: '{config.database_dir}'.",
             )
 
@@ -63,10 +68,10 @@ with Judgement() as judgement:
         ]
 
     if len(config.database_files) == 0:
-        # This will cause an Dodona "internal error"
+        # This will cause a Dodona "internal error"
         raise DodonaException(
             ErrorType.INTERNAL_ERROR,
-            Permission.STAFF,
+            MessagePermission.STAFF,
             f"Could not find database files. Make sure that the database directory contains '*.sqlite' files or a valid 'database_files' option is provided.",
         )
 
@@ -75,10 +80,10 @@ with Judgement() as judgement:
     config.solution_sql = path.join(config.resources, config.solution_sql)
 
     if not path.exists(config.solution_sql):
-        # This will cause an Dodona "internal error"
+        # This will cause a Dodona "internal error"
         raise DodonaException(
             ErrorType.INTERNAL_ERROR,
-            Permission.STAFF,
+            MessagePermission.STAFF,
             f"Could not find solution file: '{config.solution_sql}'.",
         )
 
@@ -90,7 +95,7 @@ with Judgement() as judgement:
         if len(config.solution_queries) == 0:
             raise DodonaException(
                 ErrorType.INTERNAL_ERROR,
-                Permission.STAFF,
+                MessagePermission.STAFF,
                 f"Solution file is empty.",
             )
 
@@ -102,17 +107,20 @@ with Judgement() as judgement:
     if len(config.submission_queries) > len(config.solution_queries):
         raise DodonaException(
             ErrorType.RUNTIME_ERROR,
-            Permission.STUDENT,
-            f"Error: the submitted solution contains more queries ({len(config.submission_queries)}) "
-            f"than expected ({len(config.solution_queries)}). Make sure that all queries correctly terminate with a semicolon.",
-            Format.CALLOUT,
+            MessagePermission.STUDENT,
+            config.translator.translate(
+                Translator.Text.SUBMISSION_CONTAINS_MORE_QUERIES,
+                submitted=len(config.submission_queries),
+                expected=len(config.solution_queries),
+            ),
+            MessageFormat.CALLOUT,
         )
 
     if config.semicolon_warning and config.submission_queries[-1].formatted[-1] != ";":
         with Annotation(
             row=config.raw_submission_file.rstrip().count("\n"),
-            type="warning",
-            text='Add a semicolon ";" at the end of each SQL query.',
+            type=AnnotationSeverity.WARNING,
+            text=config.translator.translate(Translator.Text.ADD_A_SEMICOLON),
         ):
             pass
 
@@ -121,10 +129,13 @@ with Judgement() as judgement:
             if query_nr >= len(config.submission_queries):
                 raise DodonaException(
                     ErrorType.RUNTIME_ERROR,
-                    Permission.STUDENT,
-                    f"Error: the submitted solution contains less queries ({len(config.submission_queries)}) "
-                    f"than expected ({len(config.solution_queries)}). Make sure that all queries correctly terminate with a semicolon.",
-                    Format.CALLOUT,
+                    MessagePermission.STUDENT,
+                    config.translator.translate(
+                        Translator.Text.SUBMISSION_CONTAINS_LESS_QUERIES,
+                        expected=len(config.solution_queries),
+                        submitted=len(config.submission_queries),
+                    ),
+                    MessageFormat.CALLOUT,
                 )
 
             solution_query = config.solution_queries[query_nr]
@@ -132,10 +143,8 @@ with Judgement() as judgement:
 
             for filename in config.database_files:
                 with Context(), TestCase(
-                    {
-                        "format": Format.SQL,
-                        "description": f"-- sqlite3 {filename}\n{submission_query.formatted}",
-                    }
+                    format=MessageFormat.SQL,
+                    description=f"-- sqlite3 {filename}\n{submission_query.formatted}",
                 ) as testcase:
                     expected_output, generated_output = None, None
 
@@ -148,7 +157,7 @@ with Judgement() as judgement:
                         # TODO(#12): support non-select queries and copy file + compare db using https://sqlite.org/sqldiff.html
                         raise DodonaException(
                             ErrorType.INTERNAL_ERROR,
-                            Permission.STAFF,
+                            MessagePermission.STAFF,
                             f"Non-select queries not yet supported.",
                         )
 
@@ -158,7 +167,7 @@ with Judgement() as judgement:
                     except Exception as err:
                         raise DodonaException(
                             ErrorType.INTERNAL_ERROR,
-                            Permission.STAFF,
+                            MessagePermission.STAFF,
                             f"Solution is not working: {err}",
                         )
 
@@ -177,12 +186,12 @@ with Judgement() as judgement:
                     except Exception as err:
                         testcase.accepted = False
                         judgement.accepted = False
-                        judgement.status = {"enum": "compilation error"}
+                        judgement.status = config.translator.error_status(
+                            ErrorType.COMPILATION_ERROR
+                        )
                         with Message(
-                            {
-                                "format": Format.CODE,
-                                "description": f"{type(err).__name__}:\n    {err}",
-                            }
+                            format=MessageFormat.CODE,
+                            description=f"{type(err).__name__}:\n    {err}",
                         ):
                             pass
 
@@ -202,7 +211,9 @@ with Judgement() as judgement:
 
                     # TODO(#7): add custom compare function that only compares subsection of columns
                     with Test(
-                        "Comparing query output csv content",
+                        config.translator.translate(
+                            Translator.Text.COMPARING_QUERY_OUTPUT_CSV_CONTENT
+                        ),
                         expected_output.csv_out,
                     ) as test:
                         test.generated = generated_output.csv_out
@@ -211,10 +222,12 @@ with Judgement() as judgement:
                             generated_output.df.index
                         ):
                             with Message(
-                                {
-                                    "format": Format.CALLOUT,
-                                    "description": f"Expected row count {len(expected_output.df.index)}, your row count was {len(generated_output.df.index)}.",
-                                }
+                                format=MessageFormat.CALLOUT,
+                                description=config.translator.translate(
+                                    Translator.Text.DIFFERENT_ROW_COUNT,
+                                    expected=len(expected_output.df.index),
+                                    submitted=len(generated_output.df.index),
+                                ),
                             ):
                                 pass
 
@@ -222,49 +235,70 @@ with Judgement() as judgement:
                             generated_output.df.columns
                         ):
                             with Message(
-                                {
-                                    "format": Format.CALLOUT,
-                                    "description": f"Expected column count {len(expected_output.df.columns)}, your column count was {len(generated_output.df.columns)}.",
-                                }
+                                format=MessageFormat.CALLOUT,
+                                description=config.translator.translate(
+                                    Translator.Text.DIFFERENT_COLUMN_COUNT,
+                                    expected=len(expected_output.df.columns),
+                                    submitted=len(generated_output.df.columns),
+                                ),
                             ):
                                 pass
 
                         if expected_output.csv_out == generated_output.csv_out:
-                            test.status = {"enum": "correct"}
+                            test.status = config.translator.error_status(
+                                ErrorType.CORRECT
+                            )
                         else:
-                            test.status = {"enum": "wrong"}
+                            test.status = config.translator.error_status(
+                                ErrorType.WRONG
+                            )
                             # TODO(#18): if wrong, and solution_query.is_ordered; try ordering columns and check if result is correct.
 
                     # TODO(#7): add custom compare function that only compares subsection of columns
                     with Test(
-                        "Comparing query output types", expected_output.types_out
+                        config.translator.translate(
+                            Translator.Text.COMPARING_QUERY_OUTPUT_TYPES
+                        ),
+                        expected_output.types_out,
                     ) as test:
                         test.generated = generated_output.types_out
 
                         if expected_output.types_out == generated_output.types_out:
-                            test.status = {"enum": "correct"}
+                            test.status = config.translator.error_status(
+                                ErrorType.CORRECT
+                            )
                         else:
-                            test.status = {"enum": "wrong"}
+                            test.status = config.translator.error_status(
+                                ErrorType.WRONG
+                            )
 
                     if (
                         config.strict_identical_order_by
                         and submission_query.is_ordered != solution_query.is_ordered
                     ):
                         with Test(
-                            "Query should return ordered rows."
-                            if solution_query.is_ordered
-                            else "No explicit row ordering should be enforced in query.",
-                            "rows are being ordered"
-                            if solution_query.is_ordered
-                            else "rows are not being ordered",
+                            config.translator.translate(
+                                Translator.Text.QUERY_SHOULD_ORDER_ROWS
+                                if solution_query.is_ordered
+                                else Translator.Text.QUERY_SHOULD_NOT_ORDER_ROWS
+                            ),
+                            config.translator.translate(
+                                Translator.Text.ROWS_ARE_BEING_ORDERED
+                                if solution_query.is_ordered
+                                else Translator.Text.ROWS_ARE_NOT_BEING_ORDERED
+                            ),
                         ) as test:
-                            test.generated = (
-                                "rows are being ordered"
+                            test.generated = config.translator.translate(
+                                Translator.Text.ROWS_ARE_BEING_ORDERED
                                 if submission_query.is_ordered
-                                else "rows are not being ordered"
+                                else Translator.Text.ROWS_ARE_NOT_BEING_ORDERED
                             )
 
                             if submission_query.is_ordered == solution_query.is_ordered:
-                                test.status = {"enum": "correct"}
+                                test.status = config.translator.error_status(
+                                    ErrorType.CORRECT
+                                )
                             else:
-                                test.status = {"enum": "wrong"}
+                                test.status = config.translator.error_status(
+                                    ErrorType.WRONG
+                                )

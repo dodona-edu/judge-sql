@@ -13,7 +13,7 @@ python_type_to_sqlite_type = {
 
 class SQLQueryResult:
     def __init__(
-        self, dataframe: pd.core.frame.DataFrame, columns: list[str], types: list[type]
+        self, dataframe: pd.DataFrame, columns: list[str], types: list[type]
     ):
         assert len(dataframe.columns) == len(columns)
         assert len(dataframe.columns) == len(types)
@@ -32,11 +32,11 @@ class SQLQueryResult:
 
         return cls(df, columns, types)
 
-    def sort_rows(self):
+    def sort_rows(self) -> None:
         if not self.df.empty:
             self.df.sort_values(by=self.df.columns.tolist(), inplace=True)
 
-    def index_columns(self, column_index: list) -> str:
+    def index_columns(self, column_index: list) -> None:
         # sort on: index in column_index, name of column, index in self.columns
         argsort = [
             i
