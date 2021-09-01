@@ -47,14 +47,24 @@ with Judgement() as judgement:
     )
 
     if hasattr(config, "database_files"):
-        config.database_files = list(config.database_files)
+        config.database_files = [
+            (filename, path.join(config.resources, filename))
+            for filename in config.database_files
+        ]
+
+        for file in config.database_files:
+            if not path.exists(file):
+                raise DodonaException(
+                    ErrorType.INTERNAL_ERROR,
+                    MessagePermission.STAFF,
+                    f"Could not find database file: '{file}'.",
+                )
     else:
         # Set 'database_dir' to "." if not set
         config.database_dir = str(getattr(config, "database_dir", "."))
         config.database_dir = path.join(config.resources, config.database_dir)
 
         if not path.exists(config.database_dir):
-            # This will cause a Dodona "internal error"
             raise DodonaException(
                 ErrorType.INTERNAL_ERROR,
                 MessagePermission.STAFF,
@@ -62,13 +72,12 @@ with Judgement() as judgement:
             )
 
         config.database_files = [
-            filename
+            (filename, path.join(config.database_dir, filename))
             for filename in sorted(os.listdir(config.database_dir))
             if filename.endswith(".sqlite")
         ]
 
     if len(config.database_files) == 0:
-        # This will cause a Dodona "internal error"
         raise DodonaException(
             ErrorType.INTERNAL_ERROR,
             MessagePermission.STAFF,
@@ -80,7 +89,6 @@ with Judgement() as judgement:
     config.solution_sql = path.join(config.resources, config.solution_sql)
 
     if not path.exists(config.solution_sql):
-        # This will cause a Dodona "internal error"
         raise DodonaException(
             ErrorType.INTERNAL_ERROR,
             MessagePermission.STAFF,
@@ -141,14 +149,12 @@ with Judgement() as judgement:
             solution_query = config.solution_queries[query_nr]
             submission_query = config.submission_queries[query_nr]
 
-            for filename in config.database_files:
+            for filename, db_file in config.database_files:
                 with Context(), TestCase(
                     format=MessageFormat.SQL,
                     description=f"-- sqlite3 {filename}\n{submission_query.formatted}",
                 ) as testcase:
                     expected_output, generated_output = None, None
-
-                    db_file = f"{config.database_dir}/{filename}"
 
                     connection = sqlite3.connect(db_file)
                     cursor = connection.cursor()
@@ -177,7 +183,7 @@ with Judgement() as judgement:
                     )
 
                     # if SELECT is not ordered -> fix ordering by sorting all rows
-                    if solution_query.is_ordered:
+                    if not solution_query.is_ordered:
                         expected_output.sort_rows()
 
                     #### RUN SUBMISSION QUERY

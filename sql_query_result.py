@@ -12,9 +12,7 @@ python_type_to_sqlite_type = {
 
 
 class SQLQueryResult:
-    def __init__(
-        self, dataframe: pd.DataFrame, columns: list[str], types: list[type]
-    ):
+    def __init__(self, dataframe: pd.DataFrame, columns: list[str], types: list[type]):
         assert len(dataframe.columns) == len(columns)
         assert len(dataframe.columns) == len(types)
 
