@@ -13,6 +13,14 @@
 * Feedback in language of user (Dutch or English)
 * Extensive customization possible in `config.json`
 
+### Feedback
+
+* Syntax errors
+* Comparison between row count and column count between solution and submission
+* Data types
+* Number of queries
+* ...
+
 ## Recommended exercise directory structure
 
 > [More info about repository directory structure](https://docs.dodona.be/en/references/repository-directory-structure/#example-of-a-valid-repository-structure)
