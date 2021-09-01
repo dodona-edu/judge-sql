@@ -1,7 +1,7 @@
 import unittest
 from sql_query import SQLQuery
 
-
+# @formatter:off
 class TestSQLQuery(unittest.TestCase):
     def test_from_raw_input_1(self):
         queries = SQLQuery.from_raw_input(
@@ -146,7 +146,7 @@ class TestSQLQuery(unittest.TestCase):
 
         query = SQLQuery('select "ORDER BY", (SELECT 1 ORDER BY test) from users')
         self.assertEqual(query.is_ordered, False)
-
+# @formatter:off
 
 if __name__ == "__main__":
     unittest.main()
