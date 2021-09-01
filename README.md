@@ -11,7 +11,7 @@
 * Support for multiple queries in one exercise
 * Allow submitted query to return columns in different order than the solution
 * Feedback in language of user (Dutch or English)
-* Extensive customization possible in `config.json`
+* Extensive [customization possible in `config.json`](#optional-evaluation-settings-in-config.json)
 * Elaborate [feedback](#feedback)
 
 ### Feedback
