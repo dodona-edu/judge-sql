@@ -19,7 +19,7 @@
 
 Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the **`evaluation`** folder. The `solution.sql` file can contain multiple queries. You can define a different name for the solution in the `config.json` file. If you add multiple databases, the queries will be executed on all databases. The names of the databases don't matter.
 
-````
+```text
 +-- README.md                            # Optional: Describes the repository
 +-- 📂public                            # Optional: Contains files that belong to the course or series
 |   +-- database_diagram.png             # Optional: An database diagram image to reuse throughout the course
@@ -41,7 +41,7 @@ Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the **`ev
 |   |           +-- boilerplate          # Optional: loaded automatically in submission text area
 |   :
 :
-````
+```
 
 ## Recommended `dirconfig.json`
 
@@ -65,6 +65,7 @@ Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the **`ev
   "contact": "firstname_lastname@ugent.be"
 }
 ````
+
 ## Recommended `config.json` (example with default settings)
 
 ````json
@@ -87,7 +88,7 @@ Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the **`ev
 }
 ````
 
-* **Optional `evaluation` settings in `config.json`**
+## Optional `evaluation` settings in `config.json`
 
 If these settings are not defined, the default value is chosen.
 
@@ -115,7 +116,9 @@ If these settings are not defined, the default value is chosen.
   }
 }
 ````
+
 or
+
 ````json
 {
   "evaluation": {
