@@ -10,13 +10,14 @@
 * Option to execute same queries on multiple databases
 * Support for multiple queries in one exercise
 * Allow submitted query to return columns in different order than the solution
-* Dutch and English feedback
+* Feedback in language of user (Dutch or English)
+* Extensive customization possible in `config.json`
 
 ## Recommended exercise directory structure
 
 > [More info about repository directory structure](https://docs.dodona.be/en/references/repository-directory-structure/#example-of-a-valid-repository-structure)
 
-Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the `evaluation` folder. The `solution.sql` file can contain multiple queries. You can define a different name for the solution in the `config.json` file. If you add multiple databases, the queries will be executed on all databases. The names of the databases don't matter.
+Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the **`evaluation`** folder. The `solution.sql` file can contain multiple queries. You can define a different name for the solution in the `config.json` file. If you add multiple databases, the queries will be executed on all databases. The names of the databases don't matter.
 
 ````
 +-- README.md                            # Optional: Describes the repository
@@ -86,7 +87,9 @@ Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the `eval
 }
 ````
 
-* **Optional settings in `config.json`**
+* **Optional `evaluation` settings in `config.json`**
+
+If these settings are not defined, the default value is chosen.
 
 | Evaluation setting             | Description                                                                                                       | Possible values     | Default          |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------- | ------------------- | ---------------- |
@@ -103,7 +106,7 @@ Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the `eval
 ````json
 {
   "evaluation": {
-    "solution_sql": "./mijn_oplossing.sql",
+    "solution_sql": "./my_answers.sql",
     "database_dir": "./databases/",
     "max_rows": 80,
     "semicolon_warning": false,
