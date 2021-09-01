@@ -17,7 +17,7 @@
 
 > [More info about repository directory structure](https://docs.dodona.be/en/references/repository-directory-structure/#example-of-a-valid-repository-structure)
 
-Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the **`evaluation`** folder. The `solution.sql` file can contain multiple queries. You can define a different name for the solution in the `config.json` file. If you add multiple databases, the queries will be executed on all databases. The names of the databases don't matter.
+Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the **`evaluation`** folder. The `solution.sql` file can contain multiple queries. You can define a different name for the solution in the `config.json` file. If you add multiple databases, the queries will be executed on all databases. The names of the databases don't matter. Absolute necessary files are marked with ▶ in the tree structure below.
 
 ```text
 +-- README.md                            # Optional: Describes the repository
@@ -26,14 +26,14 @@ Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the **`ev
 +-- dirconfig.json                       # Shared config for all exercises in subdirs
 +-- 📂sql-exercises                     # We could group exercises in a folder
 |   +-- 📂first_select_query            # Folder name for the exercise
-|   |   +-- config.json                  # configuration of the exercise
+|   |   +-- config.json                  # ▶ Configuration of the exercise
 |   |   +-- 📂evaluation                # -- 🔽️ ADD YOUR DATABASE AND SOLUTION HERE 🔽 --
 |   |   |   +-- my_database.sqlite       # ▶ The database file
 |   |   |   +-- solution.sql             # ▶ The SQL model solution file
 |   |   +-- 📂solution                  # Optional: This will be visible in Dodona
 |   |   |   +-- solution.sql             # Optional: the SQL model solution file
 |   |   +-- 📂description               #
-|   |       +-- description.nl.md        # The description in Dutch
+|   |       +-- description.nl.md        # ▶ The description in Dutch
 |   |       +-- description.en.md        # Optional: The description in English
 |   |       +-- 📂media                 # Optional folder
 |   |       |   +-- some_image.png       # Optional: An image used in the description
