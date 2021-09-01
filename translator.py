@@ -1,5 +1,6 @@
-from dodona_command import ErrorType
 from enum import Enum, auto
+
+from dodona_command import ErrorType
 
 
 class Translator:

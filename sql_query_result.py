@@ -1,6 +1,7 @@
 import io
-import pandas as pd
 from sqlite3 import Cursor
+
+import pandas as pd
 
 python_type_to_sqlite_type = {
     None: "NULL",

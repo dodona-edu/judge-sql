@@ -1,7 +1,8 @@
 import os
-import sys
 import sqlite3
-from dodona_config import DodonaConfig
+import sys
+from os import path
+
 from dodona_command import (
     AnnotationSeverity,
     Judgement,
@@ -16,10 +17,10 @@ from dodona_command import (
     MessagePermission,
     MessageFormat,
 )
+from dodona_config import DodonaConfig
 from sql_query import SQLQuery
 from sql_query_result import SQLQueryResult
 from translator import Translator
-from os import path
 
 # extract info from exercise configuration
 config = DodonaConfig.from_json(sys.stdin)

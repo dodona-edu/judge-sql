@@ -1,5 +1,7 @@
 import unittest
+
 from sql_query import SQLQuery
+
 
 # @formatter:off
 class TestSQLQuery(unittest.TestCase):

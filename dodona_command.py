@@ -1,9 +1,9 @@
 import json
 import sys
 from abc import ABC
+from enum import Enum
 from types import SimpleNamespace, TracebackType
 from typing import Union
-from enum import Enum
 
 
 class ErrorType(str, Enum):
