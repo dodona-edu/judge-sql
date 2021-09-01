@@ -25,8 +25,7 @@ Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the `eval
 |   +-- 📂first_select_query            # Folder name for the exercise
 |   |   +-- config.json                  # configuration of the exercise
 |   |   +-- 📂evaluation                # -- 🔽️ ADD YOUR DATABASE AND SOLUTION HERE 🔽 --
-|   |   |   +-- 📂databases             #
-|   |   |   |   +-- my_database.sqlite   # ▶ The database file
+|   |   |   +-- my_database.sqlite       # ▶ The database file
 |   |   |   +-- solution.sql             # ▶ The SQL model solution file
 |   |   +-- 📂solution                  # Optional: This will be visible in Dodona
 |   |   |   +-- solution.sql             # Optional: the SQL model solution file
@@ -87,13 +86,15 @@ Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the `eval
 
 * **Optional setting in `config.json`**
 
-| Evaluation setting          | Description                                                                             | Possible values | Default          |
-| --------------------------- | --------------------------------------------------------------------------------------- | --------------- | ---------------- |
-| `solution_sql`              | Relative path to solution SQL file                                                      | path            | `./solution.sql` |
-| `database_dir`              | Relative path to database directory                                                     | path            | `./databases`    |
-| `max_rows`                  | Maximal number of rows shown                                                            | int             | 100              |
-| `semicolon_warning`         | Show warning if there isn't a semicolon at the end of each query                        | `true`/`false`  | `true`           |
-| `strict_identical_order_by` | If solution (doesn't) contain(s) `ORDER BY`, student queries also (doesn't) have to contain it | `true`/`false`  | `true`           |
+| Evaluation setting             | Description                                                                             | Possible values | Default          |
+| ------------------------------ | --------------------------------------------------------------------------------------- | --------------- | ---------------- |
+| `solution_sql`                 | Relative path to solution SQL file                                                      | path            | `./solution.sql` |
+| `database_files`               | List of database files. If not provided, the files are loaded from `database_dir`       | list / not provided | not provided |
+| `database_dir`                 | Relative path to database directory                                                     | path            | `.`              |
+| `max_rows`                     | Maximal number of rows shown                                                            | int             | 100              |
+| `semicolon_warning`            | Show warning if there isn't a semicolon at the end of each query                        | `true`/`false`  | `true`           |
+| `strict_identical_order_by`    | If solution (doesn't) contain(s) `ORDER BY`, student queries also (doesn't) have to contain it | `true`/`false`  | `true`           |
+| `allow_different_column_order` | Allow submitted query to return columns in different order than the solution            | `true`/`false`  | `true`           |
 
 ### Example of modified settings
 
@@ -101,26 +102,40 @@ Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the `eval
 {
   "evaluation": {
     "solution_sql": "./mijn_oplossing.sql",
-    "database_dir": ".",
+    "database_dir": "./databases/",
     "max_rows": 80,
     "semicolon_warning": false,
-    "strict_identical_order_by": false
+    "strict_identical_order_by": false,
+    "allow_different_column_order": false
+  }
+}
+````
+or
+````json
+{
+  "evaluation": {
+    "solution_sql": "./mijn_oplossing.sql",
+    "database_files": [
+      "./databases/database1.sqlite",
+      "./databases/database2.sqlite",
+    ],
+    "max_rows": 80,
+    "semicolon_warning": false,
+    "strict_identical_order_by": false,
+    "allow_different_column_order": false
   }
 }
 ````
 
 ## Testing
 
-The following command can be used to run the doctests:
+The following command can be used to run the tests:
 
 ```bash
-$ ./run-doctest.sh
-...
-3 items passed all tests:
-   2 tests in sql_judge.detect_is_ordered
-   3 tests in sql_judge.detect_is_select
-   2 tests in sql_judge.query_cleanup
-7 tests in 5 items.
-7 passed and 0 failed.
-Test passed.
+$ ./run-tests.sh
+.........
+----------------------------------------------------------------------
+Ran 9 tests in 0.029s
+
+OK
 ```
