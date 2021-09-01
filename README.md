@@ -12,6 +12,7 @@
 * Allow submitted query to return columns in different order than the solution
 * Feedback in language of user (Dutch or English)
 * Extensive customization possible in `config.json`
+* Elaborate [feedback](#feedback)
 
 ### Feedback
 
@@ -19,6 +20,7 @@
 * Comparison between row count and column count between solution and submission
 * Data types
 * Number of queries
+* Differences between submission and solution table are highlighted
 * ...
 
 ## Recommended exercise directory structure
