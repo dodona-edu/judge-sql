@@ -146,7 +146,7 @@ class TestSQLQuery(unittest.TestCase):
 
         query = SQLQuery('select "ORDER BY", (SELECT 1 ORDER BY test) from users')
         self.assertEqual(query.is_ordered, False)
-# @formatter:off
+# @formatter:on
 
 if __name__ == "__main__":
     unittest.main()
