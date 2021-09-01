@@ -5,10 +5,12 @@
 * Comparison based on solution query
 * SQLite database per exercise
 * Automatic detection if order needs to be checked
-* Support for read and write operations
+* Support for read and (TODO) write operations
 * Automatic distinction between read and write operations
 * Option to execute same queries on multiple databases
 * Support for multiple queries in one exercise
+* Allow submitted query to return columns in different order than the solution
+* Dutch and English feedback
 
 ## Recommended exercise directory structure
 
@@ -84,17 +86,17 @@ Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the `eval
 }
 ````
 
-* **Optional setting in `config.json`**
+* **Optional settings in `config.json`**
 
-| Evaluation setting             | Description                                                                             | Possible values | Default          |
-| ------------------------------ | --------------------------------------------------------------------------------------- | --------------- | ---------------- |
-| `solution_sql`                 | Relative path to solution SQL file                                                      | path            | `./solution.sql` |
-| `database_files`               | List of database files. If not provided, the files are loaded from `database_dir`       | list / not provided | not provided |
-| `database_dir`                 | Relative path to database directory                                                     | path            | `.`              |
-| `max_rows`                     | Maximal number of rows shown                                                            | int             | 100              |
-| `semicolon_warning`            | Show warning if there isn't a semicolon at the end of each query                        | `true`/`false`  | `true`           |
-| `strict_identical_order_by`    | If solution (doesn't) contain(s) `ORDER BY`, student queries also (doesn't) have to contain it | `true`/`false`  | `true`           |
-| `allow_different_column_order` | Allow submitted query to return columns in different order than the solution            | `true`/`false`  | `true`           |
+| Evaluation setting             | Description                                                                                                       | Possible values     | Default          |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------- | ------------------- | ---------------- |
+| `solution_sql`                 | Relative path to solution SQL file.                                                                               | path                | `./solution.sql` |
+| `database_files`               | List of database files in custom order. If not provided, the files are loaded alphabetically from `database_dir`. | list / not provided | not provided     |
+| `database_dir`                 | Relative path to database directory.                                                                              | path                | `.`              |
+| `max_rows`                     | Maximal number of rows shown.                                                                                     | int                 | 100              |
+| `semicolon_warning`            | Show warning if there isn't a semicolon at the end of each query.                                                 | `true`/`false`      | `true`           |
+| `strict_identical_order_by`    | If solution (doesn't) contain(s) `ORDER BY`, student queries also (don't) have to contain it.                     | `true`/`false`      | `true`           |
+| `allow_different_column_order` | Allow submitted query to return columns in different order than the solution.                                     | `true`/`false`      | `true`           |
 
 ### Example of modified settings
 
