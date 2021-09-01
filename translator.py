@@ -76,7 +76,7 @@ class Translator:
             Text.SUBMISSION_CONTAINS_MORE_QUERIES: "Error: the submitted solution contains more queries ({submitted}) than expected ({expected}). Make sure that all queries correctly terminate with a semicolon.",
             Text.SUBMISSION_CONTAINS_LESS_QUERIES: "Error: the submitted solution contains less queries ({submitted}) than expected ({expected}). Make sure that all queries correctly terminate with a semicolon.",
             Text.DIFFERENT_ROW_COUNT: "Expected row count {expected}, your row count was {submitted}.",
-            Text.DIFFERENT_COLUMN_COUNT: "Expected column count {expected}, your row count was {submitted}.",
+            Text.DIFFERENT_COLUMN_COUNT: "Expected column count {expected}, your column count was {submitted}.",
             Text.COMPARING_QUERY_OUTPUT_CSV_CONTENT: "Comparing query output csv content",
             Text.COMPARING_QUERY_OUTPUT_TYPES: "Comparing query output SQL types",
             Text.QUERY_SHOULD_ORDER_ROWS: "Query should return ordered rows.",
