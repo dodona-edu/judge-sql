@@ -25,8 +25,10 @@ class SQLQueryResult:
         rows = cur.fetchmany(max_rows)
 
         df = pd.DataFrame(rows)
-        columns = [column[0] for column in cur.description or []]
-        types = [type(x) for x in rows[0] or []]
+        columns, types = [], []
+        if len(rows) > 0:
+            columns = [column[0] for column in cur.description or []]
+            types = [type(x) for x in rows[0]]
 
         return cls(df, columns, types)
 

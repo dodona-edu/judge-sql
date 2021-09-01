@@ -116,7 +116,7 @@ class Judgement(DodonaCommand):
     def handle_dodona_exception(self, exception: DodonaException) -> bool:
         # Set the state of the judgement to failed
         self.close_args.accepted = False
-        self.close_args.status = {"enum": exception.type}
+        self.close_args.status = {"enum": exception.error_type}
 
         # Add an error message
         with Message(
