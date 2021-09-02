@@ -1,4 +1,4 @@
-# SQL judge for [Dodona](dodona.ugent.be)
+# SQL judge for [Dodona](https://dodona.ugent.be/)
 
 ## Judge features
 
