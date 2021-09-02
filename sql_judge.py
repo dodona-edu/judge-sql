@@ -52,7 +52,7 @@ with Judgement() as judgement:
             for filename in config.database_files
         ]
 
-        for file in config.database_files:
+        for filename, file in config.database_files:
             if not path.exists(file):
                 raise DodonaException(
                     ErrorType.INTERNAL_ERROR,
@@ -121,10 +121,14 @@ with Judgement() as judgement:
                 submitted=len(config.submission_queries),
                 expected=len(config.solution_queries),
             ),
-            MessageFormat.CALLOUT,
+            MessageFormat.CALLOUT_DANGER,
         )
 
-    if config.semicolon_warning and config.submission_queries[-1].formatted[-1] != ";":
+    if config.semicolon_warning and (
+        len(config.submission_queries) == 0
+        or len(config.submission_queries[-1].formatted) == 0
+        or config.submission_queries[-1].formatted[-1] != ";"
+    ):
         with Annotation(
             row=config.raw_submission_file.rstrip().count("\n"),
             type=AnnotationSeverity.WARNING,
@@ -143,7 +147,7 @@ with Judgement() as judgement:
                         expected=len(config.solution_queries),
                         submitted=len(config.submission_queries),
                     ),
-                    MessageFormat.CALLOUT,
+                    MessageFormat.CALLOUT_DANGER,
                 )
 
             solution_query = config.solution_queries[query_nr]
@@ -182,10 +186,6 @@ with Judgement() as judgement:
                         config.max_rows, cursor
                     )
 
-                    # if SELECT is not ordered -> fix ordering by sorting all rows
-                    if not solution_query.is_ordered:
-                        expected_output.sort_rows()
-
                     #### RUN SUBMISSION QUERY
                     try:
                         cursor.execute(submission_query.formatted)
@@ -208,12 +208,16 @@ with Judgement() as judgement:
                         config.max_rows, cursor
                     )
 
+                    if config.allow_different_column_order:
+                        expected_output.index_columns(generated_output.columns)
+
+                    # if SELECT is not ordered -> fix ordering by sorting all rows
+                    if not solution_query.is_ordered:
+                        expected_output.sort_rows()
+
                     # if SELECT is not ordered -> fix ordering by sorting all rows
                     if not solution_query.is_ordered:
                         generated_output.sort_rows()
-
-                    if config.allow_different_column_order:
-                        expected_output.index_columns(generated_output.columns)
 
                     # TODO(#7): add custom compare function that only compares subsection of columns
                     with Test(
@@ -224,28 +228,28 @@ with Judgement() as judgement:
                     ) as test:
                         test.generated = generated_output.csv_out
 
-                        if len(expected_output.df.index) != len(
-                            generated_output.df.index
-                        ):
-                            with Message(
-                                format=MessageFormat.CALLOUT,
-                                description=config.translator.translate(
-                                    Translator.Text.DIFFERENT_ROW_COUNT,
-                                    expected=len(expected_output.df.index),
-                                    submitted=len(generated_output.df.index),
-                                ),
-                            ):
-                                pass
-
                         if len(expected_output.df.columns) != len(
                             generated_output.df.columns
                         ):
                             with Message(
-                                format=MessageFormat.CALLOUT,
+                                format=MessageFormat.CALLOUT_DANGER,
                                 description=config.translator.translate(
                                     Translator.Text.DIFFERENT_COLUMN_COUNT,
                                     expected=len(expected_output.df.columns),
                                     submitted=len(generated_output.df.columns),
+                                ),
+                            ):
+                                pass
+
+                        if len(expected_output.df.index) != len(
+                            generated_output.df.index
+                        ):
+                            with Message(
+                                format=MessageFormat.CALLOUT_DANGER,
+                                description=config.translator.translate(
+                                    Translator.Text.DIFFERENT_ROW_COUNT,
+                                    expected=len(expected_output.df.index),
+                                    submitted=len(generated_output.df.index),
                                 ),
                             ):
                                 pass

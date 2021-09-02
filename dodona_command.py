@@ -37,6 +37,9 @@ class MessageFormat(str, Enum):
     HTML = "html"
     MARKDOWN = "markdown"
     CALLOUT = "callout"
+    CALLOUT_INFO = "callout-info"
+    CALLOUT_WARNING = "callout-warning"
+    CALLOUT_DANGER = "callout-danger"
     CODE = "code"
     SQL = "sql"
 
