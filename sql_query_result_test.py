@@ -25,25 +25,25 @@ class TestSQLQueryResult(unittest.TestCase):
             "19,Tom,20\n"
             "11,nick,21\n"
             "17,krish,19\n"
-            "18,jack,18\n",
+            "18,jack,18",
         )
         self.assertEqual(
             qr.types_out,
             "col1 [INTEGER]\n" "col3 [TEXT]\n" "col2 [INTEGER]",
         )
 
-        qr.sort_rows()
         qr.index_columns(
             ["col3", "col1", "non_existing"]
         )  # should keep all columns & not add non_existing
+        qr.sort_rows()
 
         self.assertEqual(
             qr.csv_out,
             "col3,col1,col2\n"
-            "nick,11,21\n"
-            "krish,17,19\n"
+            "Tom,19,20\n"
             "jack,18,18\n"
-            "Tom,19,20\n",
+            "krish,17,19\n"
+            "nick,11,21",
         )
         self.assertEqual(
             qr.types_out,
@@ -59,13 +59,13 @@ class TestSQLQueryResult(unittest.TestCase):
             [str, int],
         )
 
-        self.assertEqual(qr.csv_out, "Name,Name\n" "tom,10\n" "nick,15\n" "juli,14\n")
+        self.assertEqual(qr.csv_out, "Name,Name\n" "tom,10\n" "nick,15\n" "juli,14")
         self.assertEqual(qr.types_out, "Name [TEXT]\n" "Name [INTEGER]")
 
-        qr.sort_rows()
         qr.index_columns(["Name"])  # should keep both columns & keep ordering (stable)
+        qr.sort_rows()
 
-        self.assertEqual(qr.csv_out, "Name,Name\n" "juli,14\n" "nick,15\n" "tom,10\n")
+        self.assertEqual(qr.csv_out, "Name,Name\n" "juli,14\n" "nick,15\n" "tom,10")
         self.assertEqual(qr.types_out, "Name [TEXT]\n" "Name [INTEGER]")
 
 

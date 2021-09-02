@@ -37,7 +37,7 @@ class SQLQueryResult:
         if not self.df.empty:
             self.df.sort_values(by=self.df.columns.tolist(), inplace=True)
 
-    def index_columns(self, column_index: list) -> None:
+    def index_columns(self, column_index: list[str]) -> None:
         # sort on: index in column_index, name of column, index in self.columns
         argsort = [
             i
@@ -59,7 +59,7 @@ class SQLQueryResult:
     def csv_out(self) -> str:
         csv_output = io.StringIO()
         self.df.to_csv(csv_output, header=self.columns, index=False)
-        return csv_output.getvalue()
+        return csv_output.getvalue().strip()
 
     @property
     def types_out(self) -> str:
