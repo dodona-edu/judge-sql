@@ -2,13 +2,9 @@ import sqlparse
 
 
 class SQLQuery:
-    def __init__(self, raw_input: str):
-        self.raw_input = raw_input.strip()
-        self.formatted = sqlparse.format(
-            self.raw_input,
-            strip_comments=True,
-        ).strip()
-        self.parsed = sqlparse.parse(self.formatted)[0]
+    def __init__(self, formatted: str):
+        self.formatted = formatted
+        self.parsed = sqlparse.parse(formatted)[0]
 
         self._is_ordered = None
 
@@ -33,4 +29,10 @@ class SQLQuery:
 
     @classmethod
     def from_raw_input(cls, raw_input: str) -> list["SQLQuery"]:
-        return [cls(x) for x in sqlparse.split(raw_input.strip())]
+        raw_input = raw_input.strip()
+        formatted = sqlparse.format(
+            raw_input,
+            strip_comments=True,
+        ).strip()
+        queries = sqlparse.split(formatted)
+        return [cls(x.strip()) for x in queries]

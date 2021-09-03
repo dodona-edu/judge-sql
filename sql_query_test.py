@@ -3,6 +3,11 @@ from sql_query import SQLQuery
 
 
 class TestSQLQuery(unittest.TestCase):
+    def single_query(self, raw: str):
+        queries = SQLQuery.from_raw_input(raw)
+        self.assertEqual(len(queries), 1)
+        return queries[0]
+
     def test_from_raw_input_1(self):
         queries = SQLQuery.from_raw_input(
             """-- First query:
@@ -10,6 +15,8 @@ class TestSQLQuery(unittest.TestCase):
         -- 2nd query:
         SELECT 1 # random comment"""
         )
+
+        self.assertEqual(len(queries), 2)
 
         self.assertEqual(queries[0].formatted, 'SELECT * from Users Where ";#" = 1;')
         self.assertEqual(queries[0].has_ending_semicolon, True)
@@ -20,8 +27,26 @@ class TestSQLQuery(unittest.TestCase):
         queries = SQLQuery.from_raw_input("\n\r")
         self.assertEqual(len(queries), 0)
 
+    def test_from_raw_input_3(self):
+        queries = SQLQuery.from_raw_input(
+            """
+        SELECT NAME, RATE
+        FROM CUSTOMER,
+            DISCOUNT_CODE
+        WHERE CUSTOMER.DISCOUNT_CODE = DISCOUNT_CODE.DISCOUNT_CODE;
+        -- Alternatief
+        -- SELECT NAME, RATE
+        -- FROM CUSTOMER
+        --          INNER JOIN DISCOUNT_CODE
+        --                     ON CUSTOMER.DISCOUNT_CODE = DISCOUNT_CODE.DISCOUNT_CODE;
+        """
+        )
+        self.assertEqual(len(queries), 1)
+
     def test_SQLQuery_1(self):
-        query = SQLQuery('SELECT * from Users Where ";" = 1 ORdER BY Name ASC;')
+        query = self.single_query(
+            'SELECT * from Users Where ";" = 1 ORdER BY Name ASC;'
+        )
 
         self.assertEqual(
             query.formatted,
@@ -32,7 +57,7 @@ class TestSQLQuery(unittest.TestCase):
         self.assertEqual(query.is_ordered, True)
 
     def test_SQLQuery_2(self):
-        query = SQLQuery(
+        query = self.single_query(
             '--SELECT\n   INSERT INTO table2 /**/  SELECT * FROM Users Where ";#ORDER BY" = 1;'
         )
 
@@ -45,10 +70,10 @@ class TestSQLQuery(unittest.TestCase):
         self.assertEqual(query.is_ordered, False)
 
     def test_formatted(self):
-        query = SQLQuery("\n  SELeCT\n*\tFROm   USERS  \n\r")
+        query = self.single_query("\n  SELeCT\n*\tFROm   USERS  \n\r")
         self.assertEqual(query.formatted, "SELeCT\n*\tFROm   USERS")
 
-        query = SQLQuery(
+        query = self.single_query(
             """
         SELECT *
             from users
@@ -64,32 +89,32 @@ class TestSQLQuery(unittest.TestCase):
             from users""",
         )
 
-        query = SQLQuery(
+        query = self.single_query(
             """--Select all:
         SELECT * FROM Customers;"""
         )
         self.assertEqual(query.formatted, "SELECT * FROM Customers;")
 
-        query = SQLQuery("""SELECT * FROM Customers; --Select all:""")
+        query = self.single_query("""SELECT * FROM Customers; --Select all:""")
         self.assertEqual(query.formatted, "SELECT * FROM Customers;")
 
-        query = SQLQuery(
+        query = self.single_query(
             """# Select all:
         Select * FROM Customers;"""
         )
         self.assertEqual(query.formatted, "Select * FROM Customers;")
 
-        query = SQLQuery("""SELECT * FROM Customers; # Select all:""")
+        query = self.single_query("""SELECT * FROM Customers; # Select all:""")
         self.assertEqual(query.formatted, "SELECT * FROM Customers;")
 
-        query = SQLQuery(
+        query = self.single_query(
             """/* Select all employees whose compensation is
         greater than that of Pataballa. */
         SELECT * FROM Customers; # Select all:"""
         )
         self.assertEqual(query.formatted, "SELECT * FROM Customers;")
 
-        query = SQLQuery(
+        query = self.single_query(
             """/* Select all employees whose compensation is
         greater than that of Pataballa. */
         SELECT * FROM Customers; # Select all:"""
@@ -97,13 +122,13 @@ class TestSQLQuery(unittest.TestCase):
         self.assertEqual(query.formatted, "SELECT * FROM Customers;")
 
     def test_is_select(self):
-        query = SQLQuery("  SELeCT\n*\tFROm   USERS  \n\r")
+        query = self.single_query("  SELeCT\n*\tFROm   USERS  \n\r")
         self.assertEqual(query.is_select, True)
 
-        query = SQLQuery("\nSELECT *\n    from\\n       users\n")
+        query = self.single_query("\nSELECT *\n    from\\n       users\n")
         self.assertEqual(query.is_select, True)
 
-        query = SQLQuery(
+        query = self.single_query(
             """
         INSERT INTO table2
         SELECT * FROM table1
@@ -112,7 +137,7 @@ class TestSQLQuery(unittest.TestCase):
         )
         self.assertEqual(query.is_select, False)
 
-        query = SQLQuery(
+        query = self.single_query(
             """
         -- Comment
         SELECT * FROM table1
@@ -122,7 +147,7 @@ class TestSQLQuery(unittest.TestCase):
         self.assertEqual(query.is_select, True)
 
     def test_is_ordered(self):
-        query = SQLQuery(
+        query = self.single_query(
             """SELECT column1, column2, ...
         FROM table_name
         ORDER BY column1, column2, ASC|DESC;
@@ -130,7 +155,7 @@ class TestSQLQuery(unittest.TestCase):
         )
         self.assertEqual(query.is_ordered, True)
 
-        query = SQLQuery(
+        query = self.single_query(
             """# ORDER BY
         SELECT column1, column2, ...
         FROM table_name
@@ -138,13 +163,15 @@ class TestSQLQuery(unittest.TestCase):
         )
         self.assertEqual(query.is_ordered, False)
 
-        query = SQLQuery("select * from users")
+        query = self.single_query("select * from users")
         self.assertEqual(query.is_ordered, False)
 
-        query = SQLQuery('select "ORDER BY" from users')
+        query = self.single_query('select "ORDER BY" from users')
         self.assertEqual(query.is_ordered, False)
 
-        query = SQLQuery('select "ORDER BY", (SELECT 1 ORDER BY test) from users')
+        query = self.single_query(
+            'select "ORDER BY", (SELECT 1 ORDER BY test) from users'
+        )
         self.assertEqual(query.is_ordered, False)
 
 
