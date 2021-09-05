@@ -41,7 +41,9 @@ Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the **`ev
 |   |   |   +-- my_database.sqlite       # ▶ The database file
 |   |   |   +-- solution.sql             # ▶ The SQL model solution file
 |   |   +-- 📂solution                  # Optional: This will be visible in Dodona
-|   |   |   +-- solution.sql             # Optional: the SQL model solution file
+|   |   |   +-- solution.sql             # Optional: The SQL model solution file
+|   |   +-- 📂preparation               # Optional folder
+|   |   |   +-- generator.py             # Optional: Script to generate database
 |   |   +-- 📂description               #
 |   |       +-- description.nl.md        # ▶ The description in Dutch
 |   |       +-- description.en.md        # Optional: The description in English
@@ -144,6 +146,29 @@ or
   }
 }
 ````
+
+### `generator.py` script in `preparation` folder
+
+SQLite databases can be made with a Python script. Place the script in the `preparation` folder. This a example creates an empty database in the `evaluation` folder.
+
+```python
+# import the sqlite3 module from the Python Standard Library
+import sqlite3
+
+# create the database file and create a cursor object
+connection = sqlite3.connect("../evaluation/empty.sqlite")
+cursor = connection.cursor()
+
+# define and execute an SQL command to create an empty database
+sql_command_create_dummy_table = """CREATE TABLE dummy_table(dummy_field int); """
+sql_command_remove_dummy_tabel = """DROP TABLE dummy_table;"""
+cursor.execute(sql_command_create_dummy_table)
+cursor.execute(sql_command_remove_dummy_tabel)
+
+# commit changes and close the connection to the database file
+connection.commit()
+connection.close()
+```
 
 ## Testing
 
