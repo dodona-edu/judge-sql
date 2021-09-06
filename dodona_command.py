@@ -59,16 +59,13 @@ class AnnotationSeverity(str, Enum):
 class DodonaException(Exception):
     def __init__(
         self,
-        error_type: ErrorType,
-        message_permission: MessagePermission,
-        message_description: str,
-        message_format: Union[None, MessageFormat] = None,
+        status: dict[str, str],
+        *args,
+        **kwargs,
     ):
-        self.error_type = error_type
-        self.message_permission = message_permission
-        self.message_description = message_description
-        self.message_format = (
-            message_format if message_format is not None else MessageFormat.PLAIN
+        self.status = status
+        self.message = (
+            Message(*args, **kwargs) if len(args) > 0 or len(kwargs) > 0 else None
         )
 
 
@@ -86,9 +83,6 @@ class DodonaCommand(ABC):
     def close_msg(self) -> dict:
         return {"command": f"close-{self.name()}", **self.close_args.__dict__}
 
-    def handle_dodona_exception(self, exception: DodonaException) -> bool:
-        return False
-
     @staticmethod
     def __print_command(result: Union[None, dict]) -> None:
         if result is None:
@@ -100,35 +94,52 @@ class DodonaCommand(ABC):
         self.__print_command(self.start_msg())
         return self.close_args
 
+    def handle_dodona_exception(self, exception: DodonaException) -> bool:
+        False
+
     def __exit__(
         self,
         exc_type: type[BaseException],
         exc_val: BaseException,
         exc_tb: TracebackType,
     ) -> bool:
-        handled = (
-            self.handle_dodona_exception(exc_val)
-            if isinstance(exc_val, DodonaException)
-            else False
-        )
+        if isinstance(exc_val, DodonaException):
+            handled = self.handle_dodona_exception(exc_val)
+        else:
+            handled = False
+
         self.__print_command(self.close_msg())
         return handled
 
 
-class Judgement(DodonaCommand):
+class DodonaCommandWithAccepted(DodonaCommand):
     def handle_dodona_exception(self, exception: DodonaException) -> bool:
-        # Set the state of the judgement to failed
-        self.close_args.accepted = False
-        self.close_args.status = {"enum": exception.error_type}
+        accepted = (
+            exception.status["enum"] == ErrorType.CORRECT
+            or exception.status["enum"] == ErrorType.CORRECT_ANSWER
+        )
+        self.close_args.accepted = accepted
 
         # Add an error message
-        with Message(
-            permission=exception.message_permission,
-            format=exception.message_format,
-            description=exception.message_description,
-        ):
-            pass
+        if exception.message is not None:
+            with exception.message:
+                pass
 
+            exception.message = None
+
+        return super().handle_dodona_exception(exception)
+
+
+class DodonaCommandWithStatus(DodonaCommandWithAccepted):
+    def handle_dodona_exception(self, exception: DodonaException) -> bool:
+        self.close_args.status = exception.status
+
+        return super().handle_dodona_exception(exception)
+
+
+class Judgement(DodonaCommandWithStatus):
+    def handle_dodona_exception(self, exception: DodonaException) -> bool:
+        super().handle_dodona_exception(exception)
         return True
 
 
@@ -137,11 +148,11 @@ class Tab(DodonaCommand):
         super().__init__(title=title, **kwargs)
 
 
-class Context(DodonaCommand):
+class Context(DodonaCommandWithAccepted):
     pass
 
 
-class TestCase(DodonaCommand):
+class TestCase(DodonaCommandWithAccepted):
     def __init__(self, *args, **kwargs):
         if len(args) == 1:
             super().__init__(description=args[0])
@@ -149,7 +160,7 @@ class TestCase(DodonaCommand):
             super().__init__(description=kwargs)
 
 
-class Test(DodonaCommand):
+class Test(DodonaCommandWithStatus):
     def __init__(self, description: str, expected: str, **kwargs):
         super().__init__(description=description, expected=expected, **kwargs)
 

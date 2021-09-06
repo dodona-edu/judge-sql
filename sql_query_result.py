@@ -2,8 +2,10 @@ import io
 import pandas as pd
 from sqlite3 import Cursor
 
+NoneType = type(None)
+
 python_type_to_sqlite_type = {
-    None: "NULL",
+    NoneType: "NULL",
     int: "INTEGER",
     float: "REAL",
     str: "TEXT",
@@ -32,9 +34,11 @@ class SQLQueryResult:
 
         return cls(df, columns, types)
 
-    def sort_rows(self) -> None:
-        if not self.df.empty:
-            self.df.sort_values(by=self.df.columns.tolist(), inplace=True)
+    def sort_rows(self, sort_on: list[str]) -> None:
+        if self.df.empty or len(sort_on) == 0:
+            return
+        indices = [i for i, x in enumerate(self.columns) if x in sort_on]
+        self.df.sort_values(by=self.df.columns[indices].tolist(), inplace=True)
 
     def index_columns(self, column_index: list[str]) -> None:
         # sort on: index in column_index, name of column, index in self.columns
