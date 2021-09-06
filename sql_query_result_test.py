@@ -1,5 +1,7 @@
 import unittest
+
 import pandas as pd
+
 from sql_query_result import SQLQueryResult
 
 

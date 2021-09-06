@@ -1,5 +1,6 @@
-from dodona_command import ErrorType
 from enum import Enum, auto
+
+from dodona_command import ErrorType
 
 
 class Translator:
@@ -86,8 +87,8 @@ class Translator:
         },
         Language.NL: {
             Text.ADD_A_SEMICOLON: "Voeg een puntkomma ';' toe aan het einde van elke SQL query.",
-            Text.SUBMISSION_CONTAINS_MORE_QUERIES: "Error: de ingediende oplossing bestaat uit meer queries ({submitted}) dan verwacht ({expected}). Zorg ervoor dat elke query correct eindigt op een puntkomma.",
-            Text.SUBMISSION_CONTAINS_LESS_QUERIES: "Error: de ingediende oplossing bestaat uit minder queries ({submitted}) dan verwacht ({expected}). Zorg ervoor dat elke query correct eindigt op een puntkomma.",
+            Text.SUBMISSION_CONTAINS_MORE_QUERIES: "Error: de ingediende oplossing bestaat uit meer query's ({submitted}) dan verwacht ({expected}). Zorg ervoor dat elke query correct eindigt op een puntkomma.",
+            Text.SUBMISSION_CONTAINS_LESS_QUERIES: "Error: de ingediende oplossing bestaat uit minder query's ({submitted}) dan verwacht ({expected}). Zorg ervoor dat elke query correct eindigt op een puntkomma.",
             Text.DIFFERENT_ROW_COUNT: "Verwachtte {expected} rijen, uw aantal rijen is {submitted}.",
             Text.DIFFERENT_COLUMN_COUNT: "Verwachtte {expected} kolommen, uw aantal kolommen is {submitted}.",
             Text.COMPARING_QUERY_OUTPUT_CSV_CONTENT: "Vergelijken van de query output in csv formaat",
