@@ -1,7 +1,6 @@
 import os
 import sqlite3
 import numpy as np
-from dodona_config import DodonaConfig
 import sys
 from os import path
 
@@ -174,9 +173,9 @@ with Judgement():
                     if not solution_query.is_select:
                         # TODO(#12): support non-select queries and copy file + compare db using https://sqlite.org/sqldiff.html
                         raise DodonaException(
-                            ErrorType.INTERNAL_ERROR,
-                            MessagePermission.STAFF,
-                            f"Non-select queries not yet supported.",
+                            config.translator.error_status(ErrorType.INTERNAL_ERROR),
+                            permission=MessagePermission.STAFF,
+                            description=f"Non-select queries not yet supported.",
                             format=MessageFormat.TEXT,
                         )
 

@@ -35,7 +35,7 @@ class TestSQLQueryResult(unittest.TestCase):
         qr.index_columns(
             ["col3", "col1", "non_existing"]
         )  # should keep all columns & not add non_existing
-        qr.sort_rows()
+        qr.sort_rows(["col3", "col1", "non_existing"])
 
         self.assertEqual(
             qr.csv_out,
@@ -63,7 +63,7 @@ class TestSQLQueryResult(unittest.TestCase):
         self.assertEqual(qr.types_out, "Name [TEXT]\n" "Name [INTEGER]")
 
         qr.index_columns(["Name"])  # should keep both columns & keep ordering (stable)
-        qr.sort_rows()
+        qr.sort_rows(["Name"])
 
         self.assertEqual(qr.csv_out, "Name,Name\n" "juli,14\n" "nick,15\n" "tom,10")
         self.assertEqual(qr.types_out, "Name [TEXT]\n" "Name [INTEGER]")
