@@ -170,9 +170,10 @@ connection.commit()
 connection.close()
 ```
 
-## Recommended database browser for SQLite
+## Recommended database tools for SQLite
 
-> https://sqlitebrowser.org/dl/ (free and open source)
+> [DB Browser for SQLite](https://sqlitebrowser.org/dl/) (free and open source)  
+> [DbVisualizer free version](https://www.dbvis.com/download/) ([How to import a SQLite db file into DbVisualizer](https://stackoverflow.com/questions/41606428/how-to-import-a-sqlite-db-file-into-dbvisualizer))
 
 ## Testing
 
