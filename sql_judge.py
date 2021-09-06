@@ -1,5 +1,7 @@
 import os
 import sqlite3
+import numpy as np
+from dodona_config import DodonaConfig
 import sys
 from os import path
 
@@ -25,7 +27,7 @@ from translator import Translator
 # extract info from exercise configuration
 config = DodonaConfig.from_json(sys.stdin)
 
-with Judgement() as judgement:
+with Judgement():
     config.sanity_check()
 
     # Initiate translator
@@ -56,9 +58,9 @@ with Judgement() as judgement:
         for filename, file in config.database_files:
             if not path.exists(file):
                 raise DodonaException(
-                    ErrorType.INTERNAL_ERROR,
-                    MessagePermission.STAFF,
-                    f"Could not find database file: '{file}'.",
+                    config.translator.error_status(ErrorType.INTERNAL_ERROR),
+                    permission=MessagePermission.STAFF,
+                    description=f"Could not find database file: '{file}'.",
                 )
     else:
         # Set 'database_dir' to "." if not set
@@ -67,9 +69,9 @@ with Judgement() as judgement:
 
         if not path.exists(config.database_dir):
             raise DodonaException(
-                ErrorType.INTERNAL_ERROR,
-                MessagePermission.STAFF,
-                f"Could not find database directory: '{config.database_dir}'.",
+                config.translator.error_status(ErrorType.INTERNAL_ERROR),
+                permission=MessagePermission.STAFF,
+                description=f"Could not find database directory: '{config.database_dir}'.",
             )
 
         config.database_files = [
@@ -80,9 +82,9 @@ with Judgement() as judgement:
 
     if len(config.database_files) == 0:
         raise DodonaException(
-            ErrorType.INTERNAL_ERROR,
-            MessagePermission.STAFF,
-            f"Could not find database files. Make sure that the database directory contains '*.sqlite' files or a valid 'database_files' option is provided.",
+            config.translator.error_status(ErrorType.INTERNAL_ERROR),
+            permission=MessagePermission.STAFF,
+            description=f"Could not find database files. Make sure that the database directory contains '*.sqlite' files or a valid 'database_files' option is provided.",
         )
 
     # Set 'solution_sql' to "./solution.sql" if not set
@@ -91,9 +93,9 @@ with Judgement() as judgement:
 
     if not path.exists(config.solution_sql):
         raise DodonaException(
-            ErrorType.INTERNAL_ERROR,
-            MessagePermission.STAFF,
-            f"Could not find solution file: '{config.solution_sql}'.",
+            config.translator.error_status(ErrorType.INTERNAL_ERROR),
+            permission=MessagePermission.STAFF,
+            description=f"Could not find solution file: '{config.solution_sql}'.",
         )
 
     # Parse solution query
@@ -103,9 +105,9 @@ with Judgement() as judgement:
 
         if len(config.solution_queries) == 0:
             raise DodonaException(
-                ErrorType.INTERNAL_ERROR,
-                MessagePermission.STAFF,
-                f"Solution file is empty.",
+                config.translator.error_status(ErrorType.INTERNAL_ERROR),
+                permission=MessagePermission.STAFF,
+                description=f"Solution file is empty.",
             )
 
     # Parse submission query
@@ -115,14 +117,14 @@ with Judgement() as judgement:
 
     if len(config.submission_queries) > len(config.solution_queries):
         raise DodonaException(
-            ErrorType.RUNTIME_ERROR,
-            MessagePermission.STUDENT,
-            config.translator.translate(
+            config.translator.error_status(ErrorType.RUNTIME_ERROR),
+            permission=MessagePermission.STUDENT,
+            description=config.translator.translate(
                 Translator.Text.SUBMISSION_CONTAINS_MORE_QUERIES,
                 submitted=len(config.submission_queries),
                 expected=len(config.solution_queries),
             ),
-            MessageFormat.CALLOUT_DANGER,
+            format=MessageFormat.CALLOUT_DANGER,
         )
 
     if config.semicolon_warning and (
@@ -141,14 +143,14 @@ with Judgement() as judgement:
         with Tab(f"Query {1 + query_nr}"):
             if query_nr >= len(config.submission_queries):
                 raise DodonaException(
-                    ErrorType.RUNTIME_ERROR,
-                    MessagePermission.STUDENT,
-                    config.translator.translate(
+                    config.translator.error_status(ErrorType.RUNTIME_ERROR),
+                    permission=MessagePermission.STUDENT,
+                    description=config.translator.translate(
                         Translator.Text.SUBMISSION_CONTAINS_LESS_QUERIES,
                         expected=len(config.solution_queries),
                         submitted=len(config.submission_queries),
                     ),
-                    MessageFormat.CALLOUT_DANGER,
+                    format=MessageFormat.CALLOUT_DANGER,
                 )
 
             solution_query = config.solution_queries[query_nr]
@@ -158,7 +160,7 @@ with Judgement() as judgement:
                 with Context(), TestCase(
                     format=MessageFormat.SQL,
                     description=f"-- sqlite3 {filename}\n{submission_query.formatted}",
-                ) as testcase:
+                ):
                     expected_output, generated_output = None, None
 
                     connection = sqlite3.connect(db_file)
@@ -177,9 +179,10 @@ with Judgement() as judgement:
                         cursor.execute(solution_query.formatted)
                     except Exception as err:
                         raise DodonaException(
-                            ErrorType.INTERNAL_ERROR,
-                            MessagePermission.STAFF,
-                            f"Solution is not working: {err}",
+                            config.translator.error_status(ErrorType.INTERNAL_ERROR),
+                            permission=MessagePermission.STAFF,
+                            description=f"Solution is not working ({type(err).__name__}):\n    {err}",
+                            format=MessageFormat.CODE,
                         )
 
                     #### RENDER SOLUTION QUERY OUTPUT
@@ -191,34 +194,30 @@ with Judgement() as judgement:
                     try:
                         cursor.execute(submission_query.formatted)
                     except Exception as err:
-                        testcase.accepted = False
-                        judgement.accepted = False
-                        judgement.status = config.translator.error_status(
-                            ErrorType.COMPILATION_ERROR
-                        )
-                        with Message(
-                            format=MessageFormat.CODE,
+                        raise DodonaException(
+                            config.translator.error_status(ErrorType.COMPILATION_ERROR),
+                            permission=MessagePermission.STUDENT,
                             description=f"{type(err).__name__}:\n    {err}",
-                        ):
-                            pass
-
-                        exit()
+                            format=MessageFormat.CODE,
+                        )
 
                     #### RENDER SUBMISSION QUERY OUTPUT
                     generated_output = SQLQueryResult.from_cursor(
                         config.max_rows, cursor
                     )
 
+                    connection.close()
+
                     if config.allow_different_column_order:
                         expected_output.index_columns(generated_output.columns)
 
                     # if SELECT is not ordered -> fix ordering by sorting all rows
                     if not solution_query.is_ordered:
-                        expected_output.sort_rows()
-
-                    # if SELECT is not ordered -> fix ordering by sorting all rows
-                    if not solution_query.is_ordered:
-                        generated_output.sort_rows()
+                        sort_on = np.intersect1d(
+                            expected_output.columns, generated_output.columns
+                        )
+                        expected_output.sort_rows(sort_on)
+                        generated_output.sort_rows(sort_on)
 
                     # TODO(#7): add custom compare function that only compares subsection of columns
                     with Test(
