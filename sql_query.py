@@ -10,16 +10,14 @@ class SQLQuery:
 
     @property
     def is_select(self):
-        return self.parsed.get_type() == "SELECT"
+        return str(self.parsed.get_type()) == "SELECT"
 
     @property
     def is_ordered(self):
         if self._is_ordered is not None:
             return self._is_ordered
         self._is_ordered = any(
-            True
-            for part in self.parsed
-            if part.match(sqlparse.tokens.Keyword, r"ORDER\s+BY", regex=True)
+            True for part in self.parsed if part.match(sqlparse.tokens.Keyword, r"ORDER\s+BY", regex=True)
         )
         return self._is_ordered
 

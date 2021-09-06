@@ -39,19 +39,14 @@ with Judgement():
     config.semicolon_warning = bool(getattr(config, "semicolon_warning", True))
 
     # Set 'strict_identical_order_by' to True if not set
-    config.strict_identical_order_by = bool(
-        getattr(config, "strict_identical_order_by", True)
-    )
+    config.strict_identical_order_by = bool(getattr(config, "strict_identical_order_by", True))
 
     # Set 'allow_different_column_order' to True if not set
-    config.allow_different_column_order = bool(
-        getattr(config, "allow_different_column_order", True)
-    )
+    config.allow_different_column_order = bool(getattr(config, "allow_different_column_order", True))
 
     if hasattr(config, "database_files"):
         config.database_files = [
-            (filename, path.join(config.resources, filename))
-            for filename in config.database_files
+            (str(filename), path.join(config.resources, filename)) for filename in config.database_files
         ]
 
         for filename, file in config.database_files:
@@ -191,9 +186,7 @@ with Judgement():
                         )
 
                     #### RENDER SOLUTION QUERY OUTPUT
-                    expected_output = SQLQueryResult.from_cursor(
-                        config.max_rows, cursor
-                    )
+                    expected_output = SQLQueryResult.from_cursor(config.max_rows, cursor)
 
                     #### RUN SUBMISSION QUERY
                     try:
@@ -207,9 +200,7 @@ with Judgement():
                         )
 
                     #### RENDER SUBMISSION QUERY OUTPUT
-                    generated_output = SQLQueryResult.from_cursor(
-                        config.max_rows, cursor
-                    )
+                    generated_output = SQLQueryResult.from_cursor(config.max_rows, cursor)
 
                     connection.close()
 
@@ -218,24 +209,18 @@ with Judgement():
 
                     # if SELECT is not ordered -> fix ordering by sorting all rows
                     if not solution_query.is_ordered:
-                        sort_on = np.intersect1d(
-                            expected_output.columns, generated_output.columns
-                        )
+                        sort_on = np.intersect1d(expected_output.columns, generated_output.columns)
                         expected_output.sort_rows(sort_on)
                         generated_output.sort_rows(sort_on)
 
                     # TODO(#7): add custom compare function that only compares subsection of columns
                     with Test(
-                        config.translator.translate(
-                            Translator.Text.COMPARING_QUERY_OUTPUT_CSV_CONTENT
-                        ),
+                        config.translator.translate(Translator.Text.COMPARING_QUERY_OUTPUT_CSV_CONTENT),
                         expected_output.csv_out,
                     ) as test:
                         test.generated = generated_output.csv_out
 
-                        if len(expected_output.df.columns) != len(
-                            generated_output.df.columns
-                        ):
+                        if len(expected_output.df.columns) != len(generated_output.df.columns):
                             with Message(
                                 format=MessageFormat.CALLOUT_DANGER,
                                 description=config.translator.translate(
@@ -246,9 +231,7 @@ with Judgement():
                             ):
                                 pass
 
-                        if len(expected_output.df.index) != len(
-                            generated_output.df.index
-                        ):
+                        if len(expected_output.df.index) != len(generated_output.df.index):
                             with Message(
                                 format=MessageFormat.CALLOUT_DANGER,
                                 description=config.translator.translate(
@@ -260,37 +243,24 @@ with Judgement():
                                 pass
 
                         if expected_output.csv_out == generated_output.csv_out:
-                            test.status = config.translator.error_status(
-                                ErrorType.CORRECT
-                            )
+                            test.status = config.translator.error_status(ErrorType.CORRECT)
                         else:
-                            test.status = config.translator.error_status(
-                                ErrorType.WRONG
-                            )
+                            test.status = config.translator.error_status(ErrorType.WRONG)
                             # TODO(#18): if wrong, and solution_query.is_ordered; try ordering columns and check if result is correct.
 
                     # TODO(#7): add custom compare function that only compares subsection of columns
                     with Test(
-                        config.translator.translate(
-                            Translator.Text.COMPARING_QUERY_OUTPUT_TYPES
-                        ),
+                        config.translator.translate(Translator.Text.COMPARING_QUERY_OUTPUT_TYPES),
                         expected_output.types_out,
                     ) as test:
                         test.generated = generated_output.types_out
 
                         if expected_output.types_out == generated_output.types_out:
-                            test.status = config.translator.error_status(
-                                ErrorType.CORRECT
-                            )
+                            test.status = config.translator.error_status(ErrorType.CORRECT)
                         else:
-                            test.status = config.translator.error_status(
-                                ErrorType.WRONG
-                            )
+                            test.status = config.translator.error_status(ErrorType.WRONG)
 
-                    if (
-                        config.strict_identical_order_by
-                        and submission_query.is_ordered != solution_query.is_ordered
-                    ):
+                    if config.strict_identical_order_by and submission_query.is_ordered != solution_query.is_ordered:
                         with Test(
                             config.translator.translate(
                                 Translator.Text.QUERY_SHOULD_ORDER_ROWS
@@ -310,10 +280,6 @@ with Judgement():
                             )
 
                             if submission_query.is_ordered == solution_query.is_ordered:
-                                test.status = config.translator.error_status(
-                                    ErrorType.CORRECT
-                                )
+                                test.status = config.translator.error_status(ErrorType.CORRECT)
                             else:
-                                test.status = config.translator.error_status(
-                                    ErrorType.WRONG
-                                )
+                                test.status = config.translator.error_status(ErrorType.WRONG)

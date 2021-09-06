@@ -64,9 +64,7 @@ class DodonaException(Exception):
         **kwargs,
     ):
         self.status = status
-        self.message = (
-            Message(*args, **kwargs) if len(args) > 0 or len(kwargs) > 0 else None
-        )
+        self.message = Message(*args, **kwargs) if len(args) > 0 or len(kwargs) > 0 else None
 
 
 class DodonaCommand(ABC):
@@ -114,10 +112,7 @@ class DodonaCommand(ABC):
 
 class DodonaCommandWithAccepted(DodonaCommand):
     def handle_dodona_exception(self, exception: DodonaException) -> bool:
-        accepted = (
-            exception.status["enum"] == ErrorType.CORRECT
-            or exception.status["enum"] == ErrorType.CORRECT_ANSWER
-        )
+        accepted = exception.status["enum"] == ErrorType.CORRECT or exception.status["enum"] == ErrorType.CORRECT_ANSWER
         self.close_args.accepted = accepted
 
         # Add an error message

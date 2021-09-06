@@ -27,6 +27,17 @@ class DodonaConfig(SimpleNamespace):
         workdir:                Full path to the directory in which all user code should be executed.
     """
 
+    def __init__(self, **kargs):
+        super().__init__(**kargs)
+        self.memory_limit = int(self.memory_limit)
+        self.time_limit = int(self.time_limit)
+        self.programming_language = str(self.programming_language)
+        self.natural_language = str(self.natural_language)
+        self.resources = str(self.resources)
+        self.source = str(self.source)
+        self.judge = str(self.judge)
+        self.workdir = str(self.workdir)
+
     @classmethod
     def from_json(cls, json_file: TextIO) -> "DodonaConfig":
         simple = json.load(json_file, object_hook=lambda d: SimpleNamespace(**d))

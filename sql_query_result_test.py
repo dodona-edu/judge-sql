@@ -21,29 +21,19 @@ class TestSQLQueryResult(unittest.TestCase):
 
         self.assertEqual(
             qr.csv_out,
-            "col1,col3,col2\n"
-            "19,Tom,20\n"
-            "11,nick,21\n"
-            "17,krish,19\n"
-            "18,jack,18",
+            "col1,col3,col2\n" "19,Tom,20\n" "11,nick,21\n" "17,krish,19\n" "18,jack,18",
         )
         self.assertEqual(
             qr.types_out,
             "col1 [INTEGER]\n" "col3 [TEXT]\n" "col2 [INTEGER]",
         )
 
-        qr.index_columns(
-            ["col3", "col1", "non_existing"]
-        )  # should keep all columns & not add non_existing
+        qr.index_columns(["col3", "col1", "non_existing"])  # should keep all columns & not add non_existing
         qr.sort_rows(["col3", "col1", "non_existing"])
 
         self.assertEqual(
             qr.csv_out,
-            "col3,col1,col2\n"
-            "Tom,19,20\n"
-            "jack,18,18\n"
-            "krish,17,19\n"
-            "nick,11,21",
+            "col3,col1,col2\n" "Tom,19,20\n" "jack,18,18\n" "krish,17,19\n" "nick,11,21",
         )
         self.assertEqual(
             qr.types_out,

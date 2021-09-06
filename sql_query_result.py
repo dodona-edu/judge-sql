@@ -67,7 +67,6 @@ class SQLQueryResult:
     @property
     def types_out(self) -> str:
         type_description = "\n".join(
-            f"{c} [{python_type_to_sqlite_type[t]}]"
-            for (c, t) in zip(self.columns, self.types)
+            f"{c} [{python_type_to_sqlite_type[t]}]" for (c, t) in zip(self.columns, self.types)
         )
         return type_description

@@ -46,9 +46,7 @@ class TestSQLQuery(unittest.TestCase):
         self.assertEqual(len(queries), 1)
 
     def test_query_1(self):
-        query = self.single_query(
-            'SELECT * from Users Where ";" = 1 ORdER BY Name ASC;'
-        )
+        query = self.single_query('SELECT * from Users Where ";" = 1 ORdER BY Name ASC;')
 
         self.assertEqual(
             query.formatted,
@@ -59,9 +57,7 @@ class TestSQLQuery(unittest.TestCase):
         self.assertEqual(query.is_ordered, True)
 
     def test_query_2(self):
-        query = self.single_query(
-            '--SELECT\n   INSERT INTO table2 /**/  SELECT * FROM Users Where ";#ORDER BY" = 1;'
-        )
+        query = self.single_query('--SELECT\n   INSERT INTO table2 /**/  SELECT * FROM Users Where ";#ORDER BY" = 1;')
 
         self.assertEqual(
             query.formatted,
@@ -171,9 +167,7 @@ class TestSQLQuery(unittest.TestCase):
         query = self.single_query('select "ORDER BY" from users')
         self.assertEqual(query.is_ordered, False)
 
-        query = self.single_query(
-            'select "ORDER BY", (SELECT 1 ORDER BY test) from users'
-        )
+        query = self.single_query('select "ORDER BY", (SELECT 1 ORDER BY test) from users')
         self.assertEqual(query.is_ordered, False)
 
 
