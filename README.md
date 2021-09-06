@@ -149,7 +149,7 @@ or
 
 ## Generate database with Python script
 
-SQLite databases can be made with a Python script. Place the script (e.g. `generator.py`) in the `preparation` folder. This a example creates an empty database in the `evaluation` folder.
+SQLite databases can be made with a Python script. Place the script (e.g. `generator.py`) in the `preparation` folder. This example creates an empty database in the `evaluation` folder.
 
 ```python
 # import the sqlite3 module from the Python Standard Library
@@ -169,6 +169,10 @@ cursor.execute(sql_command_remove_dummy_tabel)
 connection.commit()
 connection.close()
 ```
+
+## Recommended database browser for SQLite
+
+> https://sqlitebrowser.org/dl/ (free and open source)
 
 ## Testing
 
