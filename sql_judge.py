@@ -61,6 +61,7 @@ with Judgement():
                     config.translator.error_status(ErrorType.INTERNAL_ERROR),
                     permission=MessagePermission.STAFF,
                     description=f"Could not find database file: '{file}'.",
+                    format=MessageFormat.TEXT,
                 )
     else:
         # Set 'database_dir' to "." if not set
@@ -72,6 +73,7 @@ with Judgement():
                 config.translator.error_status(ErrorType.INTERNAL_ERROR),
                 permission=MessagePermission.STAFF,
                 description=f"Could not find database directory: '{config.database_dir}'.",
+                format=MessageFormat.TEXT,
             )
 
         config.database_files = [
@@ -85,6 +87,7 @@ with Judgement():
             config.translator.error_status(ErrorType.INTERNAL_ERROR),
             permission=MessagePermission.STAFF,
             description=f"Could not find database files. Make sure that the database directory contains '*.sqlite' files or a valid 'database_files' option is provided.",
+            format=MessageFormat.TEXT,
         )
 
     # Set 'solution_sql' to "./solution.sql" if not set
@@ -96,6 +99,7 @@ with Judgement():
             config.translator.error_status(ErrorType.INTERNAL_ERROR),
             permission=MessagePermission.STAFF,
             description=f"Could not find solution file: '{config.solution_sql}'.",
+            format=MessageFormat.TEXT,
         )
 
     # Parse solution query
@@ -108,6 +112,7 @@ with Judgement():
                 config.translator.error_status(ErrorType.INTERNAL_ERROR),
                 permission=MessagePermission.STAFF,
                 description=f"Solution file is empty.",
+                format=MessageFormat.TEXT,
             )
 
     # Parse submission query
@@ -172,6 +177,7 @@ with Judgement():
                             ErrorType.INTERNAL_ERROR,
                             MessagePermission.STAFF,
                             f"Non-select queries not yet supported.",
+                            format=MessageFormat.TEXT,
                         )
 
                     #### RUN SOLUTION QUERY
