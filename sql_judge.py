@@ -1,8 +1,11 @@
+"""sql judge main script"""
+
 import os
 import sqlite3
-import numpy as np
 import sys
 from os import path
+
+import numpy as np
 
 from dodona_command import (
     AnnotationSeverity,
@@ -80,7 +83,9 @@ with Judgement():
         raise DodonaException(
             config.translator.error_status(ErrorType.INTERNAL_ERROR),
             permission=MessagePermission.STAFF,
-            description=f"Could not find database files. Make sure that the database directory contains '*.sqlite' files or a valid 'database_files' option is provided.",
+            description="Could not find database files. "
+            "Make sure that the database directory contains '*.sqlite' "
+            "files or a valid 'database_files' option is provided.",
             format=MessageFormat.TEXT,
         )
 
@@ -97,7 +102,7 @@ with Judgement():
         )
 
     # Parse solution query
-    with open(config.solution_sql) as sql_file:
+    with open(config.solution_sql, "r", encoding="utf-8") as sql_file:
         config.raw_solution_file = sql_file.read()
         config.solution_queries = SQLQuery.from_raw_input(config.raw_solution_file)
 
@@ -105,12 +110,12 @@ with Judgement():
             raise DodonaException(
                 config.translator.error_status(ErrorType.INTERNAL_ERROR),
                 permission=MessagePermission.STAFF,
-                description=f"Solution file is empty.",
+                description="Solution file is empty.",
                 format=MessageFormat.TEXT,
             )
 
     # Parse submission query
-    with open(config.source) as sql_file:
+    with open(config.source, "r", encoding="utf-8") as sql_file:
         config.raw_submission_file = sql_file.read()
         config.submission_queries = SQLQuery.from_raw_input(config.raw_submission_file)
 
@@ -138,7 +143,7 @@ with Judgement():
         ):
             pass
 
-    for query_nr in range(len(config.solution_queries)):
+    for query_nr, solution_query in enumerate(config.solution_queries):
         with Tab(f"Query {1 + query_nr}"):
             if query_nr >= len(config.submission_queries):
                 raise DodonaException(
@@ -152,7 +157,6 @@ with Judgement():
                     format=MessageFormat.CALLOUT_DANGER,
                 )
 
-            solution_query = config.solution_queries[query_nr]
             submission_query = config.submission_queries[query_nr]
 
             for filename, db_file in config.database_files:
@@ -166,11 +170,12 @@ with Judgement():
                     cursor = connection.cursor()
 
                     if not solution_query.is_select:
-                        # TODO(#12): support non-select queries and copy file + compare db using https://sqlite.org/sqldiff.html
+                        # TODO(#12): support non-select queries and copy file
+                        # + compare db using https://sqlite.org/sqldiff.html
                         raise DodonaException(
                             config.translator.error_status(ErrorType.INTERNAL_ERROR),
                             permission=MessagePermission.STAFF,
-                            description=f"Non-select queries not yet supported.",
+                            description="Non-select queries not yet supported.",
                             format=MessageFormat.TEXT,
                         )
 
@@ -183,7 +188,7 @@ with Judgement():
                             permission=MessagePermission.STAFF,
                             description=f"Solution is not working ({type(err).__name__}):\n    {err}",
                             format=MessageFormat.CODE,
-                        )
+                        ) from err
 
                     #### RENDER SOLUTION QUERY OUTPUT
                     expected_output = SQLQueryResult.from_cursor(config.max_rows, cursor)
@@ -197,7 +202,7 @@ with Judgement():
                             permission=MessagePermission.STUDENT,
                             description=f"{type(err).__name__}:\n    {err}",
                             format=MessageFormat.CODE,
-                        )
+                        ) from err
 
                     #### RENDER SUBMISSION QUERY OUTPUT
                     generated_output = SQLQueryResult.from_cursor(config.max_rows, cursor)
@@ -220,24 +225,24 @@ with Judgement():
                     ) as test:
                         test.generated = generated_output.csv_out
 
-                        if len(expected_output.df.columns) != len(generated_output.df.columns):
+                        if len(expected_output.dataframe.columns) != len(generated_output.dataframe.columns):
                             with Message(
                                 format=MessageFormat.CALLOUT_DANGER,
                                 description=config.translator.translate(
                                     Translator.Text.DIFFERENT_COLUMN_COUNT,
-                                    expected=len(expected_output.df.columns),
-                                    submitted=len(generated_output.df.columns),
+                                    expected=len(expected_output.dataframe.columns),
+                                    submitted=len(generated_output.dataframe.columns),
                                 ),
                             ):
                                 pass
 
-                        if len(expected_output.df.index) != len(generated_output.df.index):
+                        if len(expected_output.dataframe.index) != len(generated_output.dataframe.index):
                             with Message(
                                 format=MessageFormat.CALLOUT_DANGER,
                                 description=config.translator.translate(
                                     Translator.Text.DIFFERENT_ROW_COUNT,
-                                    expected=len(expected_output.df.index),
-                                    submitted=len(generated_output.df.index),
+                                    expected=len(expected_output.dataframe.index),
+                                    submitted=len(generated_output.dataframe.index),
                                 ),
                             ):
                                 pass
@@ -246,7 +251,8 @@ with Judgement():
                             test.status = config.translator.error_status(ErrorType.CORRECT)
                         else:
                             test.status = config.translator.error_status(ErrorType.WRONG)
-                            # TODO(#18): if wrong, and solution_query.is_ordered; try ordering columns and check if result is correct.
+                            # TODO(#18): if wrong, and solution_query.is_ordered;
+                            # try ordering columns and check if result is correct.
 
                     # TODO(#7): add custom compare function that only compares subsection of columns
                     with Test(

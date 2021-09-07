@@ -1,14 +1,26 @@
+"""translate judge output towards dodona"""
+
 from enum import Enum, auto
 
 from dodona_command import ErrorType
 
 
 class Translator:
+    """A class for translating all user feedback
+
+    The Translator class provides translations for a set of Text
+    messages and for the Dodona error types.
+    """
+
     class Language(Enum):
+        """Language"""
+
         EN = auto()
         NL = auto()
 
     class Text(Enum):
+        """Text message content enum"""
+
         ADD_A_SEMICOLON = auto()
         SUBMISSION_CONTAINS_MORE_QUERIES = auto()
         SUBMISSION_CONTAINS_LESS_QUERIES = auto()
@@ -26,6 +38,14 @@ class Translator:
 
     @classmethod
     def from_str(cls, language: str) -> "Translator":
+        """created a Translator instance
+
+        If the language is not detectected correctly or not supported
+        the translator defaults to English (EN).
+
+        :param language: Dodona language string "nl" or "en"
+        :return: translator
+        """
         if language == "nl":
             return cls(cls.Language.NL)
 
@@ -33,15 +53,31 @@ class Translator:
         return cls(cls.Language.EN)
 
     def human_error(self, error: ErrorType) -> str:
+        """translate an ErrorType enum into a human-readeable string
+
+        :param error: ErrorType enum
+        :return: translated human-readeable string
+        """
         return self.error_translations[self.language][error]
 
     def error_status(self, error: ErrorType) -> dict[str, str]:
+        """translate an ErrorType enum into a status object
+
+        :param error: ErrorType enum
+        :return: Dodona status object
+        """
         return {
             "enum": error,
             "human": self.human_error(error),
         }
 
     def translate(self, message: Text, **kwargs) -> str:
+        """translate a Text enum into a string
+
+        :param message: Text enum
+        :param kwargs: parameters for message
+        :return: translated text
+        """
         return self.text_translations[self.language][message].format(**kwargs)
 
     error_translations = {
@@ -74,8 +110,12 @@ class Translator:
     text_translations = {
         Language.EN: {
             Text.ADD_A_SEMICOLON: "Add a semicolon ';' at the end of each SQL query.",
-            Text.SUBMISSION_CONTAINS_MORE_QUERIES: "Error: the submitted solution contains more queries ({submitted}) than expected ({expected}). Make sure that all queries correctly terminate with a semicolon.",
-            Text.SUBMISSION_CONTAINS_LESS_QUERIES: "Error: the submitted solution contains less queries ({submitted}) than expected ({expected}). Make sure that all queries correctly terminate with a semicolon.",
+            Text.SUBMISSION_CONTAINS_MORE_QUERIES: "Error: "
+            "the submitted solution contains more queries ({submitted}) than expected ({expected}). "
+            "Make sure that all queries correctly terminate with a semicolon.",
+            Text.SUBMISSION_CONTAINS_LESS_QUERIES: "Error: "
+            "the submitted solution contains less queries ({submitted}) than expected ({expected}). "
+            "Make sure that all queries correctly terminate with a semicolon.",
             Text.DIFFERENT_ROW_COUNT: "Expected row count {expected}, your row count was {submitted}.",
             Text.DIFFERENT_COLUMN_COUNT: "Expected column count {expected}, your column count was {submitted}.",
             Text.COMPARING_QUERY_OUTPUT_CSV_CONTENT: "Comparing query output csv content",
@@ -87,8 +127,12 @@ class Translator:
         },
         Language.NL: {
             Text.ADD_A_SEMICOLON: "Voeg een puntkomma ';' toe aan het einde van elke SQL query.",
-            Text.SUBMISSION_CONTAINS_MORE_QUERIES: "Error: de ingediende oplossing bestaat uit meer query's ({submitted}) dan verwacht ({expected}). Zorg ervoor dat elke query correct eindigt op een puntkomma.",
-            Text.SUBMISSION_CONTAINS_LESS_QUERIES: "Error: de ingediende oplossing bestaat uit minder query's ({submitted}) dan verwacht ({expected}). Zorg ervoor dat elke query correct eindigt op een puntkomma.",
+            Text.SUBMISSION_CONTAINS_MORE_QUERIES: "Error: "
+            "de ingediende oplossing bestaat uit meer query's ({submitted}) dan verwacht ({expected}). "
+            "Zorg ervoor dat elke query correct eindigt op een puntkomma.",
+            Text.SUBMISSION_CONTAINS_LESS_QUERIES: "Error: "
+            "de ingediende oplossing bestaat uit minder query's ({submitted}) dan verwacht ({expected}). "
+            "Zorg ervoor dat elke query correct eindigt op een puntkomma.",
             Text.DIFFERENT_ROW_COUNT: "Verwachtte {expected} rijen, uw aantal rijen is {submitted}.",
             Text.DIFFERENT_COLUMN_COUNT: "Verwachtte {expected} kolommen, uw aantal kolommen is {submitted}.",
             Text.COMPARING_QUERY_OUTPUT_CSV_CONTENT: "Vergelijken van de query output in csv formaat",

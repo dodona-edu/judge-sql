@@ -1,3 +1,5 @@
+# pylint: disable=missing-docstring
+
 import unittest
 
 from sql_query import SQLQuery
