@@ -1,4 +1,4 @@
-"""translate judge output towards dodona"""
+"""translate judge output towards Dodona"""
 
 from enum import Enum, auto
 
@@ -6,7 +6,7 @@ from dodona_command import ErrorType
 
 
 class Translator:
-    """A class for translating all user feedback
+    """a class for translating all user feedback
 
     The Translator class provides translations for a set of Text
     messages and for the Dodona error types.

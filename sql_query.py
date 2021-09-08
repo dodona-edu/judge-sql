@@ -4,7 +4,7 @@ import sqlparse
 
 
 class SQLQuery:
-    """A class for managing an input query (used for both solution and submission queries)"""
+    """a class for managing an input query (used for both solution and submission queries)"""
 
     def __init__(self, formatted: str):
         """create SQLQuery based on fromatted string

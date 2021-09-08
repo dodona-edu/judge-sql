@@ -16,7 +16,7 @@ python_type_to_sqlite_type = {
 
 
 class SQLQueryResult:
-    """A class for managing a query's results"""
+    """a class for managing a query's results"""
 
     def __init__(self, dataframe: pd.DataFrame, columns: list[str], types: list[type]):
         """create new SQLQueryResult

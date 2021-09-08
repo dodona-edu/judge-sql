@@ -1,4 +1,4 @@
-"""dodona Judge configuration"""
+"""Dodona Judge configuration"""
 
 import json
 import os
@@ -8,7 +8,7 @@ from typing import TextIO
 
 # pylint: disable=too-many-instance-attributes
 class DodonaConfig(SimpleNamespace):
-    """A class for containing all Dodona Judge configuration
+    """a class for containing all Dodona Judge configuration
 
     Attributes:
         memory_limit:           An integer, the memory limit in bytes. The docker container
@@ -31,7 +31,7 @@ class DodonaConfig(SimpleNamespace):
     """
 
     def __init__(self, **kargs):
-        """store all parameters & set correct type for 'known' dodona judge configuration fields
+        """store all parameters & set correct type for 'known' Dodona judge configuration fields
 
         :param kargs: the named parameters in the form of a dict
         """
@@ -50,7 +50,7 @@ class DodonaConfig(SimpleNamespace):
         """decode json filestream into a DodonaConfig object
 
         :param json_file: input json-encoded filestream
-        :return: decoded dodona judge config
+        :return: decoded Dodona judge config
         """
         simple = json.load(json_file, object_hook=lambda d: SimpleNamespace(**d))
         return cls(**simple.__dict__)
@@ -58,9 +58,9 @@ class DodonaConfig(SimpleNamespace):
     def sanity_check(self) -> None:
         """perform sanity checks
 
-        This function checsk if the python file is executed correctly. The current working dir
-        should be the same directory that is passed as the 'workdir' property in the dodona config.
-        Also, this python file (and all other python judge files) should be located in the 'judge' dir.
+        This function checsk if the Python file is executed correctly. The current working dir
+        should be the same directory that is passed as the 'workdir' property in the Dodona config.
+        Also, this Python file (and all other Python judge files) should be located in the 'judge' dir.
         """
         # Make sure that the current working dir is the workdir
         cwd = os.getcwd()

@@ -67,7 +67,7 @@ class AnnotationSeverity(str, Enum):
 
 
 class DodonaException(Exception):
-    """Exception that will automatically create a message and set the correct status when thrown
+    """exception that will automatically create a message and set the correct status when thrown
 
     When thrown inside a Dodona 'with' block, an error message will be created on the current
     Dodona object (eg. Test, Context ...). Blocks that extend the DodonaCommandWithAccepted class
@@ -89,7 +89,7 @@ class DodonaException(Exception):
 
 
 class DodonaCommand(ABC):
-    """Abstract class, parent of all Dodona commands
+    """abstract class, parent of all Dodona commands
 
     This class provides all shared functionality for the Dodona commands. These commands
     should be used in a Python 'with' block.
@@ -206,7 +206,7 @@ class DodonaCommand(ABC):
 
 
 class DodonaCommandWithAccepted(DodonaCommand):
-    """Abstract class, parent of all Dodona commands that have an accepted field"""
+    """abstract class, parent of all Dodona commands that have an accepted field"""
 
     def handle_dodona_exception(self, exception: DodonaException) -> bool:
         """update the accepted parameter based on the exception status"""
@@ -217,7 +217,7 @@ class DodonaCommandWithAccepted(DodonaCommand):
 
 
 class DodonaCommandWithStatus(DodonaCommandWithAccepted):
-    """Abstract class, parent of all Dodona commands that have a status field"""
+    """abstract class, parent of all Dodona commands that have a status field"""
 
     def handle_dodona_exception(self, exception: DodonaException) -> bool:
         """update the status of the object"""
