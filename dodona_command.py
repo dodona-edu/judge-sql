@@ -5,7 +5,7 @@ import sys
 from abc import ABC
 from enum import Enum
 from types import SimpleNamespace, TracebackType
-from typing import Union
+from typing import Dict, Type, Union
 
 
 class ErrorType(str, Enum):
@@ -79,7 +79,7 @@ class DodonaException(Exception):
 
     def __init__(
         self,
-        status: dict[str, str],
+        status: Dict[str, str],
         *args,
         **kwargs,
     ):
@@ -184,7 +184,7 @@ class DodonaCommand(ABC):
 
     def __exit__(
         self,
-        exc_type: type[BaseException],
+        exc_type: Type[BaseException],
         exc_val: BaseException,
         exc_tb: TracebackType,
     ) -> bool:
