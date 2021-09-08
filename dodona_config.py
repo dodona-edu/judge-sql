@@ -1,11 +1,14 @@
+"""Dodona Judge configuration"""
+
 import json
 import os
 from types import SimpleNamespace
 from typing import TextIO
 
 
+# pylint: disable=too-many-instance-attributes
 class DodonaConfig(SimpleNamespace):
-    """A class for containing all Dodona Judge configuration
+    """a class for containing all Dodona Judge configuration
 
     Attributes:
         memory_limit:           An integer, the memory limit in bytes. The docker container
@@ -28,6 +31,10 @@ class DodonaConfig(SimpleNamespace):
     """
 
     def __init__(self, **kargs):
+        """store all parameters & set correct type for 'known' Dodona judge configuration fields
+
+        :param kargs: the named parameters in the form of a dict
+        """
         super().__init__(**kargs)
         self.memory_limit = int(self.memory_limit)
         self.time_limit = int(self.time_limit)
@@ -40,10 +47,21 @@ class DodonaConfig(SimpleNamespace):
 
     @classmethod
     def from_json(cls, json_file: TextIO) -> "DodonaConfig":
+        """decode json filestream into a DodonaConfig object
+
+        :param json_file: input json-encoded filestream
+        :return: decoded Dodona judge config
+        """
         simple = json.load(json_file, object_hook=lambda d: SimpleNamespace(**d))
         return cls(**simple.__dict__)
 
     def sanity_check(self) -> None:
+        """perform sanity checks
+
+        This function checsk if the Python file is executed correctly. The current working dir
+        should be the same directory that is passed as the 'workdir' property in the Dodona config.
+        Also, this Python file (and all other Python judge files) should be located in the 'judge' dir.
+        """
         # Make sure that the current working dir is the workdir
         cwd = os.getcwd()
         assert os.path.realpath(cwd) == os.path.realpath(self.workdir)
