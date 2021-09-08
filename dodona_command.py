@@ -1,4 +1,4 @@
-"""report judge's results to dodona using dodona commands (partial JSON output)"""
+"""report judge's results to Dodona using Dodona commands (partial JSON output)"""
 
 import json
 import sys
@@ -69,8 +69,8 @@ class AnnotationSeverity(str, Enum):
 class DodonaException(Exception):
     """Exception that will automatically create a message and set the correct status when thrown
 
-    When thrown inside a Dododona 'with' block, an error message will be created on the current
-    dodona object (eg. Test, Context ...). Blocks that extend the DodonaCommandWithAccepted class
+    When thrown inside a Dodona 'with' block, an error message will be created on the current
+    Dodona object (eg. Test, Context ...). Blocks that extend the DodonaCommandWithAccepted class
     will have their accepted field set to True (if CORRECT or CORRECT_ANSWER) and to False otherwise.
     If the block also extends DodonaCommandWithStatus, its status is updated with this exception's
     status. The outer Judgement block will silently catch the exception and the process will exit
@@ -89,10 +89,10 @@ class DodonaException(Exception):
 
 
 class DodonaCommand(ABC):
-    """Abstract class, parent of all dodona commands
+    """Abstract class, parent of all Dodona commands
 
-    This class provides all shared functionality for the dodona commands. These commands
-    should be used in a python 'with' block.
+    This class provides all shared functionality for the Dodona commands. These commands
+    should be used in a Python 'with' block.
 
     Example:
     >>> with Judgement() as judgement:
@@ -160,13 +160,13 @@ class DodonaCommand(ABC):
 
         This function returns a boolean that is True if the exeption should
         not get propagated to parent codeblocks. This should only be True
-        for the most outer block (Judgement), so that all levels of dodona
+        for the most outer block (Judgement), so that all levels of Dodona
         objects can update their status and success parameters.
 
         This function can be overwritten by child classes, these overwrites
         should still call this function.
 
-        This function prints a dodona message and removes the message from
+        This function prints a Dodona message and removes the message from
         the exception, so it is not also printed by the parent 'with' blocks.
 
         :param exception: exception thrown in the enclosed 'with' block
@@ -206,7 +206,7 @@ class DodonaCommand(ABC):
 
 
 class DodonaCommandWithAccepted(DodonaCommand):
-    """Abstract class, parent of all dodona commands that have an accepted field"""
+    """Abstract class, parent of all Dodona commands that have an accepted field"""
 
     def handle_dodona_exception(self, exception: DodonaException) -> bool:
         """update the accepted parameter based on the exception status"""
@@ -217,7 +217,7 @@ class DodonaCommandWithAccepted(DodonaCommand):
 
 
 class DodonaCommandWithStatus(DodonaCommandWithAccepted):
-    """Abstract class, parent of all dodona commands that have a status field"""
+    """Abstract class, parent of all Dodona commands that have a status field"""
 
     def handle_dodona_exception(self, exception: DodonaException) -> bool:
         """update the status of the object"""
@@ -230,7 +230,7 @@ class Judgement(DodonaCommandWithStatus):
     """Dodona Judgement"""
 
     def handle_dodona_exception(self, exception: DodonaException) -> bool:
-        """return True to prevent the exception from crashing python and causing a non-zero exit code"""
+        """return True to prevent the exception from crashing Python and causing a non-zero exit code"""
         super().handle_dodona_exception(exception)
         return True
 
