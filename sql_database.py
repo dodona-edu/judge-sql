@@ -111,57 +111,62 @@ class SQLDatabase:
 
     count_identical_columns_sql = """
     SELECT
-    s.name,
-    count(*) as identical,
-    (SELECT count(*) FROM pragma_table_info(s.name, 'solution')) as solution,
-    (SELECT count(*) FROM pragma_table_info(s.name, 'submission')) as submission
+        s.name,
+        count(*) as identical,
+        (SELECT count(*) FROM pragma_table_info(s.name, 'solution')) as solution,
+        (SELECT count(*) FROM pragma_table_info(s.name, 'submission')) as submission
     FROM
-    solution.sqlite_master as s,
-    pragma_table_info(s.name, 'solution') A,
-    pragma_table_info(s.name, 'submission') B
+        solution.sqlite_master as s,
+        pragma_table_info(s.name, 'solution') solTable,
+        pragma_table_info(s.name, 'submission') subTable
     WHERE
-    s.type = 'table' AND
-    s.name NOT LIKE 'sqlite_%' AND
-    A.name=B.name AND
-    A.type=B.type AND
-    A.'notnull'=B.'notnull' AND
-    (
-        A.dflt_value=B.dflt_value OR
+        s.type = 'table' AND
+        s.name NOT LIKE 'sqlite_%' AND
+        solTable.name=subTable.name AND
+        solTable.type=subTable.type AND
+        solTable.'notnull'=subTable.'notnull' AND
         (
-            A.dflt_value IS NULL AND
-            B.dflt_value IS NULL
-        )
-    ) AND
-    A.pk=B.pk
+            solTable.dflt_value=subTable.dflt_value OR
+            (
+                solTable.dflt_value IS NULL AND
+                subTable.dflt_value IS NULL
+            )
+        ) AND
+        solTable.pk=B.pk
     GROUP BY s.name;
     """
 
     count_different_rows_sql = """
     SELECT count(*) FROM (
-        SELECT * FROM solution.{table} A
+        SELECT * FROM solution.'{table}' A
         EXCEPT
-        SELECT * FROM submission.{table} B
+        SELECT * FROM submission.'{table}' B
     )
     """
 
-    def diff(self) -> tuple[list[str], list[str]]:
+    def diff(self) -> tuple[list[str], list[str], list[str]]:
         """determine the difference between the solution and submission sqlite databases
 
-        First we find all tables that have a different table layout, these are returned
-        as 'diff_layout'. Then, the remaining table's content is compared and a list of tables
-        with differing contents is returned as 'diff_content'.
+        First all table names are checked, tables with a name that includes the character '
+        are returned in 'incorrect_name'. Then, from the correctly named tables, all tables
+        that have a different table layout are filtered, these are returned as 'diff_layout'.
+        Finally, the remaining table's content is compared and a list of tables with differing
+        contents is returned as 'diff_content'.
 
-        :return: (diff_layout, diff_content) names of tables that are non-identical with regards to layout or content
+        :return: (incorrect_name, diff_layout, diff_content) names of tables that have invalid names,
+        are non-identical with regards to layout, are non-identical with regards to content
         """
         cursor = self.joined_cursor()
 
         cursor.execute(self.count_identical_columns_sql)
 
-        diff_layout, check_content = [], []
+        incorrect_name, diff_layout, check_content = [], [], []
         for row in cursor.fetchall():
             table, identical, solution, submission = row
 
-            if solution != submission or solution != identical:
+            if "'" in table:
+                incorrect_name += [table]
+            elif solution != submission or solution != identical:
                 diff_layout += [table]
             else:
                 check_content += [table]
@@ -178,4 +183,4 @@ class SQLDatabase:
 
             diff_content += [table]
 
-        return diff_layout, diff_content
+        return incorrect_name, diff_layout, diff_content

@@ -201,7 +201,18 @@ with Judgement():
 
                     if not solution_query.is_select:
                         with SQLDatabase(db_file) as db:
-                            diff_layout, diff_content = db.diff()
+                            incorrect_name, diff_layout, diff_content = db.diff()
+
+                            if len(incorrect_name) > 0:
+                                raise DodonaException(
+                                    config.translator.error_status(ErrorType.COMPILATION_ERROR),
+                                    permission=MessagePermission.STUDENT,
+                                    description=config.translator.translate(
+                                        Translator.Text.INVALID_SINGLE_QUOTE_TABLE_NAME,
+                                        table=incorrect_name[0],
+                                    ),
+                                    format=MessageFormat.CALLOUT_DANGER,
+                                )
 
                             for table in diff_layout:
                                 try:

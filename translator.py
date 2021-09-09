@@ -22,6 +22,7 @@ class Translator:
         """Text message content enum"""
 
         ADD_A_SEMICOLON = auto()
+        INVALID_SINGLE_QUOTE_TABLE_NAME = auto()
         SUBMISSION_CONTAINS_MORE_QUERIES = auto()
         SUBMISSION_CONTAINS_LESS_QUERIES = auto()
         DIFFERENT_ROW_COUNT = auto()
@@ -110,6 +111,8 @@ class Translator:
     text_translations = {
         Language.EN: {
             Text.ADD_A_SEMICOLON: "Add a semicolon ';' at the end of each SQL query.",
+            Text.INVALID_SINGLE_QUOTE_TABLE_NAME: "Error: "
+            "The database contains a tablename ({table}) containing a single quote.",
             Text.SUBMISSION_CONTAINS_MORE_QUERIES: "Error: "
             "the submitted solution contains more queries ({submitted}) than expected ({expected}). "
             "Make sure that all queries correctly terminate with a semicolon.",
@@ -127,6 +130,8 @@ class Translator:
         },
         Language.NL: {
             Text.ADD_A_SEMICOLON: "Voeg een puntkomma ';' toe aan het einde van elke SQL query.",
+            Text.INVALID_SINGLE_QUOTE_TABLE_NAME: "Error: "
+            "De database bevat een tabel naam ({table}) die een enkele aanhalingsteken (apostrof) bevat.",
             Text.SUBMISSION_CONTAINS_MORE_QUERIES: "Error: "
             "de ingediende oplossing bestaat uit meer query's ({submitted}) dan verwacht ({expected}). "
             "Zorg ervoor dat elke query correct eindigt op een puntkomma.",
