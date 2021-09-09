@@ -132,7 +132,7 @@ class SQLDatabase:
                 subTable.dflt_value IS NULL
             )
         ) AND
-        solTable.pk=B.pk
+        solTable.pk=subTable.pk
     GROUP BY s.name;
     """
 
