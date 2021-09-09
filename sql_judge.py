@@ -1,7 +1,6 @@
 """sql judge main script"""
 
 import os
-import sqlite3
 import sys
 from os import path
 
@@ -24,6 +23,7 @@ from dodona_command import (
 from dodona_config import DodonaConfig
 from sql_query import SQLQuery
 from sql_query_result import SQLQueryResult
+from sql_database import SQLDatabase
 from translator import Translator
 
 # extract info from exercise configuration
@@ -166,48 +166,95 @@ with Judgement():
                 ):
                     expected_output, generated_output = None, None
 
-                    connection = sqlite3.connect(db_file)
-                    cursor = connection.cursor()
+                    with SQLDatabase(db_file) as db:
+                        cursor = db.solution_cursor()
+
+                        #### RUN SOLUTION QUERY
+                        try:
+                            cursor.execute(solution_query.formatted)
+                        except Exception as err:
+                            raise DodonaException(
+                                config.translator.error_status(ErrorType.INTERNAL_ERROR),
+                                permission=MessagePermission.STAFF,
+                                description=f"Solution is not working ({type(err).__name__}):\n    {err}",
+                                format=MessageFormat.CODE,
+                            ) from err
+
+                        #### RENDER SOLUTION QUERY OUTPUT
+                        expected_output = SQLQueryResult.from_cursor(config.max_rows, cursor)
+
+                        cursor = db.submission_cursor()
+
+                        #### RUN SUBMISSION QUERY
+                        try:
+                            cursor.execute(submission_query.formatted)
+                        except Exception as err:
+                            raise DodonaException(
+                                config.translator.error_status(ErrorType.COMPILATION_ERROR),
+                                permission=MessagePermission.STUDENT,
+                                description=f"{type(err).__name__}:\n    {err}",
+                                format=MessageFormat.CODE,
+                            ) from err
+
+                        #### RENDER SUBMISSION QUERY OUTPUT
+                        generated_output = SQLQueryResult.from_cursor(config.max_rows, cursor)
 
                     if not solution_query.is_select:
-                        # TODO(#12): support non-select queries and copy file
-                        # + compare db using https://sqlite.org/sqldiff.html
-                        raise DodonaException(
-                            config.translator.error_status(ErrorType.INTERNAL_ERROR),
-                            permission=MessagePermission.STAFF,
-                            description="Non-select queries not yet supported.",
-                            format=MessageFormat.TEXT,
-                        )
+                        with SQLDatabase(db_file) as db:
+                            incorrect_name, diff_layout, diff_content = db.diff()
 
-                    #### RUN SOLUTION QUERY
-                    try:
-                        cursor.execute(solution_query.formatted)
-                    except Exception as err:
-                        raise DodonaException(
-                            config.translator.error_status(ErrorType.INTERNAL_ERROR),
-                            permission=MessagePermission.STAFF,
-                            description=f"Solution is not working ({type(err).__name__}):\n    {err}",
-                            format=MessageFormat.CODE,
-                        ) from err
+                            if len(incorrect_name) > 0:
+                                raise DodonaException(
+                                    config.translator.error_status(ErrorType.COMPILATION_ERROR),
+                                    permission=MessagePermission.STUDENT,
+                                    description=config.translator.translate(
+                                        Translator.Text.INVALID_SINGLE_QUOTE_TABLE_NAME,
+                                        table=incorrect_name[0],
+                                    ),
+                                    format=MessageFormat.CALLOUT_DANGER,
+                                )
 
-                    #### RENDER SOLUTION QUERY OUTPUT
-                    expected_output = SQLQueryResult.from_cursor(config.max_rows, cursor)
+                            for table in diff_layout:
+                                try:
+                                    solution_layout, submission_layout = db.get_table_layout(config, table)
+                                except Exception as err:
+                                    raise DodonaException(
+                                        config.translator.error_status(ErrorType.INTERNAL_ERROR),
+                                        permission=MessagePermission.STAFF,
+                                        description="Could not retrieve solution layout "
+                                        f"({type(err).__name__}):\n    {err}",
+                                        format=MessageFormat.CODE,
+                                    ) from err
 
-                    #### RUN SUBMISSION QUERY
-                    try:
-                        cursor.execute(submission_query.formatted)
-                    except Exception as err:
-                        raise DodonaException(
-                            config.translator.error_status(ErrorType.COMPILATION_ERROR),
-                            permission=MessagePermission.STUDENT,
-                            description=f"{type(err).__name__}:\n    {err}",
-                            format=MessageFormat.CODE,
-                        ) from err
+                                with Test(
+                                    f"Checking table {table} layout",
+                                    solution_layout.csv_out,
+                                    format="csv",
+                                ) as test:
+                                    test.generated = submission_layout.csv_out
+                                    test.status = config.translator.error_status(ErrorType.WRONG)
 
-                    #### RENDER SUBMISSION QUERY OUTPUT
-                    generated_output = SQLQueryResult.from_cursor(config.max_rows, cursor)
+                            for table in diff_content:
+                                try:
+                                    solution_content, submission_content = db.get_table_content(config, table)
+                                except Exception as err:
+                                    raise DodonaException(
+                                        config.translator.error_status(ErrorType.INTERNAL_ERROR),
+                                        permission=MessagePermission.STAFF,
+                                        description="Could not retrieve solution content "
+                                        f"({type(err).__name__}):\n    {err}",
+                                        format=MessageFormat.CODE,
+                                    ) from err
 
-                    connection.close()
+                                with Test(
+                                    f"Checking table {table} content",
+                                    solution_content.csv_out,
+                                    format="csv",
+                                ) as test:
+                                    test.generated = submission_content.csv_out
+                                    test.status = config.translator.error_status(ErrorType.WRONG)
+
+                        continue
 
                     if config.allow_different_column_order:
                         expected_output.index_columns(generated_output.columns)
@@ -222,6 +269,7 @@ with Judgement():
                     with Test(
                         config.translator.translate(Translator.Text.COMPARING_QUERY_OUTPUT_CSV_CONTENT),
                         expected_output.csv_out,
+                        format="csv",
                     ) as test:
                         test.generated = generated_output.csv_out
 
