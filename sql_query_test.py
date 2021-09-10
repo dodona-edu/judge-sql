@@ -172,6 +172,58 @@ class TestSQLQuery(unittest.TestCase):
         query = self.single_query('select "ORDER BY", (SELECT 1 ORDER BY test) from users')
         self.assertEqual(query.is_ordered, False)
 
+    def test_query_type(self):
+        query = self.single_query('select * from users WHERE zip LIKE "test"')
+        self.assertEqual(query.type, "SELECT")
+
+        query = self.single_query('INSERT INTO table_name (column) VALUES ("value");')
+        self.assertEqual(query.type, "INSERT")
+
+        query = self.single_query("DELETE FROM table_name WHERE condition;")
+        self.assertEqual(query.type, "DELETE")
+
+        query = self.single_query("INSERT INTO table2 SELECT * FROM table1 WHERE condition;")
+        self.assertEqual(query.type, "INSERT")
+
+    def test_match_keywords(self):
+        query = self.single_query('select * from users WHERE zip LIKE "test"')
+        self.assertEqual(query.match("LIKE"), "LIKE")
+
+        query = self.single_query('select * from users WHERE zip = "LIKE"')
+        self.assertEqual(query.match("select"), "select")
+        self.assertEqual(query.match("sel"), None)
+        self.assertEqual(query.match("sel..."), "select")
+        self.assertEqual(query.match("from"), "from")
+        self.assertEqual(query.match("users"), "users")
+        self.assertEqual(query.match("WHERE"), "WHERE")
+        self.assertEqual(query.match("zip"), "zip")
+        self.assertEqual(query.match('"LIKE"'), '"LIKE"')
+        self.assertEqual(query.match("LIKE"), None)
+
+        query = self.single_query('select (SELECT COUNT(*) FROM table WHERE zip = "LIKE") from users')
+        self.assertEqual(query.match("select"), "select")
+        self.assertEqual(query.match("count"), "COUNT")
+        self.assertEqual(query.match("from"), "FROM")
+        self.assertEqual(query.match("table"), "table")
+        self.assertEqual(query.match("WHERE"), "WHERE")
+        self.assertEqual(query.match("zip"), "zip")
+        self.assertEqual(query.match("users"), "users")
+
+        query = self.single_query("select CITY as like from users")
+        self.assertEqual(query.match("select"), "select")
+        self.assertEqual(query.match("CITY"), "CITY")
+        self.assertEqual(query.match("as"), "as")
+        self.assertEqual(query.match("like"), "like")
+        self.assertEqual(query.match("from"), "from")
+        self.assertEqual(query.match("users"), "users")
+
+        query = self.single_query("select DISTICT CITY from users")
+        self.assertEqual(query.match("select"), "select")
+        self.assertEqual(query.match("DISTICT"), "DISTICT")
+        self.assertEqual(query.match("CITY"), "CITY")
+        self.assertEqual(query.match("from"), "from")
+        self.assertEqual(query.match("users"), "users")
+
 
 # @formatter:on
 

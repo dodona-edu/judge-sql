@@ -1,5 +1,7 @@
 """input query parsing"""
 
+import re
+
 import sqlparse
 
 
@@ -19,6 +21,11 @@ class SQLQuery:
         self._is_ordered = None
 
     @property
+    def type(self):
+        """query type (eg. ALTER, CREATE, DELETE, DROP, INSERT, REPLACE, SELECT, UPDATE, UPSERT ...)"""
+        return str(self.parsed.get_type())
+
+    @property
     def is_select(self):
         """is query a SELECT query?"""
         return str(self.parsed.get_type()) == "SELECT"
@@ -28,15 +35,34 @@ class SQLQuery:
         """does query order its results?"""
         if self._is_ordered is not None:
             return self._is_ordered
-        self._is_ordered = any(
-            True for part in self.parsed if part.match(sqlparse.tokens.Keyword, r"ORDER\s+BY", regex=True)
-        )
+        self._is_ordered = any(part.match(sqlparse.tokens.Keyword, r"ORDER\s+BY", regex=True) for part in self.parsed)
         return self._is_ordered
 
     @property
     def has_ending_semicolon(self):
         """does query end with a semicolon?"""
         return self.formatted[-1] == ";"
+
+    def match(self, word: str):
+        """checks if query contains word
+
+        WARNING: This is a non-perfect solution. Some column names will cause
+        false-positive matches (eg. a column named 'like').
+        """
+        reg = re.compile(word, re.IGNORECASE)
+
+        def recursive_match(parsed):
+            if not parsed.is_group:
+                return parsed.value if reg.fullmatch(parsed.value.upper()) else None
+
+            for item in parsed.tokens:
+                res = recursive_match(item)
+                if res is not None:
+                    return res
+
+            return None
+
+        return recursive_match(self.parsed)
 
     @classmethod
     def from_raw_input(cls, raw_input: str) -> list["SQLQuery"]:
