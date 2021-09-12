@@ -158,7 +158,7 @@ class Translator:
             Text.QUERY_SHOULD_NOT_ORDER_ROWS: "De query mag de rijen niet expliciet gaan sorteren.",
             Text.ROWS_ARE_BEING_ORDERED: "rijen worden gesorteerd",
             Text.ROWS_ARE_NOT_BEING_ORDERED: "rijen worden niet gesorteerd",
-            Text.COMPARING_TABLE_LAYOUT: 'Vergelijken van de kolom layout van "{table}".',
+            Text.COMPARING_TABLE_LAYOUT: 'Vergelijken van de tabel lay-out van "{table}".',
             Text.COMPARING_TABLE_CONTENT: 'Vergelijken van de tabel inhoud van "{table}".',
         },
     }
