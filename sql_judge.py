@@ -2,9 +2,6 @@
 
 import os
 import sys
-from os import path
-
-import numpy as np
 
 from dodona_command import (
     AnnotationSeverity,
@@ -12,8 +9,6 @@ from dodona_command import (
     Tab,
     Context,
     TestCase,
-    Test,
-    Message,
     Annotation,
     DodonaException,
     ErrorType,
@@ -24,6 +19,8 @@ from dodona_config import DodonaConfig
 from sql_query import SQLQuery
 from sql_query_result import SQLQueryResult
 from sql_database import SQLDatabase
+from sql_judge_select_feedback import select_feedback
+from sql_judge_non_select_feedback import non_select_feedback
 from translator import Translator
 
 # extract info from exercise configuration
@@ -47,13 +44,21 @@ with Judgement():
     # Set 'allow_different_column_order' to True if not set
     config.allow_different_column_order = bool(getattr(config, "allow_different_column_order", True))
 
+    # Set 'forbidden_pre_execution' to [".*sqlite_(temp_)?(master|schema)$", "pragma"] if not set
+    config.forbidden_pre_execution = list(
+        getattr(config, "forbidden_pre_execution", [".*sqlite_(temp_)?(master|schema).*", "pragma"])
+    )
+
+    # Set 'forbidden_post_execution' to [] if not set
+    config.forbidden_post_execution = list(getattr(config, "forbidden_post_execution", []))
+
     if hasattr(config, "database_files"):
         config.database_files = [
-            (str(filename), path.join(config.resources, filename)) for filename in config.database_files
+            (str(filename), os.path.join(config.resources, filename)) for filename in config.database_files
         ]
 
         for filename, file in config.database_files:
-            if not path.exists(file):
+            if not os.path.exists(file):
                 raise DodonaException(
                     config.translator.error_status(ErrorType.INTERNAL_ERROR),
                     permission=MessagePermission.STAFF,
@@ -63,9 +68,9 @@ with Judgement():
     else:
         # Set 'database_dir' to "." if not set
         config.database_dir = str(getattr(config, "database_dir", "."))
-        config.database_dir = path.join(config.resources, config.database_dir)
+        config.database_dir = os.path.join(config.resources, config.database_dir)
 
-        if not path.exists(config.database_dir):
+        if not os.path.exists(config.database_dir):
             raise DodonaException(
                 config.translator.error_status(ErrorType.INTERNAL_ERROR),
                 permission=MessagePermission.STAFF,
@@ -74,7 +79,7 @@ with Judgement():
             )
 
         config.database_files = [
-            (filename, path.join(config.database_dir, filename))
+            (filename, os.path.join(config.database_dir, filename))
             for filename in sorted(os.listdir(config.database_dir))
             if filename.endswith(".sqlite")
         ]
@@ -91,9 +96,9 @@ with Judgement():
 
     # Set 'solution_sql' to "./solution.sql" if not set
     config.solution_sql = str(getattr(config, "solution_sql", "./solution.sql"))
-    config.solution_sql = path.join(config.resources, config.solution_sql)
+    config.solution_sql = os.path.join(config.resources, config.solution_sql)
 
-    if not path.exists(config.solution_sql):
+    if not os.path.exists(config.solution_sql):
         raise DodonaException(
             config.translator.error_status(ErrorType.INTERNAL_ERROR),
             permission=MessagePermission.STAFF,
@@ -159,14 +164,38 @@ with Judgement():
 
             submission_query = config.submission_queries[query_nr]
 
-            for filename, db_file in config.database_files:
+            if solution_query.type != submission_query.type:
+                raise DodonaException(
+                    config.translator.error_status(ErrorType.RUNTIME_ERROR),
+                    permission=MessagePermission.STUDENT,
+                    description=config.translator.translate(
+                        Translator.Text.SUBMISSION_WRONG_QUERY_TYPE,
+                        submitted=submission_query.type,
+                    ),
+                    format=MessageFormat.CALLOUT_DANGER,
+                )
+
+            for regex in config.forbidden_pre_execution:
+                match = submission_query.match(regex)
+                if match is not None:
+                    raise DodonaException(
+                        config.translator.error_status(ErrorType.RUNTIME_ERROR),
+                        permission=MessagePermission.STUDENT,
+                        description=config.translator.translate(
+                            Translator.Text.SUBMISSION_FORBIDDEN_WORD,
+                            keyword=match,
+                        ),
+                        format=MessageFormat.CALLOUT_DANGER,
+                    )
+
+            for db_name, db_file in config.database_files:
                 with Context(), TestCase(
                     format=MessageFormat.SQL,
-                    description=f"-- sqlite3 {filename}\n{submission_query.formatted}",
-                ):
+                    description=f"-- sqlite3 {db_name}\n{submission_query.formatted}",
+                ) as testcase:
                     expected_output, generated_output = None, None
 
-                    with SQLDatabase(db_file) as db:
+                    with SQLDatabase(db_name, db_file, config.workdir) as db:
                         cursor = db.solution_cursor()
 
                         #### RUN SOLUTION QUERY
@@ -200,140 +229,22 @@ with Judgement():
                         generated_output = SQLQueryResult.from_cursor(config.max_rows, cursor)
 
                     if not solution_query.is_select:
-                        with SQLDatabase(db_file) as db:
-                            incorrect_name, diff_layout, diff_content = db.diff()
+                        non_select_feedback(config, testcase, db_name, db_file)
+                    else:
+                        select_feedback(
+                            config, testcase, expected_output, generated_output, solution_query, submission_query
+                        )
 
-                            if len(incorrect_name) > 0:
+                    if getattr(testcase, "accepted", True):  # Only run if all other tests are OK
+                        for regex in config.forbidden_post_execution:
+                            match = submission_query.match(regex)
+                            if match is not None:
                                 raise DodonaException(
-                                    config.translator.error_status(ErrorType.COMPILATION_ERROR),
+                                    config.translator.error_status(ErrorType.WRONG),
                                     permission=MessagePermission.STUDENT,
                                     description=config.translator.translate(
-                                        Translator.Text.INVALID_SINGLE_QUOTE_TABLE_NAME,
-                                        table=incorrect_name[0],
+                                        Translator.Text.SUBMISSION_FORBIDDEN_WORD,
+                                        keyword=match,
                                     ),
                                     format=MessageFormat.CALLOUT_DANGER,
                                 )
-
-                            for table in diff_layout:
-                                try:
-                                    solution_layout, submission_layout = db.get_table_layout(config, table)
-                                except Exception as err:
-                                    raise DodonaException(
-                                        config.translator.error_status(ErrorType.INTERNAL_ERROR),
-                                        permission=MessagePermission.STAFF,
-                                        description="Could not retrieve solution layout "
-                                        f"({type(err).__name__}):\n    {err}",
-                                        format=MessageFormat.CODE,
-                                    ) from err
-
-                                with Test(
-                                    f"Checking table {table} layout",
-                                    solution_layout.csv_out,
-                                    format="csv",
-                                ) as test:
-                                    test.generated = submission_layout.csv_out
-                                    test.status = config.translator.error_status(ErrorType.WRONG)
-
-                            for table in diff_content:
-                                try:
-                                    solution_content, submission_content = db.get_table_content(config, table)
-                                except Exception as err:
-                                    raise DodonaException(
-                                        config.translator.error_status(ErrorType.INTERNAL_ERROR),
-                                        permission=MessagePermission.STAFF,
-                                        description="Could not retrieve solution content "
-                                        f"({type(err).__name__}):\n    {err}",
-                                        format=MessageFormat.CODE,
-                                    ) from err
-
-                                with Test(
-                                    f"Checking table {table} content",
-                                    solution_content.csv_out,
-                                    format="csv",
-                                ) as test:
-                                    test.generated = submission_content.csv_out
-                                    test.status = config.translator.error_status(ErrorType.WRONG)
-
-                        continue
-
-                    if config.allow_different_column_order:
-                        expected_output.index_columns(generated_output.columns)
-
-                    # if SELECT is not ordered -> fix ordering by sorting all rows
-                    if not solution_query.is_ordered:
-                        sort_on = np.intersect1d(expected_output.columns, generated_output.columns)
-                        expected_output.sort_rows(sort_on)
-                        generated_output.sort_rows(sort_on)
-
-                    # TODO(#7): add custom compare function that only compares subsection of columns
-                    with Test(
-                        config.translator.translate(Translator.Text.COMPARING_QUERY_OUTPUT_CSV_CONTENT),
-                        expected_output.csv_out,
-                        format="csv",
-                    ) as test:
-                        test.generated = generated_output.csv_out
-
-                        if len(expected_output.dataframe.columns) != len(generated_output.dataframe.columns):
-                            with Message(
-                                format=MessageFormat.CALLOUT_DANGER,
-                                description=config.translator.translate(
-                                    Translator.Text.DIFFERENT_COLUMN_COUNT,
-                                    expected=len(expected_output.dataframe.columns),
-                                    submitted=len(generated_output.dataframe.columns),
-                                ),
-                            ):
-                                pass
-
-                        if len(expected_output.dataframe.index) != len(generated_output.dataframe.index):
-                            with Message(
-                                format=MessageFormat.CALLOUT_DANGER,
-                                description=config.translator.translate(
-                                    Translator.Text.DIFFERENT_ROW_COUNT,
-                                    expected=len(expected_output.dataframe.index),
-                                    submitted=len(generated_output.dataframe.index),
-                                ),
-                            ):
-                                pass
-
-                        if expected_output.csv_out == generated_output.csv_out:
-                            test.status = config.translator.error_status(ErrorType.CORRECT)
-                        else:
-                            test.status = config.translator.error_status(ErrorType.WRONG)
-                            # TODO(#18): if wrong, and solution_query.is_ordered;
-                            # try ordering columns and check if result is correct.
-
-                    # TODO(#7): add custom compare function that only compares subsection of columns
-                    with Test(
-                        config.translator.translate(Translator.Text.COMPARING_QUERY_OUTPUT_TYPES),
-                        expected_output.types_out,
-                    ) as test:
-                        test.generated = generated_output.types_out
-
-                        if expected_output.types_out == generated_output.types_out:
-                            test.status = config.translator.error_status(ErrorType.CORRECT)
-                        else:
-                            test.status = config.translator.error_status(ErrorType.WRONG)
-
-                    if config.strict_identical_order_by and submission_query.is_ordered != solution_query.is_ordered:
-                        with Test(
-                            config.translator.translate(
-                                Translator.Text.QUERY_SHOULD_ORDER_ROWS
-                                if solution_query.is_ordered
-                                else Translator.Text.QUERY_SHOULD_NOT_ORDER_ROWS
-                            ),
-                            config.translator.translate(
-                                Translator.Text.ROWS_ARE_BEING_ORDERED
-                                if solution_query.is_ordered
-                                else Translator.Text.ROWS_ARE_NOT_BEING_ORDERED
-                            ),
-                        ) as test:
-                            test.generated = config.translator.translate(
-                                Translator.Text.ROWS_ARE_BEING_ORDERED
-                                if submission_query.is_ordered
-                                else Translator.Text.ROWS_ARE_NOT_BEING_ORDERED
-                            )
-
-                            if submission_query.is_ordered == solution_query.is_ordered:
-                                test.status = config.translator.error_status(ErrorType.CORRECT)
-                            else:
-                                test.status = config.translator.error_status(ErrorType.WRONG)

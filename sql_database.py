@@ -1,10 +1,11 @@
 """manage sqlite solution and submission database"""
 
+import os
 import sqlite3
+
 from sqlite3 import Cursor
 from types import TracebackType
 from shutil import copyfile
-import os.path
 from dodona_config import DodonaConfig
 from sql_query_result import SQLQueryResult
 
@@ -19,14 +20,15 @@ class SQLDatabase:
     when used with non-select sql queries (eg. CREATE & INSERT).
     """
 
-    def __init__(self, sourcefile: str):
+    def __init__(self, db_name: str, sourcefile: str, workdir: str):
         """construct SQLDatabase
 
         :param sourcefile: exercise's sqlite start databse file
         """
         self.sourcefile = sourcefile
-        self.solutionfile = f"{self.sourcefile}.solution"
-        self.submissionfile = f"{self.sourcefile}.submission"
+        self.solutionfile = os.path.join(workdir, f"{db_name}.solution")
+        self.submissionfile = os.path.join(workdir, f"{db_name}.submission")
+
         self.connection = None
 
     def __enter__(self) -> "SQLDatabase":

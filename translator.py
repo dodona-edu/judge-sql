@@ -23,6 +23,8 @@ class Translator:
 
         ADD_A_SEMICOLON = auto()
         INVALID_SINGLE_QUOTE_TABLE_NAME = auto()
+        SUBMISSION_WRONG_QUERY_TYPE = auto()
+        SUBMISSION_FORBIDDEN_WORD = auto()
         SUBMISSION_CONTAINS_MORE_QUERIES = auto()
         SUBMISSION_CONTAINS_LESS_QUERIES = auto()
         DIFFERENT_ROW_COUNT = auto()
@@ -33,6 +35,8 @@ class Translator:
         QUERY_SHOULD_NOT_ORDER_ROWS = auto()
         ROWS_ARE_BEING_ORDERED = auto()
         ROWS_ARE_NOT_BEING_ORDERED = auto()
+        COMPARING_TABLE_LAYOUT = auto()
+        COMPARING_TABLE_CONTENT = auto()
 
     def __init__(self, language: Language):
         self.language = language
@@ -113,6 +117,9 @@ class Translator:
             Text.ADD_A_SEMICOLON: "Add a semicolon ';' at the end of each SQL query.",
             Text.INVALID_SINGLE_QUOTE_TABLE_NAME: "Error: "
             "The database contains a tablename ({table}) containing a single quote.",
+            Text.SUBMISSION_WRONG_QUERY_TYPE: "Error: "
+            "the submitted query is of a different type ({submitted}) than expected.",
+            Text.SUBMISSION_FORBIDDEN_WORD: 'Error: the submitted query should not contain "{keyword}".',
             Text.SUBMISSION_CONTAINS_MORE_QUERIES: "Error: "
             "the submitted solution contains more queries ({submitted}) than expected ({expected}). "
             "Make sure that all queries correctly terminate with a semicolon.",
@@ -127,15 +134,20 @@ class Translator:
             Text.QUERY_SHOULD_NOT_ORDER_ROWS: "No explicit row ordering should be enforced in query.",
             Text.ROWS_ARE_BEING_ORDERED: "rows are being ordered",
             Text.ROWS_ARE_NOT_BEING_ORDERED: "rows are not being ordered",
+            Text.COMPARING_TABLE_LAYOUT: 'Comparing the table layout of "{table}".',
+            Text.COMPARING_TABLE_CONTENT: 'Comparing the table content of "{table}".',
         },
         Language.NL: {
             Text.ADD_A_SEMICOLON: "Voeg een puntkomma ';' toe aan het einde van elke SQL query.",
-            Text.INVALID_SINGLE_QUOTE_TABLE_NAME: "Error: "
+            Text.INVALID_SINGLE_QUOTE_TABLE_NAME: "Fout: "
             "De database bevat een tabel naam ({table}) die een enkele aanhalingsteken (apostrof) bevat.",
-            Text.SUBMISSION_CONTAINS_MORE_QUERIES: "Error: "
+            Text.SUBMISSION_WRONG_QUERY_TYPE: "Fout: "
+            "de ingediende query is van een ander type ({submitted}) dan verwacht.",
+            Text.SUBMISSION_FORBIDDEN_WORD: 'Fout: de ingediende query mag niet "{keyword}" bevatten.',
+            Text.SUBMISSION_CONTAINS_MORE_QUERIES: "Fout: "
             "de ingediende oplossing bestaat uit meer query's ({submitted}) dan verwacht ({expected}). "
             "Zorg ervoor dat elke query correct eindigt op een puntkomma.",
-            Text.SUBMISSION_CONTAINS_LESS_QUERIES: "Error: "
+            Text.SUBMISSION_CONTAINS_LESS_QUERIES: "Fout: "
             "de ingediende oplossing bestaat uit minder query's ({submitted}) dan verwacht ({expected}). "
             "Zorg ervoor dat elke query correct eindigt op een puntkomma.",
             Text.DIFFERENT_ROW_COUNT: "Verwachtte {expected} rijen, uw aantal rijen is {submitted}.",
@@ -146,5 +158,7 @@ class Translator:
             Text.QUERY_SHOULD_NOT_ORDER_ROWS: "De query mag de rijen niet expliciet gaan sorteren.",
             Text.ROWS_ARE_BEING_ORDERED: "rijen worden gesorteerd",
             Text.ROWS_ARE_NOT_BEING_ORDERED: "rijen worden niet gesorteerd",
+            Text.COMPARING_TABLE_LAYOUT: 'Vergelijken van de tabel lay-out van "{table}".',
+            Text.COMPARING_TABLE_CONTENT: 'Vergelijken van de tabel inhoud van "{table}".',
         },
     }

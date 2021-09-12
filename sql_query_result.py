@@ -2,6 +2,7 @@
 
 import io
 from sqlite3 import Cursor
+
 import pandas as pd
 
 NoneType = type(None)
