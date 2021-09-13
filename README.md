@@ -155,9 +155,13 @@ or
 }
 ````
 
-## Generate database with Python script
+## Generator scripts
 
-SQLite databases can be made with a Python script. Place the script (e.g. `generator.py`) in the `preparation` folder. This example creates an empty database in the `evaluation` folder.
+SQLite databases can be made with a Python 3.9 script. Place the script (e.g. `generator.py`) in the `preparation` folder.
+
+### Generate empty database with Python script
+
+ This example creates an empty database in the `evaluation` folder.
 
 ```python
 # import the sqlite3 module from the Python Standard Library
@@ -177,6 +181,52 @@ cursor.execute(sql_command_remove_dummy_tabel)
 connection.commit()
 connection.close()
 ```
+
+### Generate database based on previous exercises
+
+Place the `previous_solution.sql` in the `evaluation folder.
+
+<details>
+  <summary>Click <b>here</b> to show to code!</summary>
+  
+````python
+import os
+import sqlite3
+from sqlite3 import OperationalError
+
+import pandas as pd
+
+def execute_sql_from_file(filename: str):
+    with open(filename, 'r') as file:
+        sql_file = file.read()
+
+    sql_commands = sql_file.split(';')
+
+    for command in sql_commands:
+        try:
+            cursor.execute(command)
+        except OperationalError as msg:
+            print("Command skipped: ", msg)
+
+db_filename = "../evaluation/your_database.sqlite"
+
+if os.path.exists(db_filename):
+    os.remove(db_filename)
+
+connection = sqlite3.connect(db_filename)
+cursor = connection.cursor()
+
+execute_sql_from_file("previous_solution.sql")
+
+# Print contents and properties of YOUR_TABLE_NAME
+table_name = "YOUR_TABLE_NAME"
+print(pd.read_sql(f"SELECT * FROM {table_name};", connection))
+print(pd.read_sql(f"PRAGMA TABLE_INFO({table_name});", connection))
+
+connection.commit()
+connection.close()
+````
+</details>
 
 ## Recommended database tools for SQLite
 
