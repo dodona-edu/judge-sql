@@ -20,6 +20,7 @@
 * Comparison between row count and column count between solution and submission
 * Data types
 * Number of queries
+* Only same type of query as solution is allowed
 * Differences between submission and solution table are highlighted
 * ...
 
