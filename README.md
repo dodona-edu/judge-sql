@@ -182,12 +182,12 @@ connection.commit()
 connection.close()
 ```
 
-### Generate database based on previous exercises
+### Generate empty database based on changes from previous exercises
 
-Place the `previous_solution.sql` in the `evaluation folder.
+Place the `previous_solution.sql` in the `evaluation` folder.
 
 <details>
-  <summary>Click <b>here</b> to show to code!</summary>
+  <summary>Click <b>here</b> to show to code.</summary>
   
 ````python
 import os
@@ -214,6 +214,62 @@ if os.path.exists(db_filename):
     os.remove(db_filename)
 
 connection = sqlite3.connect(db_filename)
+cursor = connection.cursor()
+
+execute_sql_from_file("previous_solution.sql")
+
+# Print contents and properties of YOUR_TABLE_NAME
+table_name = "YOUR_TABLE_NAME"
+print(pd.read_sql(f"SELECT * FROM {table_name};", connection))
+print(pd.read_sql(f"PRAGMA TABLE_INFO({table_name});", connection))
+
+connection.commit()
+connection.close()
+````
+</details>
+
+### Generate updated database based with changes from previous exercises
+
+Place the `previous_solution.sql` in the `evaluation` folder. Use this script if you want to update an existing database.
+
+<details>
+  <summary>Click <b>here</b> to show to code.</summary>
+  
+````python
+import os
+import sqlite3
+from sqlite3 import OperationalError
+
+import pandas as pd
+
+
+def execute_sql_from_file(filename: str):
+    with open(filename, 'r') as file:
+        sql_file = file.read()
+
+    sql_commands = sql_file.split(';')
+
+    for command in sql_commands:
+        try:
+            cursor.execute(command)
+        except OperationalError as msg:
+            print("Command skipped: ", msg)
+
+
+original_db = "./my_origi_db.sqlite"
+modified_db = "../evaluation/my_new_db.sqlite"
+
+if os.path.exists(modified_db):
+    os.remove(modified_db)
+
+# Copy original database
+con = sqlite3.connect(original_db)
+bck = sqlite3.connect(modified_db)
+con.backup(bck)
+bck.close()
+con.close()
+
+connection = sqlite3.connect(modified_db)
 cursor = connection.cursor()
 
 execute_sql_from_file("previous_solution.sql")
