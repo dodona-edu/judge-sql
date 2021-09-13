@@ -181,7 +181,18 @@ connection.close()
 ## Recommended database tools for SQLite
 
 * [DB Browser for SQLite](https://sqlitebrowser.org/dl/) (free and open source)  
-* [DbVisualizer free version](https://www.dbvis.com/download/) ([How to import a SQLite db file into DbVisualizer](https://stackoverflow.com/questions/41606428/how-to-import-a-sqlite-db-file-into-dbvisualizer))
+* [DbVisualizer free version](https://www.dbvis.com/download/)
+
+> **How to generate diagram with table relationships?**
+> * Open **DbVisualizer**
+> * `Tools` (in menu bar at the top) > `Connection Wizard...`
+> * Enter connection alias: e.g. `my_database` > `Next >`
+> * Select Database Driver > `SQLite` > `Next >`
+> * Path to Database in `Database file name`: e.g. `C:\Users\YOUR_NAME\PycharmProjects\YOUR_PROJECT\YOUR_FOLDER\YOUR_EXERCISE\evaluation\my_database.sqlite` > `Finish`
+> * Locate **Tables** in the Databases tab tree > Double click it > `Open Object`
+> * **References** > Layout: `Hierarchical`
+> * Fourth icon `Export graph to file` > Output format: `PNG` > `Next >`
+> * Choose a folder > `Export` 
 
 ## Testing
 
