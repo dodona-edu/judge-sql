@@ -182,9 +182,9 @@ connection.commit()
 connection.close()
 ```
 
-### Generate empty database based on changes from previous exercises
+### Generate database based on changes from previous exercises from scratch
 
-Place the `previous_solution.sql` in the `evaluation` folder.
+Place the `previous_solution.sql` in the `evaluation` folder. Use this script if you want to start with an empty database and update it with the results previous exercises (only applicable for write queries).
 
 <details>
   <summary>Click <b>here</b> to show to code.</summary>
@@ -230,7 +230,7 @@ connection.close()
 
 ### Generate updated database based with changes from previous exercises
 
-Place the `previous_solution.sql` in the `evaluation` folder. Use this script if you want to update an existing database.
+Place the `previous_solution.sql` in the `evaluation` folder. Use this script if you want to update an existing database (only applicable for write queries).
 
 <details>
   <summary>Click <b>here</b> to show to code.</summary>
