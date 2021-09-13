@@ -162,7 +162,7 @@ connection = sqlite3.connect("../evaluation/empty.sqlite")
 cursor = connection.cursor()
 
 # define and execute an SQL command to create an empty database
-sql_command_create_dummy_table = """CREATE TABLE dummy_table(dummy_field int); """
+sql_command_create_dummy_table = """CREATE TABLE dummy_table(dummy_field int);"""
 sql_command_remove_dummy_tabel = """DROP TABLE dummy_table;"""
 cursor.execute(sql_command_create_dummy_table)
 cursor.execute(sql_command_remove_dummy_tabel)
@@ -174,8 +174,8 @@ connection.close()
 
 ## Recommended database tools for SQLite
 
-> [DB Browser for SQLite](https://sqlitebrowser.org/dl/) (free and open source)  
-> [DbVisualizer free version](https://www.dbvis.com/download/) ([How to import a SQLite db file into DbVisualizer](https://stackoverflow.com/questions/41606428/how-to-import-a-sqlite-db-file-into-dbvisualizer))
+* [DB Browser for SQLite](https://sqlitebrowser.org/dl/) (free and open source)  
+* [DbVisualizer free version](https://www.dbvis.com/download/) ([How to import a SQLite db file into DbVisualizer](https://stackoverflow.com/questions/41606428/how-to-import-a-sqlite-db-file-into-dbvisualizer))
 
 ## Testing
 
