@@ -91,9 +91,9 @@ class SQLDatabase:
         :return: (solution_layout, submission_layout) containing the pragma table info
         """
         cursor = self.joined_cursor()
-        cursor.execute(f"PRAGMA table_info('{table}', 'solution')")
+        cursor.execute(f"PRAGMA solution.table_info('{table}')")
         solution_layout = SQLQueryResult.from_cursor(config.max_rows, cursor)
-        cursor.execute(f"PRAGMA table_info('{table}', 'submission')")
+        cursor.execute(f"PRAGMA submission.table_info('{table}')")
         submission_layout = SQLQueryResult.from_cursor(config.max_rows, cursor)
         return solution_layout, submission_layout
 
