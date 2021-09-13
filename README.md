@@ -64,7 +64,7 @@ Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the **`ev
 {
   "type": "exercise",
   "programming_language": "sql",
-  "access": "private",
+  "access": "public",
   "evaluation": {
     "handler": "sql",
     "time_limit": 10,
