@@ -127,7 +127,8 @@ If these settings are not defined, the default value is chosen.
     "max_rows": 80,
     "semicolon_warning": false,
     "strict_identical_order_by": false,
-    "allow_different_column_order": false
+    "allow_different_column_order": false,
+
   }
 }
 ````
@@ -139,13 +140,17 @@ or
   "evaluation": {
     "solution_sql": "./mijn_oplossing.sql",
     "database_files": [
-      "./databases/database1.sqlite",
       "./databases/database2.sqlite",
+      "./databases/database1.sqlite"
     ],
     "max_rows": 80,
     "semicolon_warning": false,
     "strict_identical_order_by": false,
-    "allow_different_column_order": false
+    "allow_different_column_order": false,
+    "forbidden_pre_execution": [
+      "dummy",
+      "like"
+    ]
   }
 }
 ````
