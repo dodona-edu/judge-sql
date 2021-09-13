@@ -46,7 +46,11 @@ with Judgement():
 
     # Set 'forbidden_pre_execution' to [".*sqlite_(temp_)?(master|schema)$", "pragma"] if not set
     config.forbidden_pre_execution = list(
-        getattr(config, "forbidden_pre_execution", [".*sqlite_(temp_)?(master|schema).*", "pragma"])
+        getattr(
+            config,
+            "forbidden_pre_execution",
+            [".*sqlite_(temp_)?(master|schema).*", "pragma"],
+        )
     )
 
     # Set 'forbidden_post_execution' to [] if not set
@@ -232,7 +236,12 @@ with Judgement():
                         non_select_feedback(config, testcase, db_name, db_file)
                     else:
                         select_feedback(
-                            config, testcase, expected_output, generated_output, solution_query, submission_query
+                            config,
+                            testcase,
+                            expected_output,
+                            generated_output,
+                            solution_query,
+                            submission_query,
                         )
 
                     if getattr(testcase, "accepted", True):  # Only run if all other tests are OK

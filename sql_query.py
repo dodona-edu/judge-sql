@@ -53,7 +53,7 @@ class SQLQuery:
 
         def recursive_match(parsed):
             if not parsed.is_group:
-                return parsed.value if reg.fullmatch(parsed.value.upper()) else None
+                return parsed.value if reg.fullmatch(parsed.value) else None
 
             for item in parsed.tokens:
                 res = recursive_match(item)

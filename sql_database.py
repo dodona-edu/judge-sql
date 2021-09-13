@@ -112,11 +112,34 @@ class SQLDatabase:
         return solution_content, submission_content
 
     count_identical_columns_sql = """
+    --- ONLY IN SOLUTION ---
+    SELECT
+        sol.name,
+        0, 1, 0 -- any number values that trigger a mismatch will do
+    FROM solution.sqlite_master AS sol
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM submission.sqlite_master AS sub
+        WHERE sub.name = sol.name
+    )
+    UNION ALL
+    --- ONLY IN SUBMISSION ---
+    SELECT
+        sub.name,
+        0, 0, 1 -- any number values that trigger a mismatch will do
+    FROM submission.sqlite_master AS sub
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM solution.sqlite_master AS sol
+        WHERE sol.name = sub.name
+    )
+    UNION ALL
+    --- DIFFERENT SCHEME ---
     SELECT
         s.name,
-        count(*) as identical,
-        (SELECT count(*) FROM pragma_table_info(s.name, 'solution')) as solution,
-        (SELECT count(*) FROM pragma_table_info(s.name, 'submission')) as submission
+        count(1) as identical,
+        (SELECT count(1) FROM pragma_table_info(s.name, 'solution')) as solution,
+        (SELECT count(1) FROM pragma_table_info(s.name, 'submission')) as submission
     FROM
         solution.sqlite_master as s,
         pragma_table_info(s.name, 'solution') solTable,
@@ -139,7 +162,7 @@ class SQLDatabase:
     """
 
     count_different_rows_sql = """
-    SELECT count(*) FROM (
+    SELECT count(1) FROM (
         SELECT * FROM solution.'{table}' A
         EXCEPT
         SELECT * FROM submission.'{table}' B
@@ -163,7 +186,8 @@ class SQLDatabase:
         cursor.execute(self.count_identical_columns_sql)
 
         incorrect_name, diff_layout, check_content = [], [], []
-        for row in cursor.fetchall():
+        temp = cursor.fetchall()
+        for row in temp:
             table, identical, solution, submission = row
 
             if "'" in table:
