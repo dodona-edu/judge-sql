@@ -43,7 +43,7 @@ def non_select_feedback(config: DodonaConfig, testcase: SimpleNamespace, db_name
             with Test(
                 config.translator.translate(Translator.Text.COMPARING_TABLE_LAYOUT, table=table),
                 solution_layout.csv_out,
-                format="csv",
+                # format="csv",
             ) as test:
                 test.generated = submission_layout.csv_out
                 test.status = config.translator.error_status(ErrorType.WRONG)
@@ -63,7 +63,7 @@ def non_select_feedback(config: DodonaConfig, testcase: SimpleNamespace, db_name
             with Test(
                 config.translator.translate(Translator.Text.COMPARING_TABLE_CONTENT, table=table),
                 solution_content.csv_out,
-                format="csv",
+                # format="csv",
             ) as test:
                 test.generated = submission_content.csv_out
                 test.status = config.translator.error_status(ErrorType.WRONG)
