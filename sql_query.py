@@ -43,26 +43,48 @@ class SQLQuery:
         """does query end with a semicolon?"""
         return self.formatted[-1] == ";"
 
-    def match(self, word: str):
-        """checks if query contains word
+    def match_regex(self, regex: str):
+        """checks if query contains word matching the regex
 
         WARNING: This is a non-perfect solution. Some column names will cause
         false-positive matches (eg. a column named 'like').
+        :return: word matching the regex, if not found return None
         """
-        reg = re.compile(word, re.IGNORECASE)
+        reg = re.compile(regex, re.IGNORECASE)
 
-        def recursive_match(parsed):
+        def recursive_match_regex(parsed):
             if not parsed.is_group:
                 return parsed.value if reg.fullmatch(parsed.value) else None
 
             for item in parsed.tokens:
-                res = recursive_match(item)
+                res = recursive_match_regex(item)
                 if res is not None:
                     return res
 
             return None
 
-        return recursive_match(self.parsed)
+        return recursive_match_regex(self.parsed)
+
+    def match_array(self, words: list[str]):
+        """checks if query contains word that is in the list
+
+        WARNING: This is a non-perfect solution. Some column names will cause
+        false-positive matches (eg. a column named 'like').
+        :return: word that is in the list, if not found return None
+        """
+
+        def recursive_match_array(parsed):
+            if not parsed.is_group:
+                return parsed.value if parsed.value in words else None
+
+            for item in parsed.tokens:
+                res = recursive_match_array(item)
+                if res is not None:
+                    return res
+
+            return None
+
+        return recursive_match_array(self.parsed)
 
     @classmethod
     def from_raw_input(cls, raw_input: str) -> list["SQLQuery"]:

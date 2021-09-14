@@ -180,7 +180,7 @@ with Judgement():
                 )
 
             for regex in config.forbidden_pre_execution:
-                match = submission_query.match(regex)
+                match = submission_query.match_regex(regex)
                 if match is not None:
                     raise DodonaException(
                         config.translator.error_status(ErrorType.RUNTIME_ERROR),
@@ -233,7 +233,7 @@ with Judgement():
                         generated_output = SQLQueryResult.from_cursor(config.max_rows, cursor)
 
                     if not solution_query.is_select:
-                        non_select_feedback(config, testcase, db_name, db_file)
+                        non_select_feedback(config, testcase, db_name, db_file, solution_query)
                     else:
                         select_feedback(
                             config,
@@ -246,7 +246,7 @@ with Judgement():
 
                     if getattr(testcase, "accepted", True):  # Only run if all other tests are OK
                         for regex in config.forbidden_post_execution:
-                            match = submission_query.match(regex)
+                            match = submission_query.match_regex(regex)
                             if match is not None:
                                 raise DodonaException(
                                     config.translator.error_status(ErrorType.WRONG),

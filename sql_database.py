@@ -169,7 +169,7 @@ class SQLDatabase:
     )
     """
 
-    def diff(self) -> tuple[list[str], list[str], list[str]]:
+    def diff(self) -> tuple[list[str], list[str], list[str], list[str]]:
         """determine the difference between the solution and submission sqlite databases
 
         First all table names are checked, tables with a name that includes the character '
@@ -178,14 +178,14 @@ class SQLDatabase:
         Finally, the remaining table's content is compared and a list of tables with differing
         contents is returned as 'diff_content'.
 
-        :return: (incorrect_name, diff_layout, diff_content) names of tables that have invalid names,
-        are non-identical with regards to layout, are non-identical with regards to content
+        :return: (incorrect_name, diff_layout, diff_content, correct) names of tables that have invalid names,
+        are non-identical with regards to layout, are non-identical with regards to content and are identical
         """
         cursor = self.joined_cursor()
 
         cursor.execute(self.count_identical_columns_sql)
 
-        incorrect_name, diff_layout, check_content = [], [], []
+        incorrect_name, diff_layout, check_content, correct = [], [], [], []
         temp = cursor.fetchall()
         for row in temp:
             table, identical, solution, submission = row
@@ -204,9 +204,9 @@ class SQLDatabase:
         counts = [count for (count,) in cursor.fetchall()]
         diff_content = []
         for i, table in enumerate(check_content):
-            if counts[i] == 0:
-                continue
+            if counts[i] != 0:
+                diff_content += [table]
+            else:
+                correct += [table]
 
-            diff_content += [table]
-
-        return incorrect_name, diff_layout, diff_content
+        return incorrect_name, diff_layout, diff_content, correct
