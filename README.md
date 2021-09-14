@@ -18,6 +18,8 @@
 
 * Syntax errors
 * Comparison between row count and column count between solution and submission
+* Unnecessary sorts (student query should be sorted when solution query is and vice versa)
+* Correct records but wrong order
 * Data types
 * Number of queries
 * Only same type of query as solution is allowed
@@ -188,7 +190,7 @@ Place the `previous_solution.sql` in the `evaluation` folder. Use this script if
 
 <details>
   <summary>Click <b>here</b> to show to code.</summary>
-  
+
 ````python
 import os
 import sqlite3
@@ -234,7 +236,7 @@ Place the `previous_solution.sql` in the `evaluation` folder. Use this script if
 
 <details>
   <summary>Click <b>here</b> to show to code.</summary>
-  
+
 ````python
 import os
 import sqlite3
