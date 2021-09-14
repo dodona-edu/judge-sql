@@ -166,6 +166,10 @@ class SQLDatabase:
         SELECT * FROM solution.'{table}' A
         EXCEPT
         SELECT * FROM submission.'{table}' B
+        UNION ALL
+        SELECT * FROM submission.'{table}' B
+        EXCEPT
+        SELECT * FROM solution.'{table}' A
     )
     """
 
