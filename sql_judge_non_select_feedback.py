@@ -102,7 +102,7 @@ def non_select_feedback(
         with Test(
             config.translator.translate(Translator.Text.COMPARING_TABLE_CONTENT, table=affected_table),
             solution_content.csv_out,
-            format="csv",
+            # format="csv",
         ) as test:
             test.generated = submission_content.csv_out
             test.status = config.translator.error_status(ErrorType.CORRECT)
