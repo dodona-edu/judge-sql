@@ -45,20 +45,20 @@ class TestSQLQueryResult(unittest.TestCase):
     def test_init2(self):
         query_result = SQLQueryResult(
             pd.DataFrame(
-                [["tom", 10], ["nick", 15], ["juli", 14]],
+                [["tom", 2, 10], ["nick", 2, 15], ["juli", 2, 14]],
             ),
-            ["Name", "Name"],
-            [str, int],
+            ["Name", "Test", "Name"],
+            [str, int, int],
         )
 
-        self.assertEqual(query_result.csv_out, "Name,Name\n" "tom,10\n" "nick,15\n" "juli,14")
-        self.assertEqual(query_result.types_out, "Name [TEXT]\n" "Name [INTEGER]")
+        self.assertEqual(query_result.csv_out, "Name,Test,Name\n" "tom,2,10\n" "nick,2,15\n" "juli,2,14")
+        self.assertEqual(query_result.types_out, "Name [TEXT]\n" "Test [INTEGER]\n" "Name [INTEGER]")
 
-        query_result.index_columns(["Name"])  # should keep both columns & keep ordering (stable)
+        query_result.index_columns(["Name", "Test"])  # should keep both columns & keep ordering (stable)
         query_result.sort_rows(["Name"])
 
-        self.assertEqual(query_result.csv_out, "Name,Name\n" "juli,14\n" "nick,15\n" "tom,10")
-        self.assertEqual(query_result.types_out, "Name [TEXT]\n" "Name [INTEGER]")
+        self.assertEqual(query_result.csv_out, "Name,Test,Name\n" "juli,2,14\n" "nick,2,15\n" "tom,2,10")
+        self.assertEqual(query_result.types_out, "Name [TEXT]\n" "Test [INTEGER]\n" "Name [INTEGER]")
 
 
 if __name__ == "__main__":

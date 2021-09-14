@@ -75,18 +75,18 @@ class SQLQueryResult:
 
         :param column_index: list of column names that should be placed first
         """
-        # sort on: index in column_index, name of column, index in self.columns
-        argsort = [
-            i
-            for (_, _, i) in sorted(
-                (
-                    column_index.index(v) if v in column_index else len(column_index),
-                    v,
-                    i,
-                )
-                for (i, v) in enumerate(self.columns)
-            )
-        ]
+        index = {}
+        for i, column in enumerate(self.columns):
+            index.setdefault(column, []).append(i)
+
+        argsort = []
+        for column in column_index:
+            if column not in index or len(index[column]) == 0:
+                continue
+
+            argsort += [index[column].pop(0)]
+
+        argsort += sorted(i for l in index.values() for i in l)
 
         self.columns = [self.columns[i] for i in argsort]
         self.types = [self.types[i] for i in argsort]
