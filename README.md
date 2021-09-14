@@ -312,3 +312,9 @@ Ran 9 tests in 0.029s
 
 OK
 ```
+
+## Contributors
+* T. Ramlot
+* B. Willems
+
+*Development funded by the Faculty of Engineering and Architecture ([Ghent University](https://www.ugent.be/en))*
