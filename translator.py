@@ -35,6 +35,7 @@ class Translator:
         QUERY_SHOULD_NOT_ORDER_ROWS = auto()
         ROWS_ARE_BEING_ORDERED = auto()
         ROWS_ARE_NOT_BEING_ORDERED = auto()
+        CORRECT_ROWS_WRONG_ORDER = auto()
         COMPARING_TABLE_LAYOUT = auto()
         COMPARING_TABLE_CONTENT = auto()
 
@@ -132,6 +133,7 @@ class Translator:
             Text.COMPARING_QUERY_OUTPUT_TYPES: "Comparing query output SQL types",
             Text.QUERY_SHOULD_ORDER_ROWS: "Query should return ordered rows.",
             Text.QUERY_SHOULD_NOT_ORDER_ROWS: "No explicit row ordering should be enforced in query.",
+            Text.CORRECT_ROWS_WRONG_ORDER: "The rows are correct but in the wrong order.",
             Text.COMPARING_TABLE_LAYOUT: 'Comparing the table layout of "{table}".',
             Text.COMPARING_TABLE_CONTENT: 'Comparing the table content of "{table}".',
         },
@@ -154,6 +156,7 @@ class Translator:
             Text.COMPARING_QUERY_OUTPUT_TYPES: "Vergelijken van de query output SQL types",
             Text.QUERY_SHOULD_ORDER_ROWS: "De query moet de rijen gesorteerd teruggeven.",
             Text.QUERY_SHOULD_NOT_ORDER_ROWS: "De query mag de rijen niet expliciet gaan sorteren.",
+            Text.CORRECT_ROWS_WRONG_ORDER: "Het query resultaat bevat de juiste rijen, maar in de verkeerde volgorde.",
             Text.COMPARING_TABLE_LAYOUT: 'Vergelijken van de tabel lay-out van "{table}".',
             Text.COMPARING_TABLE_CONTENT: 'Vergelijken van de tabel inhoud van "{table}".',
         },
