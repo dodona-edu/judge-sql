@@ -37,7 +37,6 @@ def select_feedback(
         expected_output.sort_rows(sort_on)
         generated_output.sort_rows(sort_on)
 
-    # TODO(#7): add custom compare function that only compares subsection of columns
     with Test(
         config.translator.translate(Translator.Text.COMPARING_QUERY_OUTPUT_CSV_CONTENT),
         expected_output.csv_out,
@@ -73,10 +72,19 @@ def select_feedback(
             test.status = config.translator.error_status(ErrorType.WRONG)
             testcase.accepted = False  # Signal that following on-success tests should not run
 
-            # TODO(#18): if wrong, and solution_query.is_ordered;
-            # try ordering columns and check if result is correct.
+            # if SELECT is ordered -> check if rows are correct but order is wrong
+            if solution_query.is_ordered:
+                sort_on = np.intersect1d(expected_output.columns, generated_output.columns)
+                expected_output.sort_rows(sort_on)
+                generated_output.sort_rows(sort_on)
 
-    # TODO(#7): add custom compare function that only compares subsection of columns
+                if expected_output.csv_out == generated_output.csv_out:
+                    with Message(
+                        format=MessageFormat.CALLOUT_INFO,
+                        description=config.translator.translate(Translator.Text.CORRECT_ROWS_WRONG_ORDER),
+                    ):
+                        pass
+
     with Test(
         config.translator.translate(Translator.Text.COMPARING_QUERY_OUTPUT_TYPES),
         expected_output.types_out,
