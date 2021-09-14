@@ -1,7 +1,8 @@
 """sql feedback for non-select queries"""
 
-from sql_query import SQLQuery
 from types import SimpleNamespace
+
+from sql_query import SQLQuery
 from translator import Translator
 from dodona_config import DodonaConfig
 from dodona_command import (
