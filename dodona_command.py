@@ -73,18 +73,26 @@ class DodonaException(Exception):
     Dodona object (eg. Test, Context ...). Blocks that extend the DodonaCommandWithAccepted class
     will have their accepted field set to True (if CORRECT or CORRECT_ANSWER) and to False otherwise.
     If the block also extends DodonaCommandWithStatus, its status is updated with this exception's
-    status. The outer Judgement block will silently catch the exception and the process will exit
-    with a 0 exitcode.
+    status. A with block with a type that matches recover_at will silently catch the exception; and
+    if the class is not Judgement, an escalate status message will be sent.
     """
 
     def __init__(
         self,
         status: dict[str, str],
+        recover_at: type = None,
         *args,
         **kwargs,
     ):
         super().__init__()
         self.status = status
+        if recover_at is None:
+            # class Jugement is not yet defined, use this hack to retrieve the class at runtime
+            self.recover_at = globals()["Judgement"]
+            self.escalate_status = False
+        else:
+            self.recover_at = recover_at
+            self.escalate_status = True
         self.message = Message(*args, **kwargs) if len(args) > 0 or len(kwargs) > 0 else None
 
 
@@ -160,14 +168,16 @@ class DodonaCommand(ABC):
 
         This function returns a boolean that is True if the exeption should
         not get propagated to parent codeblocks. This should only be True
-        for the most outer block (Judgement), so that all levels of Dodona
-        objects can update their status and success parameters.
+        if the current with block's type matches the type defined in recover_at,
+        this means that all higher levels of Dodona objects can update their
+        status and success parameters.
 
         This function can be overwritten by child classes, these overwrites
         should still call this function.
 
         This function prints a Dodona message and removes the message from
         the exception, so it is not also printed by the parent 'with' blocks.
+        The function return True if self is of the type recover_at.
 
         :param exception: exception thrown in the enclosed 'with' block
         :return: if True, the exception is not propagated
@@ -179,6 +189,17 @@ class DodonaCommand(ABC):
                 pass
 
             exception.message = None
+
+        if isinstance(self, exception.recover_at):
+            if exception.escalate_status:
+                self.__print_command(
+                    {
+                        "command": "escalate-status",
+                        "status": exception.status,
+                    }
+                )
+
+            return True
 
         return False
 
@@ -228,11 +249,6 @@ class DodonaCommandWithStatus(DodonaCommandWithAccepted):
 
 class Judgement(DodonaCommandWithStatus):
     """Dodona Judgement"""
-
-    def handle_dodona_exception(self, exception: DodonaException) -> bool:
-        """return True to prevent the exception from crashing Python and causing a non-zero exit code"""
-        super().handle_dodona_exception(exception)
-        return True
 
 
 class Tab(DodonaCommand):

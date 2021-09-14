@@ -5,6 +5,9 @@ from types import SimpleNamespace
 import numpy as np
 
 from dodona_command import (
+    Context,
+    DodonaException,
+    MessagePermission,
     Test,
     Message,
     ErrorType,
@@ -91,23 +94,14 @@ def select_feedback(
         and getattr(testcase, "accepted", True)  # Only run if all other tests are OK
         and submission_query.is_ordered != solution_query.is_ordered  # Only run if result is wrong
     ):
-        with Test(
-            config.translator.translate(
+        raise DodonaException(
+            config.translator.error_status(ErrorType.WRONG),
+            recover_at=Context,
+            permission=MessagePermission.STUDENT,
+            description=config.translator.translate(
                 Translator.Text.QUERY_SHOULD_ORDER_ROWS
                 if solution_query.is_ordered
                 else Translator.Text.QUERY_SHOULD_NOT_ORDER_ROWS
             ),
-            config.translator.translate(
-                Translator.Text.ROWS_ARE_BEING_ORDERED
-                if solution_query.is_ordered
-                else Translator.Text.ROWS_ARE_NOT_BEING_ORDERED
-            ),
-        ) as test:
-            test.generated = config.translator.translate(
-                Translator.Text.ROWS_ARE_BEING_ORDERED
-                if submission_query.is_ordered
-                else Translator.Text.ROWS_ARE_NOT_BEING_ORDERED
-            )
-
-            test.status = config.translator.error_status(ErrorType.WRONG)
-            testcase.accepted = False  # Signal that following on-success tests should not run
+            format=MessageFormat.CALLOUT_DANGER,
+        )
