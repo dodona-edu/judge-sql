@@ -1,37 +1,87 @@
 """input query parsing"""
 
 import re
+from translator import Translator
+from typing import Union
 
 import sqlparse
+
+
+def flatten_symbols(parsed: sqlparse.sql.Statement) -> list[str]:
+    """flatten sqlparse sql statement into a list of symbols
+
+    A symbol might exist out of multiple words (eg. 'not like', '" string with spaces  "').
+
+    :return: list of symbols
+    """
+
+    def _flatten_symbols(statement):
+        if not statement.is_group:
+            return [statement.value]
+
+        return [item for group in statement.tokens for item in _flatten_symbols(group)]
+
+    symbols = []
+    in_brackets = False
+    for symbol in _flatten_symbols(parsed):
+        if in_brackets and len(symbols) > 0:
+            symbols[-1] += symbol
+        else:
+            symbols += [symbol]
+
+        if symbol == "[":
+            in_brackets = True
+        elif symbol == "]":
+            in_brackets = False
+
+    return [symbol.strip() for symbol in symbols if len(symbol.strip()) > 0]
+
+
+def format_join_symbols(symbols: list[str]) -> str:
+    """join a list of symbols into a formatted query
+
+    :return: formatted query
+    """
+
+    result = ""
+    for symbol in symbols:
+        if len(result) > 0 and symbol == ",":
+            result = result[:-1] + ", "
+        else:
+            result += symbol + " "
+
+    return result.rstrip()
 
 
 class SQLQuery:
     """a class for managing an input query (used for both solution and submission queries)"""
 
-    def __init__(self, formatted: str):
+    def __init__(self, without_comments: str):
         """create SQLQuery based on fromatted string
 
         This constructor should not be used directly, use 'from_raw_input' instead.
 
         :param formatted: formatted sql query string
         """
-        self.formatted = formatted
-        self.parsed = sqlparse.parse(formatted)[0]
+        self.without_comments = without_comments
+        self.parsed = sqlparse.parse(without_comments)[0]
+        self.symbols = flatten_symbols(self.parsed)
+        self.canonical = format_join_symbols(self.symbols)
 
         self._is_ordered = None
 
     @property
-    def type(self):
+    def type(self) -> str:
         """query type (eg. ALTER, CREATE, DELETE, DROP, INSERT, REPLACE, SELECT, UPDATE, UPSERT ...)"""
         return str(self.parsed.get_type())
 
     @property
-    def is_select(self):
+    def is_select(self) -> bool:
         """is query a SELECT query?"""
         return str(self.parsed.get_type()) == "SELECT"
 
     @property
-    def is_ordered(self):
+    def is_ordered(self) -> bool:
         """does query order its results?"""
         if self._is_ordered is not None:
             return self._is_ordered
@@ -39,52 +89,63 @@ class SQLQuery:
         return self._is_ordered
 
     @property
-    def has_ending_semicolon(self):
+    def has_ending_semicolon(self) -> bool:
         """does query end with a semicolon?"""
-        return self.formatted[-1] == ";"
+        return len(self.symbols) > 0 and self.symbols[-1] == ";"
 
-    def match_regex(self, regex: str):
-        """checks if query contains word matching the regex
+    def match_multi_regex(
+        self,
+        forbidden_symbolregex: list[str],
+        mandatory_symbolregex: list[str],
+        fullregex: list[str],
+    ) -> Union[None, tuple[Translator.Text, str]]:
+        """checks if query complies to all given regexs
 
-        WARNING: This is a non-perfect solution. Some column names will cause
-        false-positive matches (eg. a column named 'like').
+        :return: first non-complying match, or none if none are found
+        """
+        for regex in forbidden_symbolregex:
+            match = self.match_regex(regex)
+            if match is not None:
+                return Translator.Text.SUBMISSION_FORBIDDEN_REGEX, match
+
+        for regex in mandatory_symbolregex:
+            match = self.match_regex(regex)
+            if match is None:
+                return Translator.Text.SUBMISSION_MANDATORY_REGEX, regex
+
+        for regex in fullregex:
+            reg = re.compile(regex, re.IGNORECASE)
+
+            if not reg.fullmatch(self.canonical):
+                return Translator.Text.SUBMISSION_REGEX_MISMATCH, regex
+
+        return None
+
+    def match_regex(self, regex: str) -> Union[None, str]:
+        """checks if query contains a symbol matching the regex (case insensitive)
+
         :return: word matching the regex, if not found return None
         """
         reg = re.compile(regex, re.IGNORECASE)
 
-        def recursive_match_regex(parsed):
-            if not parsed.is_group:
-                return parsed.value if reg.fullmatch(parsed.value) else None
+        for symbol in self.symbols:
+            if reg.fullmatch(symbol):
+                return symbol
 
-            for item in parsed.tokens:
-                res = recursive_match_regex(item)
-                if res is not None:
-                    return res
+        return None
 
-            return None
+    def match_array(self, words: list[str]) -> Union[None, str]:
+        """checks if query contains symbol that is in the list (case insensitive)
 
-        return recursive_match_regex(self.parsed)
-
-    def match_array(self, words: list[str]):
-        """checks if query contains word that is in the list
-
-        WARNING: This is a non-perfect solution. Some column names will cause
-        false-positive matches (eg. a column named 'like').
         :return: word that is in the list, if not found return None
         """
+        lowercase_words = [word.lower() for word in words]
 
-        def recursive_match_array(parsed):
-            if not parsed.is_group:
-                return parsed.value if parsed.value.lower() in words else None
+        for symbol in self.symbols:
+            if symbol.lower() in lowercase_words:
+                return symbol
 
-            for item in parsed.tokens:
-                res = recursive_match_array(item)
-                if res is not None:
-                    return res
-
-            return None
-
-        return recursive_match_array(self.parsed)
+        return None
 
     @classmethod
     def from_raw_input(cls, raw_input: str) -> list["SQLQuery"]:
@@ -94,9 +155,9 @@ class SQLQuery:
         :return: list of individual sql queries
         """
         raw_input = raw_input.strip()
-        formatted = sqlparse.format(
+        without_comments = sqlparse.format(
             raw_input,
             strip_comments=True,
         ).strip()
-        queries = sqlparse.split(formatted)
+        queries = sqlparse.split(without_comments)
         return [cls(x.strip()) for x in queries]

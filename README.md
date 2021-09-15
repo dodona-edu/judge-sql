@@ -114,8 +114,12 @@ If these settings are not defined, the default value is chosen.
 | `semicolon_warning`            | Show warning if there isn't a semicolon at the end of each query.                                                 | `true`/`false`      | `true`           |
 | `strict_identical_order_by`    | If solution (doesn't) contain(s) `ORDER BY`, student queries also (don't) have to contain it.                     | `true`/`false`      | `true`           |
 | `allow_different_column_order` | Allow submitted query to return columns in different order than the solution.                                     | `true`/`false`      | `true`           |
-| `forbidden_pre_execution`      | Disallow the usage of some words in queries (check runs before query execution).                                  | list of regex       | `[".*sqlite_(temp_)?(master\|schema).*", "pragma"]` |
-| `forbidden_post_execution`     | Disallow the usage of some words in queries (check runs after query execution and only if all other tests succeeded). | list of regex       | `[]`             |
+| `pre_execution_forbidden_symbolregex` | Disallow the usage of some word groups in queries (check runs before query execution).                     | list of regex       | `[".*sqlite_(temp_)?(master\|schema).*", "pragma"]` |
+| `pre_execution_mandatory_symbolregex` | Require the usage of some word groups in queries (check runs before query execution).                      | list of regex       | `[]` |
+| `pre_execution_fullregex`             | Require the query to match the provided regex (check runs before query execution).                         | list of regex       | `[]` |
+| `post_execution_forbidden_symbolregex` | Disallow the usage of some word groups in queries (check runs after query execution and only if all other tests succeeded). | list of regex       | `[]` |
+| `post_execution_mandatory_symbolregex` | Require the usage of some word groups in queries (check runs after query execution and only if all other tests succeeded).  | list of regex       | `[]` |
+| `post_execution_fullregex`             | Require the query to match the provided regex (check runs after query execution and only if all other tests succeeded).     | list of regex       | `[]` |
 
 ### Example of modified settings
 

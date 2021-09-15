@@ -81,7 +81,6 @@ class DodonaException(Exception):
         self,
         status: dict[str, str],
         recover_at: type = None,
-        *args,
         **kwargs,
     ):
         super().__init__()
@@ -93,7 +92,7 @@ class DodonaException(Exception):
         else:
             self.recover_at = recover_at
             self.escalate_status = True
-        self.message = Message(*args, **kwargs) if len(args) > 0 or len(kwargs) > 0 else None
+        self.message = Message(**kwargs) if len(kwargs) > 0 else None
 
 
 class DodonaCommand(ABC):
