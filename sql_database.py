@@ -193,6 +193,7 @@ class SQLDatabase:
         temp = cursor.fetchall()
         for row in temp:
             table, identical, solution, submission = row
+            table = table.lower()
 
             if "'" in table:
                 incorrect_name += [table]
