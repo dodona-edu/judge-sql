@@ -75,7 +75,7 @@ class SQLQuery:
 
         def recursive_match_array(parsed):
             if not parsed.is_group:
-                return parsed.value if parsed.value in words else None
+                return parsed.value if parsed.value.lower() in words else None
 
             for item in parsed.tokens:
                 res = recursive_match_array(item)
