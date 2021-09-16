@@ -18,7 +18,7 @@ from dodona_command import (
 from dodona_config import DodonaConfig
 from sql_query import SQLQuery
 from sql_query_result import SQLQueryResult
-from sql_database import SQLDatabase
+from sql_database import SQLDatabase, sql_run_startup_script
 from sql_judge_select_feedback import select_feedback
 from sql_judge_non_select_feedback import non_select_feedback
 from translator import Translator
@@ -43,6 +43,9 @@ with Judgement():
 
     # Set 'allow_different_column_order' to True if not set
     config.allow_different_column_order = bool(getattr(config, "allow_different_column_order", True))
+
+    # Set 'startup_script' to "" if not set
+    config.startup_script = str(getattr(config, "startup_script", ""))
 
     # Set 'pre_execution_forbidden_symbolregex' to [".*sqlite_(temp_)?(master|schema).*", "pragma"] if not set
     defaults = [".*sqlite_(temp_)?(master|schema).*", "pragma"]
@@ -153,6 +156,20 @@ with Judgement():
         ):
             pass
 
+    if config.startup_script != "":
+        try:
+            config.database_files = [
+                (db_name, sql_run_startup_script(db_file, config.workdir, db_name, config.startup_script))
+                for db_name, db_file in config.database_files
+            ]
+        except Exception as err:
+            raise DodonaException(
+                config.translator.error_status(ErrorType.INTERNAL_ERROR),
+                permission=MessagePermission.STAFF,
+                description=f"Startup script is not working ({type(err).__name__}):\n    {err}",
+                format=MessageFormat.CODE,
+            ) from err
+
     for query_nr, solution_query in enumerate(config.solution_queries):
         with Tab(f"Query {1 + query_nr}"):
             if query_nr >= len(config.submission_queries):
@@ -203,7 +220,7 @@ with Judgement():
                 ) as testcase:
                     expected_output, generated_output = None, None
 
-                    with SQLDatabase(db_name, db_file, config.workdir) as db:
+                    with SQLDatabase(db_file, config.workdir, db_name) as db:
                         cursor = db.solution_cursor()
 
                         #### RUN SOLUTION QUERY
