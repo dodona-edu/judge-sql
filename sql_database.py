@@ -141,7 +141,7 @@ class SQLDatabase:
     WHERE NOT EXISTS (
         SELECT 1
         FROM submission.sqlite_master AS sub
-        WHERE sub.name = sol.name
+        WHERE upper(sub.name) = upper(sol.name)
     )
     UNION ALL
     --- ONLY IN SUBMISSION ---
@@ -152,7 +152,7 @@ class SQLDatabase:
     WHERE NOT EXISTS (
         SELECT 1
         FROM solution.sqlite_master AS sol
-        WHERE sol.name = sub.name
+        WHERE upper(sol.name) = upper(sub.name)
     )
     UNION ALL
     --- DIFFERENT SCHEME ---
