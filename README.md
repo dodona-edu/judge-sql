@@ -303,9 +303,11 @@ connection.close()
 
 * [DB Browser for SQLite](https://sqlitebrowser.org/dl/) (free and open source)
 * [DbVisualizer free version](https://www.dbvis.com/download/)
+* PyCharm Professional ([free for students and teachers](https://www.jetbrains.com/community/education/#students))
 
-> **How to generate diagram with table relationships?**
-> * Open **DbVisualizer**
+## How to generate database diagram with table relationships?**
+
+### Database diagram with **DbVisualizer**
 > * `Tools` (in menu bar at the top) > `Connection Wizard...`
 > * Enter connection alias: e.g. `my_database` > `Next >`
 > * Select Database Driver > `SQLite` > `Next >`
@@ -314,10 +316,14 @@ connection.close()
 > * **References** > Layout: `Hierarchical`
 > * Fourth icon `Export graph to file` > Output format: `PNG` > `Next >`
 > * Choose a folder > `Export`
+> *[More info](http://confluence.dbvis.com/display/UG100/Viewing+Table+Relationships)*
+
+### Database diagram with **PyCharm Professional**
+> *[More info](https://www.jetbrains.com/help/pycharm/creating-diagrams.html)*
 
 ## Add database schema overview to each exercise
 
-1. Make sure there is a database icon ([example](https://thenounproject.com/term/database/1211369/)) and
+1. Make sure there is a database icon (e.g. [database information icon](https://thenounproject.com/term/database/1211369/)) and
    an [image of database schema](#recommended-database-tools-for-sqlite) in
    the [`public` folder](https://docs.dodona.be/en/references/repository-directory-structure/) of your repository.
 2. Click your repository on https://dodona.ugent.be/en/repositories/
