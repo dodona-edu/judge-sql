@@ -337,21 +337,21 @@ connection.close()
    recommend markdown.
 
 ### Icon which shows database schema on click
-
+* Markdown (recommended)
 ```markdown
 ![Database schema](LINK_TO_DATABASE_ICON){:data-large="LINK_TO_DATABASE_SCHEMA_OVERVIEW"}{:style="float: right"}
 ```
-
+* HTML
 ```html
 <img alt="Database schema" src="LINK_TO_DATABASE_ICON" data-large="LINK_TO_DATABASE_SCHEMA_OVERVIEW" style="float: right"/>
 ```
 
 ### Text link which shows database schema on click
-
+* Markdown (recommended)
 ```markdown
 [Show database schema](LINK_TO_DATABASE_SCHEMA_OVERVIEW){: .dodona-lightbox}{: data-caption="Show database schema"}
 ```
-
+* HTML
 ```html
 <a href="LINK_TO_DATABASE_SCHEMA_OVERVIEW" class="dodona-lightbox" data-caption="Show database schema">Show database schema</a>
 ```
