@@ -44,17 +44,20 @@ with Judgement():
     # Set 'allow_different_column_order' to True if not set
     config.allow_different_column_order = bool(getattr(config, "allow_different_column_order", True))
 
-    # Set 'forbidden_pre_execution' to [".*sqlite_(temp_)?(master|schema)$", "pragma"] if not set
-    config.forbidden_pre_execution = list(
-        getattr(
-            config,
-            "forbidden_pre_execution",
-            [".*sqlite_(temp_)?(master|schema).*", "pragma"],
-        )
-    )
+    # Set 'pre_execution_forbidden_symbolregex' to [".*sqlite_(temp_)?(master|schema).*", "pragma"] if not set
+    defaults = [".*sqlite_(temp_)?(master|schema).*", "pragma"]
+    config.pre_execution_forbidden_symbolregex = list(getattr(config, "pre_execution_forbidden_symbolregex", defaults))
+    # Set 'pre_execution_mandatory_symbolregex' to [] if not set
+    config.pre_execution_mandatory_symbolregex = list(getattr(config, "pre_execution_mandatory_symbolregex", []))
+    # Set 'pre_execution_fullregex' to [] if not set
+    config.pre_execution_fullregex = list(getattr(config, "pre_execution_fullregex", []))
 
-    # Set 'forbidden_post_execution' to [] if not set
-    config.forbidden_post_execution = list(getattr(config, "forbidden_post_execution", []))
+    # Set 'post_execution_forbidden_symbolregex' to [] if not set
+    config.post_execution_forbidden_symbolregex = list(getattr(config, "post_execution_forbidden_symbolregex", []))
+    # Set 'post_execution_mandatory_symbolregex' to [] if not set
+    config.post_execution_mandatory_symbolregex = list(getattr(config, "post_execution_mandatory_symbolregex", []))
+    # Set 'post_execution_fullregex' to [] if not set
+    config.post_execution_fullregex = list(getattr(config, "post_execution_fullregex", []))
 
     if hasattr(config, "database_files"):
         config.database_files = [
@@ -141,9 +144,7 @@ with Judgement():
         )
 
     if config.semicolon_warning and (
-        len(config.submission_queries) == 0
-        or len(config.submission_queries[-1].formatted) == 0
-        or config.submission_queries[-1].formatted[-1] != ";"
+        len(config.submission_queries) == 0 or not config.submission_queries[-1].has_ending_semicolon
     ):
         with Annotation(
             row=config.raw_submission_file.rstrip().count("\n"),
@@ -179,23 +180,26 @@ with Judgement():
                     format=MessageFormat.CALLOUT_DANGER,
                 )
 
-            for regex in config.forbidden_pre_execution:
-                match = submission_query.match_regex(regex)
-                if match is not None:
-                    raise DodonaException(
-                        config.translator.error_status(ErrorType.RUNTIME_ERROR),
-                        permission=MessagePermission.STUDENT,
-                        description=config.translator.translate(
-                            Translator.Text.SUBMISSION_FORBIDDEN_WORD,
-                            keyword=match,
-                        ),
-                        format=MessageFormat.CALLOUT_DANGER,
-                    )
+            match = submission_query.match_multi_regex(
+                config.pre_execution_forbidden_symbolregex,
+                config.pre_execution_mandatory_symbolregex,
+                config.pre_execution_fullregex,
+            )
+            if match is not None:
+                raise DodonaException(
+                    config.translator.error_status(ErrorType.RUNTIME_ERROR),
+                    permission=MessagePermission.STUDENT,
+                    description=config.translator.translate(
+                        match[0],
+                        value=match[1],
+                    ),
+                    format=MessageFormat.CALLOUT_DANGER,
+                )
 
             for db_name, db_file in config.database_files:
                 with Context(), TestCase(
                     format=MessageFormat.SQL,
-                    description=f"-- sqlite3 {db_name}\n{submission_query.formatted}",
+                    description=f"-- sqlite3 {db_name}\n{submission_query.without_comments}",
                 ) as testcase:
                     expected_output, generated_output = None, None
 
@@ -204,7 +208,7 @@ with Judgement():
 
                         #### RUN SOLUTION QUERY
                         try:
-                            cursor.execute(solution_query.formatted)
+                            cursor.execute(solution_query.without_comments)
                         except Exception as err:
                             raise DodonaException(
                                 config.translator.error_status(ErrorType.INTERNAL_ERROR),
@@ -220,7 +224,7 @@ with Judgement():
 
                         #### RUN SUBMISSION QUERY
                         try:
-                            cursor.execute(submission_query.formatted)
+                            cursor.execute(submission_query.without_comments)
                         except Exception as err:
                             raise DodonaException(
                                 config.translator.error_status(ErrorType.COMPILATION_ERROR),
@@ -245,15 +249,19 @@ with Judgement():
                         )
 
                     if getattr(testcase, "accepted", True):  # Only run if all other tests are OK
-                        for regex in config.forbidden_post_execution:
-                            match = submission_query.match_regex(regex)
-                            if match is not None:
-                                raise DodonaException(
-                                    config.translator.error_status(ErrorType.WRONG),
-                                    permission=MessagePermission.STUDENT,
-                                    description=config.translator.translate(
-                                        Translator.Text.SUBMISSION_FORBIDDEN_WORD,
-                                        keyword=match,
-                                    ),
-                                    format=MessageFormat.CALLOUT_DANGER,
-                                )
+                        match = submission_query.match_multi_regex(
+                            config.post_execution_forbidden_symbolregex,
+                            config.post_execution_mandatory_symbolregex,
+                            config.post_execution_fullregex,
+                        )
+                        if match is not None:
+                            raise DodonaException(
+                                config.translator.error_status(ErrorType.WRONG),
+                                recover_at=Context,  # Continue testing all other contexts
+                                permission=MessagePermission.STUDENT,
+                                description=config.translator.translate(
+                                    match[0],
+                                    value=match[1],
+                                ),
+                                format=MessageFormat.CALLOUT_DANGER,
+                            )

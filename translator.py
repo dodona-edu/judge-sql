@@ -24,7 +24,9 @@ class Translator:
         ADD_A_SEMICOLON = auto()
         INVALID_SINGLE_QUOTE_TABLE_NAME = auto()
         SUBMISSION_WRONG_QUERY_TYPE = auto()
-        SUBMISSION_FORBIDDEN_WORD = auto()
+        SUBMISSION_FORBIDDEN_REGEX = auto()
+        SUBMISSION_MANDATORY_REGEX = auto()
+        SUBMISSION_REGEX_MISMATCH = auto()
         SUBMISSION_CONTAINS_MORE_QUERIES = auto()
         SUBMISSION_CONTAINS_LESS_QUERIES = auto()
         DIFFERENT_ROW_COUNT = auto()
@@ -120,7 +122,9 @@ class Translator:
             "The database contains a tablename ({table}) containing a single quote.",
             Text.SUBMISSION_WRONG_QUERY_TYPE: "Error: "
             "the submitted query is of a different type ({submitted}) than expected.",
-            Text.SUBMISSION_FORBIDDEN_WORD: 'Error: the submitted query should not contain "{keyword}".',
+            Text.SUBMISSION_FORBIDDEN_REGEX: "Error: the submitted query should not contain `{value}`.",
+            Text.SUBMISSION_MANDATORY_REGEX: "Error: the submitted query should contain `{value}`.",
+            Text.SUBMISSION_REGEX_MISMATCH: "Error: the submitted query should match `{value}`.",
             Text.SUBMISSION_CONTAINS_MORE_QUERIES: "Error: "
             "the submitted solution contains more queries ({submitted}) than expected ({expected}). "
             "Make sure that all queries correctly terminate with a semicolon.",
@@ -143,7 +147,9 @@ class Translator:
             "De database bevat een tabel naam ({table}) die een enkele aanhalingsteken (apostrof) bevat.",
             Text.SUBMISSION_WRONG_QUERY_TYPE: "Fout: "
             "de ingediende query is van een ander type ({submitted}) dan verwacht.",
-            Text.SUBMISSION_FORBIDDEN_WORD: 'Fout: de ingediende query mag niet "{keyword}" bevatten.',
+            Text.SUBMISSION_FORBIDDEN_REGEX: "Fout: de ingediende query mag niet `{value}` bevatten.",
+            Text.SUBMISSION_MANDATORY_REGEX: "Fout: de ingediende query moet `{value}` bevatten.",
+            Text.SUBMISSION_REGEX_MISMATCH: "Fout: de ingediende query moet voldoen aan `{value}`.",
             Text.SUBMISSION_CONTAINS_MORE_QUERIES: "Fout: "
             "de ingediende oplossing bestaat uit meer query's ({submitted}) dan verwacht ({expected}). "
             "Zorg ervoor dat elke query correct eindigt op een puntkomma.",

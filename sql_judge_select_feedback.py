@@ -40,7 +40,7 @@ def select_feedback(
     with Test(
         config.translator.translate(Translator.Text.COMPARING_QUERY_OUTPUT_CSV_CONTENT),
         expected_output.csv_out,
-        # format="csv",
+        format="csv",
     ) as test:
         test.generated = generated_output.csv_out
 
@@ -104,7 +104,7 @@ def select_feedback(
     ):
         raise DodonaException(
             config.translator.error_status(ErrorType.WRONG),
-            recover_at=Context,
+            recover_at=Context,  # Continue testing all other contexts
             permission=MessagePermission.STUDENT,
             description=config.translator.translate(
                 Translator.Text.QUERY_SHOULD_ORDER_ROWS
