@@ -30,7 +30,10 @@
 
 > [More info about repository directory structure](https://docs.dodona.be/en/references/repository-directory-structure/#example-of-a-valid-repository-structure)
 
-Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the **`evaluation`** folder. The `solution.sql` file can contain multiple queries. You can define a different name for the solution in the `config.json` file. If you add multiple databases, the queries will be executed on all databases. The names of the databases don't matter. Absolute necessary files are marked with `▶` in the tree structure below.
+Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the **`evaluation`** folder. The `solution.sql`
+file can contain multiple queries. You can define a different name for the solution in the `config.json` file. If you
+add multiple databases, the queries will be executed on all databases. The names of the databases don't matter. Absolute
+necessary files are marked with `▶` in the tree structure below.
 
 ```text
 +-- README.md                            # Optional: Describes the repository
@@ -133,8 +136,7 @@ If these settings are not defined, the default value is chosen.
     "max_rows": 80,
     "semicolon_warning": false,
     "strict_identical_order_by": false,
-    "allow_different_column_order": false,
-
+    "allow_different_column_order": false
   }
 }
 ````
@@ -163,11 +165,12 @@ or
 
 ## Generator scripts
 
-SQLite databases can be made with a Python 3.9 script. Place the script (e.g. `generator.py`) in the `preparation` folder.
+SQLite databases can be made with a Python 3.9 script. Place the script (e.g. `generator.py`) in the `preparation`
+folder.
 
 ### Generate empty database with Python script
 
- This example creates an empty database in the `evaluation` folder.
+This example creates an empty database in the `evaluation` folder.
 
 ```python
 # import the sqlite3 module from the Python Standard Library
@@ -190,7 +193,8 @@ connection.close()
 
 ### Generate database based on changes from previous exercises from scratch
 
-Place the `previous_solution.sql` in the `evaluation` folder. Use this script if you want to start with an empty database and update it with the results previous exercises (only applicable for write queries).
+Place the `previous_solution.sql` in the `evaluation` folder. Use this script if you want to start with an empty
+database and update it with the results previous exercises (only applicable for write queries).
 
 <details>
   <summary>Click <b>here</b> to show to code.</summary>
@@ -201,6 +205,7 @@ import sqlite3
 from sqlite3 import OperationalError
 
 import pandas as pd
+
 
 def execute_sql_from_file(filename: str):
     with open(filename, 'r') as file:
@@ -213,6 +218,7 @@ def execute_sql_from_file(filename: str):
             cursor.execute(command)
         except OperationalError as msg:
             print("Command skipped: ", msg)
+
 
 db_filename = "../evaluation/your_database.sqlite"
 
@@ -232,11 +238,13 @@ print(pd.read_sql(f"PRAGMA TABLE_INFO({table_name});", connection))
 connection.commit()
 connection.close()
 ````
+
 </details>
 
 ### Generate updated database based with changes from previous exercises
 
-Place the `previous_solution.sql` in the `evaluation` folder. Use this script if you want to update an existing database (only applicable for write queries).
+Place the `previous_solution.sql` in the `evaluation` folder. Use this script if you want to update an existing
+database (only applicable for write queries).
 
 <details>
   <summary>Click <b>here</b> to show to code.</summary>
@@ -288,11 +296,12 @@ print(pd.read_sql(f"PRAGMA TABLE_INFO({table_name});", connection))
 connection.commit()
 connection.close()
 ````
+
 </details>
 
 ## Recommended database tools for SQLite
 
-* [DB Browser for SQLite](https://sqlitebrowser.org/dl/) (free and open source)  
+* [DB Browser for SQLite](https://sqlitebrowser.org/dl/) (free and open source)
 * [DbVisualizer free version](https://www.dbvis.com/download/)
 
 > **How to generate diagram with table relationships?**
@@ -304,24 +313,28 @@ connection.close()
 > * Locate **Tables** in the Databases tab tree > Double click it > `Open Object`
 > * **References** > Layout: `Hierarchical`
 > * Fourth icon `Export graph to file` > Output format: `PNG` > `Next >`
-> * Choose a folder > `Export` 
+> * Choose a folder > `Export`
 
 ## Add database schema overview to each exercise
 
-1. Make sure there is a database icon ([example](https://thenounproject.com/term/database/1211369/)) and an [image of database schema](#recommended-database-tools-for-sqlite) in the [`public` folder](https://docs.dodona.be/en/references/repository-directory-structure/) of your repository.
+1. Make sure there is a database icon ([example](https://thenounproject.com/term/database/1211369/)) and
+   an [image of database schema](#recommended-database-tools-for-sqlite) in
+   the [`public` folder](https://docs.dodona.be/en/references/repository-directory-structure/) of your repository.
 2. Click your repository on https://dodona.ugent.be/en/repositories/
 3. Scroll to the bottom to **Public files**
 4. Copy the links (e.g. https://dodona.ugent.be/nl/repositories/NUMBER/public/YOUR_IMAGE.png)
-5. Fill in a template of your choice and make this the first line in the description of each exercise. We recommend markdown.
+5. Fill in a template of your choice and make this the first line in the description of each exercise. We recommend
+   markdown.
 
 ### Icon which shows database schema on click
 
 ```markdown
-![Database schema](LINK_TO_DATABASE_ICON){:data-large="	LINK_TO_DATABASE_SCHEMA_OVERVIEW"}{:style="float: right"}
+![Database schema](LINK_TO_DATABASE_ICON){:data-large="    LINK_TO_DATABASE_SCHEMA_OVERVIEW"}{:style="float: right"}
 ```
 
 ```html
-<img alt="Database schema" src="LINK_TO_DATABASE_ICON" data-large="LINK_TO_DATABASE_SCHEMA_OVERVIEW" style="float: right"/>
+<img alt="Database schema" src="LINK_TO_DATABASE_ICON" data-large="LINK_TO_DATABASE_SCHEMA_OVERVIEW"
+     style="float: right"/>
 ```
 
 ### Text link which shows database schema on click
@@ -331,7 +344,8 @@ connection.close()
 ```
 
 ```html
-<a href="LINK_TO_DATABASE_SCHEMA_OVERVIEW" class="dodona-lightbox" data-caption="Show database schema">Show database schema</a>
+<a href="LINK_TO_DATABASE_SCHEMA_OVERVIEW" class="dodona-lightbox" data-caption="Show database schema">Show database
+    schema</a>
 ```
 
 ## Testing
@@ -348,7 +362,9 @@ OK
 ```
 
 ## Contributors
+
 * **T. Ramlot**
 * B. Willems
 
-*Development funded by the [Faculty of Engineering and Architecture](https://www.ugent.be/ea/en) of [Ghent University](https://www.ugent.be/en)*
+*Development funded by the [Faculty of Engineering and Architecture](https://www.ugent.be/ea/en)
+of [Ghent University](https://www.ugent.be/en)*
