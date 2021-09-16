@@ -308,6 +308,7 @@ connection.close()
 ## How to generate database diagram with table relationships?**
 
 ### Database diagram with **DbVisualizer**
+
 > * `Tools` (in menu bar at the top) > `Connection Wizard...`
 > * Enter connection alias: e.g. `my_database` > `Next >`
 > * Select Database Driver > `SQLite` > `Next >`
@@ -316,31 +317,33 @@ connection.close()
 > * **References** > Layout: `Hierarchical`
 > * Fourth icon `Export graph to file` > Output format: `PNG` > `Next >`
 > * Choose a folder > `Export`
+>
 > *[More info](http://confluence.dbvis.com/display/UG100/Viewing+Table+Relationships)*
 
 ### Database diagram with **PyCharm Professional**
+
 > *[More info](https://www.jetbrains.com/help/pycharm/creating-diagrams.html)*
 
 ## Add database schema overview to each exercise
 
-1. Make sure there is a database icon (e.g. [database information icon](https://thenounproject.com/term/database/1211369/)) and
+1. Make sure there is a database icon (
+   e.g. [database information icon](https://thenounproject.com/term/database/1211369/)) and
    an [image of database schema](#recommended-database-tools-for-sqlite) in
    the [`public` folder](https://docs.dodona.be/en/references/repository-directory-structure/) of your repository.
-2. Click your repository on https://dodona.ugent.be/en/repositories/
-3. Scroll to the bottom to **Public files**
+2. Click your repository on https://dodona.ugent.be/en/repositories/.
+3. Scroll to the bottom to **Public files**.
 4. Copy the links (e.g. https://dodona.ugent.be/nl/repositories/NUMBER/public/YOUR_IMAGE.png)
-5. Fill in a template of your choice and make this the first line in the description of each exercise. We recommend
-   markdown.
+5. Fill in a template of your choice below and make this the first line in the description of each exercise. We
+   recommend markdown.
 
 ### Icon which shows database schema on click
 
 ```markdown
-![Database schema](LINK_TO_DATABASE_ICON){:data-large="    LINK_TO_DATABASE_SCHEMA_OVERVIEW"}{:style="float: right"}
+![Database schema](LINK_TO_DATABASE_ICON){:data-large="LINK_TO_DATABASE_SCHEMA_OVERVIEW"}{:style="float: right"}
 ```
 
 ```html
-<img alt="Database schema" src="LINK_TO_DATABASE_ICON" data-large="LINK_TO_DATABASE_SCHEMA_OVERVIEW"
-     style="float: right"/>
+<img alt="Database schema" src="LINK_TO_DATABASE_ICON" data-large="LINK_TO_DATABASE_SCHEMA_OVERVIEW" style="float: right"/>
 ```
 
 ### Text link which shows database schema on click
@@ -350,8 +353,7 @@ connection.close()
 ```
 
 ```html
-<a href="LINK_TO_DATABASE_SCHEMA_OVERVIEW" class="dodona-lightbox" data-caption="Show database schema">Show database
-    schema</a>
+<a href="LINK_TO_DATABASE_SCHEMA_OVERVIEW" class="dodona-lightbox" data-caption="Show database schema">Show database schema</a>
 ```
 
 ## Testing
