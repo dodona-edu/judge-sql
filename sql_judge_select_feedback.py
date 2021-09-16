@@ -40,7 +40,7 @@ def select_feedback(
     with Test(
         config.translator.translate(Translator.Text.COMPARING_QUERY_OUTPUT_CSV_CONTENT),
         expected_output.csv_out,
-        # format="csv",
+        format="csv",
     ) as test:
         test.generated = generated_output.csv_out
 
