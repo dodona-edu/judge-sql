@@ -5,7 +5,7 @@
 * Comparison based on solution query
 * SQLite database per exercise
 * Automatic detection if order needs to be checked
-* Support for read and (TODO) write operations
+* Support for read and write operations
 * Automatic distinction between read and write operations
 * Option to execute same queries on multiple databases
 * Support for multiple queries in one exercise
@@ -155,9 +155,9 @@ or
     "semicolon_warning": false,
     "strict_identical_order_by": false,
     "allow_different_column_order": false,
-    "forbidden_pre_execution": [
+    "post_execution_forbidden_symbolregex": [
       "dummy",
-      "like"
+      "(?i).*like.*"
     ]
   }
 }
@@ -193,7 +193,7 @@ connection.close()
 
 ### Generate database based on changes from previous exercises from scratch
 
-Place the `previous_solution.sql` in the `evaluation` folder. Use this script if you want to start with an empty
+Place the `previous_solution.sql` in the `preparation` folder. Use this script if you want to start with an empty
 database and update it with the results previous exercises (only applicable for write queries).
 
 <details>
@@ -243,7 +243,7 @@ connection.close()
 
 ### Generate updated database based with changes from previous exercises
 
-Place the `previous_solution.sql` in the `evaluation` folder. Use this script if you want to update an existing
+Place the `previous_solution.sql` in the `preparation` folder. Use this script if you want to update an existing
 database (only applicable for write queries).
 
 <details>
@@ -305,7 +305,7 @@ connection.close()
 * [DbVisualizer free version](https://www.dbvis.com/download/)
 * PyCharm Professional ([free for students and teachers](https://www.jetbrains.com/community/education/#students))
 
-## How to generate database diagram with table relationships?**
+## How to generate a database diagram with table relationships?
 
 ### Database diagram with **DbVisualizer**
 
@@ -326,17 +326,15 @@ connection.close()
 
 ## Add database schema overview to each exercise
 
-1. Make sure there is a database icon (
-   e.g. [database information icon](https://thenounproject.com/term/database/1211369/)) and
+1. Make sure there is a database icon (e.g. [database information icon](https://thenounproject.com/term/database/1211369/)) and
    an [image of database schema](#recommended-database-tools-for-sqlite) in
    the [`public` folder](https://docs.dodona.be/en/references/repository-directory-structure/) of your repository.
 2. Click your repository on https://dodona.ugent.be/en/repositories/.
 3. Scroll to the bottom to **Public files**.
 4. Copy the links (e.g. https://dodona.ugent.be/nl/repositories/NUMBER/public/YOUR_IMAGE.png)
-5. Fill in a template of your choice below and make this the first line in the description of each exercise. We
-   recommend markdown.
+5. Fill in a template of your choice below and put it in the description of each exercise.
 
-### Icon which shows database schema on click
+### Icon which shows database diagram on click
 
 * Markdown (recommended)
 
@@ -350,7 +348,7 @@ connection.close()
 <img alt="Database schema" src="LINK_TO_DATABASE_ICON" data-large="LINK_TO_DATABASE_SCHEMA_OVERVIEW" style="float: right"/>
 ```
 
-### Text link which shows database schema on click
+### Text link which shows database diagram on click
 
 * Markdown (recommended)
 
