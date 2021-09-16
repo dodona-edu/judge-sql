@@ -302,6 +302,34 @@ connection.close()
 > * Fourth icon `Export graph to file` > Output format: `PNG` > `Next >`
 > * Choose a folder > `Export` 
 
+## Add database schema overview to each exercise
+
+1. Make sure there is a database icon ([example](https://thenounproject.com/term/database/1211369/)) and an [image of database schema](#recommended-database-tools-for-sqlite) in the [`public` folder](https://docs.dodona.be/en/references/repository-directory-structure/) of your repository.
+2. Click your repository on https://dodona.ugent.be/en/repositories/
+3. Scroll to the bottom to **Public files**
+4. Copy the links (e.g. https://dodona.ugent.be/nl/repositories/NUMBER/public/YOUR_IMAGE.png)
+5. Fill in a template of your choice and make this the first line in the description of each exercise. We recommend markdown.
+
+### Icon which shows database schema on click
+
+```markdown
+![Database schema](LINK_TO_DATABASE_ICON){:data-large="	LINK_TO_DATABASE_SCHEMA_OVERVIEW"}{:style="float: right"}
+```
+
+```html
+<img alt="Database schema" src="LINK_TO_DATABASE_ICON" data-large="LINK_TO_DATABASE_SCHEMA_OVERVIEW" style="float: right"/>
+```
+
+### Text link which shows database schema on click
+
+```markdown
+[Show database schema](LINK_TO_DATABASE_SCHEMA_OVERVIEW){: .dodona-lightbox}{: data-caption="Show database schema"}
+```
+
+```html
+<a href="LINK_TO_DATABASE_SCHEMA_OVERVIEW" class="dodona-lightbox" data-caption="Show database schema">Show database schema</a>
+```
+
 ## Testing
 
 The following command can be used to run the tests:
@@ -316,7 +344,7 @@ OK
 ```
 
 ## Contributors
-* T. Ramlot
+* **T. Ramlot**
 * B. Willems
 
 *Development funded by the [Faculty of Engineering and Architecture](https://www.ugent.be/ea/en) of [Ghent University](https://www.ugent.be/en)*
