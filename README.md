@@ -110,21 +110,21 @@ necessary files are marked with `▶` in the tree structure below.
 
 If these settings are not defined, the default value is chosen.
 
-| Evaluation setting             | Description                                                                                                       | Possible values     | Default          |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------- | ------------------- | ---------------- |
-| `solution_sql`                 | Relative path to solution SQL file.                                                                               | path                | `./solution.sql` |
-| `database_files`               | List of database files in custom order. If not provided, the files are loaded alphabetically from `database_dir`. | list / not provided | not provided     |
-| `database_dir`                 | Relative path to database directory.                                                                              | path                | `.`              |
-| `max_rows`                     | Maximal number of rows shown.                                                                                     | int                 | 100              |
-| `semicolon_warning`            | Show warning if there isn't a semicolon at the end of each query.                                                 | `true`/`false`      | `true`           |
-| `strict_identical_order_by`    | If solution (doesn't) contain(s) `ORDER BY`, student queries also (don't) have to contain it.                     | `true`/`false`      | `true`           |
-| `allow_different_column_order` | Allow submitted query to return columns in different order than the solution.                                     | `true`/`false`      | `true`           |
-| `pre_execution_forbidden_symbolregex` | Disallow the usage of some word groups in queries (check runs before query execution).                     | list of regex       | `[".*sqlite_(temp_)?(master\|schema).*", "pragma"]` |
-| `pre_execution_mandatory_symbolregex` | Require the usage of some word groups in queries (check runs before query execution).                      | list of regex       | `[]` |
-| `pre_execution_fullregex`             | Require the query to match the provided regex (check runs before query execution).                         | list of regex       | `[]` |
-| `post_execution_forbidden_symbolregex` | Disallow the usage of some word groups in queries (check runs after query execution and only if all other tests succeeded). | list of regex       | `[]` |
-| `post_execution_mandatory_symbolregex` | Require the usage of some word groups in queries (check runs after query execution and only if all other tests succeeded).  | list of regex       | `[]` |
-| `post_execution_fullregex`             | Require the query to match the provided regex (check runs after query execution and only if all other tests succeeded).     | list of regex       | `[]` |
+| Evaluation setting                     | Description                                                                                                                 | Possible values     | Default                                             |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------- | --------------------------------------------------- |
+| `solution_sql`                         | Relative path to solution SQL file.                                                                                         | path                | `./solution.sql`                                    |
+| `database_files`                       | List of database files in custom order. If not provided, the files are loaded alphabetically from `database_dir`.           | list / not provided | not provided                                        |
+| `database_dir`                         | Relative path to database directory.                                                                                        | path                | `.`                                                 |
+| `max_rows`                             | Maximal number of rows shown.                                                                                               | int                 | 100                                                 |
+| `semicolon_warning`                    | Show warning if there isn't a semicolon at the end of each query.                                                           | `true`/`false`      | `true`                                              |
+| `strict_identical_order_by`            | If solution (doesn't) contain(s) `ORDER BY`, student queries also (don't) have to contain it.                               | `true`/`false`      | `true`                                              |
+| `allow_different_column_order`         | Allow submitted query to return columns in different order than the solution.                                               | `true`/`false`      | `true`                                              |
+| `pre_execution_forbidden_symbolregex`  | Disallow the usage of some word groups in queries (check runs before query execution).                                      | list of regex       | `[".*sqlite_(temp_)?(master\|schema).*", "pragma"]` |
+| `pre_execution_mandatory_symbolregex`  | Require the usage of some word groups in queries (check runs before query execution).                                       | list of regex       | `[]`                                                |
+| `pre_execution_fullregex`              | Require the query to match the provided regex (check runs before query execution).                                          | list of regex       | `[]`                                                |
+| `post_execution_forbidden_symbolregex` | Disallow the usage of some word groups in queries (check runs after query execution and only if all other tests succeeded). | list of regex       | `[]`                                                |
+| `post_execution_mandatory_symbolregex` | Require the usage of some word groups in queries (check runs after query execution and only if all other tests succeeded).  | list of regex       | `[]`                                                |
+| `post_execution_fullregex`             | Require the query to match the provided regex (check runs after query execution and only if all other tests succeeded).     | list of regex       | `[]`                                                |
 
 ### Example of modified settings
 
@@ -337,21 +337,29 @@ connection.close()
    recommend markdown.
 
 ### Icon which shows database schema on click
+
 * Markdown (recommended)
+
 ```markdown
 ![Database schema](LINK_TO_DATABASE_ICON){:data-large="LINK_TO_DATABASE_SCHEMA_OVERVIEW"}{:style="float: right"}
 ```
+
 * HTML
+
 ```html
 <img alt="Database schema" src="LINK_TO_DATABASE_ICON" data-large="LINK_TO_DATABASE_SCHEMA_OVERVIEW" style="float: right"/>
 ```
 
 ### Text link which shows database schema on click
+
 * Markdown (recommended)
+
 ```markdown
 [Show database schema](LINK_TO_DATABASE_SCHEMA_OVERVIEW){: .dodona-lightbox}{: data-caption="Show database schema"}
 ```
+
 * HTML
+
 ```html
 <a href="LINK_TO_DATABASE_SCHEMA_OVERVIEW" class="dodona-lightbox" data-caption="Show database schema">Show database schema</a>
 ```
