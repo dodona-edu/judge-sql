@@ -1,10 +1,11 @@
 """input query parsing"""
 
 import re
-from translator import Translator
 from typing import Union
 
 import sqlparse
+
+from translator import Translator
 
 
 def flatten_symbols(parsed: sqlparse.sql.Statement) -> list[str]:
