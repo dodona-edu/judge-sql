@@ -220,7 +220,7 @@ with Judgement():
                 ) as testcase:
                     expected_output, generated_output = None, None
 
-                    with SQLDatabase(db_name, db_file, config.workdir) as db:
+                    with SQLDatabase(db_file, config.workdir, db_name) as db:
                         cursor = db.solution_cursor()
 
                         #### RUN SOLUTION QUERY

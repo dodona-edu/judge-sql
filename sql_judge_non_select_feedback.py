@@ -19,7 +19,7 @@ def non_select_feedback(
     config: DodonaConfig, testcase: SimpleNamespace, db_name: str, db_file: str, solution_query: SQLQuery
 ):
     """run tests based on execution results of a select query"""
-    with SQLDatabase(db_name, db_file, config.workdir) as database:
+    with SQLDatabase(db_file, config.workdir, db_name) as database:
         incorrect_name, diff_layout, diff_content, correct = database.diff()
 
         if len(incorrect_name) > 0:
