@@ -23,7 +23,7 @@ def sql_run_pargma_startup_script(sourcefile: str, workdir: str, db_name: str, s
     for query in SQLQuery.from_raw_input(script):
         if not query.is_pragma:
             raise Exception(
-                f"only PRAGMA queries are allowed in the startup script\nreceived '{query.canonical}' instead"
+                f"Only PRAGMA queries are allowed in the startup script\nreceived '{query.canonical}' instead."
             )
 
     newfile = os.path.join(workdir, db_name)
