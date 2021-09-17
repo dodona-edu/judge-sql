@@ -65,7 +65,7 @@ necessary files are marked with `▶` in the tree structure below.
 
 > [More info about exercise directory structure](https://docs.dodona.be/en/references/exercise-directory-structure/)
 
-````json
+```json
 {
   "type": "exercise",
   "programming_language": "sql",
@@ -82,11 +82,11 @@ necessary files are marked with `▶` in the tree structure below.
   "author": "Firstname Lastname <firstname_lastname@ugent.be>",
   "contact": "firstname_lastname@ugent.be"
 }
-````
+```
 
 ## Recommended `config.json` (example with default settings)
 
-````json
+```json
 {
   "description": {
     "names": {
@@ -104,7 +104,7 @@ necessary files are marked with `▶` in the tree structure below.
     "handler": "sql"
   }
 }
-````
+```
 
 ## Optional `evaluation` settings in `config.json`
 
@@ -128,7 +128,7 @@ If these settings are not defined, the default value is chosen.
 
 ### Example of modified settings
 
-````json
+```json
 {
   "evaluation": {
     "solution_sql": "./my_answers.sql",
@@ -139,11 +139,11 @@ If these settings are not defined, the default value is chosen.
     "allow_different_column_order": false
   }
 }
-````
+```
 
 or
 
-````json
+```json
 {
   "evaluation": {
     "solution_sql": "./mijn_oplossing.sql",
@@ -161,7 +161,7 @@ or
     ]
   }
 }
-````
+```
 
 ## Generator scripts
 
@@ -199,7 +199,7 @@ database and update it with the results previous exercises (only applicable for 
 <details>
   <summary>Click <b>here</b> to show to code.</summary>
 
-````python
+```python
 import os
 import sqlite3
 from sqlite3 import OperationalError
@@ -237,7 +237,7 @@ print(pd.read_sql(f"PRAGMA TABLE_INFO({table_name});", connection))
 
 connection.commit()
 connection.close()
-````
+```
 
 </details>
 
@@ -249,7 +249,7 @@ database (only applicable for write queries).
 <details>
   <summary>Click <b>here</b> to show to code.</summary>
 
-````python
+```python
 import os
 import sqlite3
 from sqlite3 import OperationalError
@@ -295,7 +295,7 @@ print(pd.read_sql(f"PRAGMA TABLE_INFO({table_name});", connection))
 
 connection.commit()
 connection.close()
-````
+```
 
 </details>
 
