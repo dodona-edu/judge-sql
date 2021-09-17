@@ -293,7 +293,7 @@ class TestCase(DodonaCommandWithAccepted):
 class Test(DodonaCommandWithStatus):
     """Dodona Test"""
 
-    def __init__(self, description: str, expected: str, **kwargs):
+    def __init__(self, description: Union[str, dict], expected: str, **kwargs):
         super().__init__(description=description, expected=expected, **kwargs)
 
 

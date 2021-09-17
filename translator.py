@@ -138,8 +138,8 @@ class Translator:
             Text.QUERY_SHOULD_ORDER_ROWS: "Query should return ordered rows.",
             Text.QUERY_SHOULD_NOT_ORDER_ROWS: "No explicit row ordering should be enforced in query.",
             Text.CORRECT_ROWS_WRONG_ORDER: "The rows are correct but in the wrong order.",
-            Text.COMPARING_TABLE_LAYOUT: 'Comparing the table layout of "{table}".',
-            Text.COMPARING_TABLE_CONTENT: 'Comparing the table content of "{table}".',
+            Text.COMPARING_TABLE_LAYOUT: "Comparing the table layout of `{table}`.",
+            Text.COMPARING_TABLE_CONTENT: "Comparing the table content of `{table}`.",
         },
         Language.NL: {
             Text.ADD_A_SEMICOLON: "Voeg een puntkomma ';' toe aan het einde van elke SQL query.",
@@ -163,7 +163,7 @@ class Translator:
             Text.QUERY_SHOULD_ORDER_ROWS: "De query moet de rijen gesorteerd teruggeven.",
             Text.QUERY_SHOULD_NOT_ORDER_ROWS: "De query mag de rijen niet expliciet gaan sorteren.",
             Text.CORRECT_ROWS_WRONG_ORDER: "Het query resultaat bevat de juiste rijen, maar in de verkeerde volgorde.",
-            Text.COMPARING_TABLE_LAYOUT: 'Vergelijken van de tabel lay-out van "{table}".',
-            Text.COMPARING_TABLE_CONTENT: 'Vergelijken van de tabel inhoud van "{table}".',
+            Text.COMPARING_TABLE_LAYOUT: "Vergelijken van de tabel lay-out van `{table}`.",
+            Text.COMPARING_TABLE_CONTENT: "Vergelijken van de tabel inhoud van `{table}`.",
         },
     }

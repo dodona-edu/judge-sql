@@ -45,7 +45,10 @@ def non_select_feedback(
                 ) from err
 
             with Test(
-                config.translator.translate(Translator.Text.COMPARING_TABLE_LAYOUT, table=table),
+                {
+                    "description": config.translator.translate(Translator.Text.COMPARING_TABLE_LAYOUT, table=table),
+                    "format": MessageFormat.MARKDOWN,
+                },
                 solution_layout.csv_out,
                 format="csv",
             ) as test:
@@ -65,7 +68,10 @@ def non_select_feedback(
                 ) from err
 
             with Test(
-                config.translator.translate(Translator.Text.COMPARING_TABLE_CONTENT, table=table),
+                {
+                    "description": config.translator.translate(Translator.Text.COMPARING_TABLE_CONTENT, table=table),
+                    "format": MessageFormat.MARKDOWN,
+                },
                 solution_content.csv_out,
                 format="csv",
             ) as test:
@@ -93,7 +99,12 @@ def non_select_feedback(
             ) from err
 
         with Test(
-            config.translator.translate(Translator.Text.COMPARING_TABLE_LAYOUT, table=affected_table),
+            {
+                "description": config.translator.translate(
+                    Translator.Text.COMPARING_TABLE_LAYOUT, table=affected_table
+                ),
+                "format": MessageFormat.MARKDOWN,
+            },
             solution_layout.csv_out,
             format="csv",
         ) as test:
@@ -101,7 +112,12 @@ def non_select_feedback(
             test.status = config.translator.error_status(ErrorType.CORRECT)
 
         with Test(
-            config.translator.translate(Translator.Text.COMPARING_TABLE_CONTENT, table=affected_table),
+            {
+                "description": config.translator.translate(
+                    Translator.Text.COMPARING_TABLE_CONTENT, table=affected_table
+                ),
+                "format": MessageFormat.MARKDOWN,
+            },
             solution_content.csv_out,
             format="csv",
         ) as test:
