@@ -11,8 +11,8 @@ from sql_query import SQLQuery
 from sql_query_result import SQLQueryResult
 
 
-def sql_run_startup_script(sourcefile: str, workdir: str, db_name: str, script: str) -> str:
-    """run a script on the database before using the database in the exercise
+def sql_run_pargma_startup_script(sourcefile: str, workdir: str, db_name: str, script: str) -> str:
+    """run a pragma script on the database before using the database in the exercise
 
     :param sourcefile: exercise's sqlite start databse file
     :param workdir: dodona workdir that is used to store the updated version of the database

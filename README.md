@@ -113,13 +113,29 @@ If these settings are not defined, the default value is chosen.
 | `semicolon_warning`                    | Show warning if there isn't a semicolon at the end of each query.                                                           | `true`/`false`      | `true`                                              |
 | `strict_identical_order_by`            | If solution (doesn't) contain(s) `ORDER BY`, student queries also (don't) have to contain it.                               | `true`/`false`      | `true`                                              |
 | `allow_different_column_order`         | Allow submitted query to return columns in different order than the solution.                                               | `true`/`false`      | `true`                                              |
-| `startup_script`                       | Run the provided queries on all test databases before starting the tests.                                                   | string              | `""`                                                |
+| `pargma_startup_script`                | Run the provided PRAGMA queries on all test databases before starting the tests.                                            | string              | `""`                                                |
 | `pre_execution_forbidden_symbolregex`  | Disallow the usage of some word groups in queries (check runs before query execution).                                      | list of regex       | `[".*sqlite_(temp_)?(master\|schema).*", "pragma"]` |
 | `pre_execution_mandatory_symbolregex`  | Require the usage of some word groups in queries (check runs before query execution).                                       | list of regex       | `[]`                                                |
 | `pre_execution_fullregex`              | Require the query to match the provided regex (check runs before query execution).                                          | list of regex       | `[]`                                                |
 | `post_execution_forbidden_symbolregex` | Disallow the usage of some word groups in queries (check runs after query execution and only if all other tests succeeded). | list of regex       | `[]`                                                |
 | `post_execution_mandatory_symbolregex` | Require the usage of some word groups in queries (check runs after query execution and only if all other tests succeeded).  | list of regex       | `[]`                                                |
 | `post_execution_fullregex`             | Require the query to match the provided regex (check runs after query execution and only if all other tests succeeded).     | list of regex       | `[]`                                                |
+
+### Regex match settings
+
+The `pre_execution_forbidden_symbolregex`, `pre_execution_mandatory_symbolregex`, `pre_execution_fullregex`, `post_execution_forbidden_symbolregex`, `post_execution_mandatory_symbolregex` and `post_execution_fullregex` regex lists can be used to set extra checks for the submission query.
+The `..._symbolregex` lists are used to check each individual "symbol" (these symbols are detected by sqlparse library, examples are `not like`, `users` and `'String value'`).
+All regular expressions are used in a caseinsensitive way, and a full match is performed (no `^` and `$` required).
+
+For the example query "SELECT \* FROM users WHERE name = 'test';":
+| Field | Value | No error✅ / Error❌ | Reason |
+| --------------------------- | ----- | -------------- | ---- |
+| `..._forbidden_symbolregex` | ["users"] | ❌ | symbol found |
+| `..._mandatory_symbolregex` | ["customers"] | ❌ | symbol not found |
+| `..._fullregex` | ["select"] | ❌ | not a full match |
+| `..._forbidden_symbolregex` | ["test"] | ✅ | not a full match |
+| `..._mandatory_symbolregex` | [".test."] | ✅ | symbol found (`'test'`) |
+| `..._fullregex` | ["select .*"] | ✅ | full match |
 
 ### Example of modified settings
 
@@ -150,7 +166,7 @@ or
     "semicolon_warning": false,
     "strict_identical_order_by": false,
     "allow_different_column_order": false,
-    "post_execution_forbidden_symbolregex": ["dummy", "(?i).*like.*"]
+    "post_execution_forbidden_symbolregex": ["dummy", ".*like.*"]
   }
 }
 ```
@@ -369,9 +385,9 @@ The following command can be used to run the tests:
 
 ```bash
 $ ./run-tests.sh
-.........
+.............
 ----------------------------------------------------------------------
-Ran 9 tests in 0.029s
+Ran 13 tests in 0.069s
 
 OK
 ```
