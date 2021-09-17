@@ -82,6 +82,12 @@ class SQLQuery:
         return str(self.parsed.get_type()) == "SELECT"
 
     @property
+    def is_pragma(self) -> bool:
+        """is query a PRAGMA query?"""
+        # self.parsed.get_type() would return "UNKNOWN" here
+        return self.canonical.upper().startswith("PRAGMA")
+
+    @property
     def is_ordered(self) -> bool:
         """does query order its results?"""
         if self._is_ordered is not None:

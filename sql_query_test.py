@@ -164,14 +164,16 @@ class TestSQLQuery(unittest.TestCase):
             query.canonical, "SELECT '\n\n\n', ( count ( name ) ) [aaaaa], [name] as 'test' FROM ( sqlite_master ) ;"
         )
 
-    def test_is_select(self):
+    def test_is_select_is_pragma(self):
         query = self.single_query("  SELeCT\n*\tFROm   USERS  \n\r")
         self.assertEqual(query.canonical, "SELeCT * FROm USERS")
         self.assertEqual(query.is_select, True)
+        self.assertEqual(query.is_pragma, False)
 
         query = self.single_query("\nSELECT *\n    from\n       users\n")
         self.assertEqual(query.canonical, "SELECT * from users")
         self.assertEqual(query.is_select, True)
+        self.assertEqual(query.is_pragma, False)
 
         query = self.single_query(
             """
@@ -182,6 +184,7 @@ class TestSQLQuery(unittest.TestCase):
         )
         self.assertEqual(query.canonical, "INSERT INTO table2 SELECT * FROM table1 WHERE condition ;")
         self.assertEqual(query.is_select, False)
+        self.assertEqual(query.is_pragma, False)
 
         query = self.single_query(
             """
@@ -192,6 +195,12 @@ class TestSQLQuery(unittest.TestCase):
         )
         self.assertEqual(query.canonical, "SELECT * FROM table1 WHERE condition ;")
         self.assertEqual(query.is_select, True)
+        self.assertEqual(query.is_pragma, False)
+
+        query = self.single_query("PRAGMA CASE_SENSITIVE_LIKE=ON;")
+        self.assertEqual(query.canonical, "PRAGMA CASE_SENSITIVE_LIKE = ON ;")
+        self.assertEqual(query.is_select, False)
+        self.assertEqual(query.is_pragma, True)
 
     def test_is_ordered(self):
         query = self.single_query(
