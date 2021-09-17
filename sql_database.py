@@ -10,6 +10,25 @@ from dodona_config import DodonaConfig
 from sql_query_result import SQLQueryResult
 
 
+def sql_run_startup_script(sourcefile: str, workdir: str, db_name: str, script: str) -> str:
+    """run a script on the database before using the database in the exercise
+
+    :param sourcefile: exercise's sqlite start databse file
+    :param workdir: dodona workdir that is used to store the updated version of the database
+    :param db_name: name of the database
+    :param script: script that should be executed on the database
+    :return: the filename of the updated database
+    """
+    newfile = os.path.join(workdir, db_name)
+    copyfile(sourcefile, newfile)
+    connection = sqlite3.connect(newfile)
+    cursor = connection.cursor()
+    cursor.executescript(script)
+    connection.commit()
+    connection.close()
+    return newfile
+
+
 class SQLDatabase:
     """wrapper class for the sqlite3 connections & file management
 
@@ -20,10 +39,12 @@ class SQLDatabase:
     when used with non-select sql queries (eg. CREATE & INSERT).
     """
 
-    def __init__(self, db_name: str, sourcefile: str, workdir: str):
+    def __init__(self, sourcefile: str, workdir: str, db_name: str):
         """construct SQLDatabase
 
         :param sourcefile: exercise's sqlite start databse file
+        :param workdir: dodona workdir that is used to store the changed versions of the database
+        :param db_name: name of the database
         """
         self.sourcefile = sourcefile
         self.solutionfile = os.path.join(workdir, f"{db_name}.solution")
@@ -120,7 +141,7 @@ class SQLDatabase:
     WHERE NOT EXISTS (
         SELECT 1
         FROM submission.sqlite_master AS sub
-        WHERE sub.name = sol.name
+        WHERE upper(sub.name) = upper(sol.name)
     )
     UNION ALL
     --- ONLY IN SUBMISSION ---
@@ -131,7 +152,7 @@ class SQLDatabase:
     WHERE NOT EXISTS (
         SELECT 1
         FROM solution.sqlite_master AS sol
-        WHERE sol.name = sub.name
+        WHERE upper(sol.name) = upper(sub.name)
     )
     UNION ALL
     --- DIFFERENT SCHEME ---

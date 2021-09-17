@@ -2,29 +2,29 @@
 
 ## Judge features
 
-* Comparison based on solution query
-* SQLite database per exercise
-* Automatic detection if order needs to be checked
-* Support for read and write operations
-* Automatic distinction between read and write operations
-* Option to execute same queries on multiple databases
-* Support for multiple queries in one exercise
-* Allow submitted query to return columns in different order than the solution
-* Feedback in language of user (Dutch or English)
-* Extensive [customization possible in `config.json`](#optional-evaluation-settings-in-configjson)
-* Elaborate [feedback](#feedback)
+- Comparison based on solution query
+- SQLite database per exercise
+- Automatic detection if order needs to be checked
+- Support for read and write operations
+- Automatic distinction between read and write operations
+- Option to execute same queries on multiple databases
+- Support for multiple queries in one exercise
+- Allow submitted query to return columns in different order than the solution
+- Feedback in language of user (Dutch or English)
+- Extensive [customization possible in `config.json`](#optional-evaluation-settings-in-configjson)
+- Elaborate [feedback](#feedback)
 
 ### Feedback
 
-* Syntax errors
-* Comparison between row count and column count between solution and submission
-* Unnecessary sorts (student query should be sorted when solution query is and vice versa)
-* Correct records but wrong order
-* Data types
-* Number of queries
-* Only same type of query as solution is allowed
-* Differences between submission and solution table are highlighted
-* ...
+- Syntax errors
+- Comparison between row count and column count between solution and submission
+- Unnecessary sorts (student query should be sorted when solution query is and vice versa)
+- Correct records but wrong order
+- Data types
+- Number of queries
+- Only same type of query as solution is allowed
+- Differences between submission and solution table are highlighted
+- ...
 
 ## Recommended exercise directory structure
 
@@ -75,10 +75,7 @@ necessary files are marked with `▶` in the tree structure below.
     "time_limit": 10,
     "memory_limit": 50000000
   },
-  "labels": [
-    "sqlite",
-    "database"
-  ],
+  "labels": ["sqlite", "database"],
   "author": "Firstname Lastname <firstname_lastname@ugent.be>",
   "contact": "firstname_lastname@ugent.be"
 }
@@ -96,10 +93,7 @@ necessary files are marked with `▶` in the tree structure below.
   },
   "type": "exercise",
   "programming_language": "sql",
-  "labels": [
-    "sqlite",
-    "database"
-  ],
+  "labels": ["sqlite", "database"],
   "evaluation": {
     "handler": "sql"
   }
@@ -119,6 +113,7 @@ If these settings are not defined, the default value is chosen.
 | `semicolon_warning`                    | Show warning if there isn't a semicolon at the end of each query.                                                           | `true`/`false`      | `true`                                              |
 | `strict_identical_order_by`            | If solution (doesn't) contain(s) `ORDER BY`, student queries also (don't) have to contain it.                               | `true`/`false`      | `true`                                              |
 | `allow_different_column_order`         | Allow submitted query to return columns in different order than the solution.                                               | `true`/`false`      | `true`                                              |
+| `startup_script`                       | Run the provided queries on all test databases before starting the tests.                                                   | string              | `""`                                                |
 | `pre_execution_forbidden_symbolregex`  | Disallow the usage of some word groups in queries (check runs before query execution).                                      | list of regex       | `[".*sqlite_(temp_)?(master\|schema).*", "pragma"]` |
 | `pre_execution_mandatory_symbolregex`  | Require the usage of some word groups in queries (check runs before query execution).                                       | list of regex       | `[]`                                                |
 | `pre_execution_fullregex`              | Require the query to match the provided regex (check runs before query execution).                                          | list of regex       | `[]`                                                |
@@ -155,10 +150,7 @@ or
     "semicolon_warning": false,
     "strict_identical_order_by": false,
     "allow_different_column_order": false,
-    "post_execution_forbidden_symbolregex": [
-      "dummy",
-      "(?i).*like.*"
-    ]
+    "post_execution_forbidden_symbolregex": ["dummy", "(?i).*like.*"]
   }
 }
 ```
@@ -301,28 +293,28 @@ connection.close()
 
 ## Recommended database tools for SQLite
 
-* [DB Browser for SQLite](https://sqlitebrowser.org/dl/) (free and open source)
-* [DbVisualizer free version](https://www.dbvis.com/download/)
-* PyCharm Professional ([free for students and teachers](https://www.jetbrains.com/community/education/#students))
+- [DB Browser for SQLite](https://sqlitebrowser.org/dl/) (free and open source)
+- [DbVisualizer free version](https://www.dbvis.com/download/)
+- PyCharm Professional ([free for students and teachers](https://www.jetbrains.com/community/education/#students))
 
 ## How to generate a database diagram with table relationships?
 
-* Database diagram with **DbVisualizer**
+- Database diagram with **DbVisualizer**
 
-> * `Tools` (in menu bar at the top) > `Connection Wizard...`
-> * Enter connection alias: e.g. `my_database` > `Next >`
-> * Select Database Driver > `SQLite` > `Next >`
-> * Path to Database in `Database file name`: e.g. `C:\Users\YOUR_NAME\PycharmProjects\YOUR_PROJECT\YOUR_FOLDER\YOUR_EXERCISE\evaluation\my_database.sqlite` > `Finish`
-> * Locate **Tables** in the Databases tab tree > Double click it > `Open Object`
-> * **References** > Layout: `Hierarchical`
-> * Fourth icon `Export graph to file` > Output format: `PNG` > `Next >`
-> * Choose a folder > `Export`
+> - `Tools` (in menu bar at the top) > `Connection Wizard...`
+> - Enter connection alias: e.g. `my_database` > `Next >`
+> - Select Database Driver > `SQLite` > `Next >`
+> - Path to Database in `Database file name`: e.g. `C:\Users\YOUR_NAME\PycharmProjects\YOUR_PROJECT\YOUR_FOLDER\YOUR_EXERCISE\evaluation\my_database.sqlite` > `Finish`
+> - Locate **Tables** in the Databases tab tree > Double click it > `Open Object`
+> - **References** > Layout: `Hierarchical`
+> - Fourth icon `Export graph to file` > Output format: `PNG` > `Next >`
+> - Choose a folder > `Export`
 >
-> *[More info](http://confluence.dbvis.com/display/UG100/Viewing+Table+Relationships)*
+> _[More info](http://confluence.dbvis.com/display/UG100/Viewing+Table+Relationships)_
 
-* Database diagram with **PyCharm Professional**
+- Database diagram with **PyCharm Professional**
 
-> *[More info](https://www.jetbrains.com/help/pycharm/creating-diagrams.html)*
+> _[More info](https://www.jetbrains.com/help/pycharm/creating-diagrams.html)_
 
 ### Add database schema overview to each exercise
 
@@ -335,30 +327,40 @@ connection.close()
 
 #### Icon which shows database diagram on click
 
-* Markdown (recommended)
+- Markdown (recommended)
 
 ```markdown
 ![Database schema](LINK_TO_DATABASE_ICON){:data-large="LINK_TO_DATABASE_SCHEMA_OVERVIEW"}{:style="float: right"}
 ```
 
-* HTML
+- HTML
 
 ```html
-<img alt="Database schema" src="LINK_TO_DATABASE_ICON" data-large="LINK_TO_DATABASE_SCHEMA_OVERVIEW" style="float: right"/>
+<img
+  alt="Database schema"
+  src="LINK_TO_DATABASE_ICON"
+  data-large="LINK_TO_DATABASE_SCHEMA_OVERVIEW"
+  style="float: right"
+/>
 ```
 
 #### Text link which shows database diagram on click
 
-* Markdown (recommended)
+- Markdown (recommended)
 
 ```markdown
 [Show database schema](LINK_TO_DATABASE_SCHEMA_OVERVIEW){: .dodona-lightbox}{: data-caption="Show database schema"}
 ```
 
-* HTML
+- HTML
 
 ```html
-<a href="LINK_TO_DATABASE_SCHEMA_OVERVIEW" class="dodona-lightbox" data-caption="Show database schema">Show database schema</a>
+<a
+  href="LINK_TO_DATABASE_SCHEMA_OVERVIEW"
+  class="dodona-lightbox"
+  data-caption="Show database schema"
+  >Show database schema</a
+>
 ```
 
 ## Testing
@@ -376,8 +378,8 @@ OK
 
 ## Contributors
 
-* **T. Ramlot**
-* B. Willems
+- **T. Ramlot**
+- B. Willems
 
-*Development funded by the [Faculty of Engineering and Architecture](https://www.ugent.be/ea/en)
-of [Ghent University](https://www.ugent.be/en)*
+_Development funded by the [Faculty of Engineering and Architecture](https://www.ugent.be/ea/en)
+of [Ghent University](https://www.ugent.be/en)_
