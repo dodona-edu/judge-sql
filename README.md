@@ -125,7 +125,7 @@ If these settings are not defined, the default value is chosen.
 
 The `pre_execution_forbidden_symbolregex`, `pre_execution_mandatory_symbolregex`, `pre_execution_fullregex`, `post_execution_forbidden_symbolregex`, `post_execution_mandatory_symbolregex` and `post_execution_fullregex` regex lists can be used to set extra checks for the submission query.
 The `..._symbolregex` lists are used to check each individual "symbol" (these symbols are detected by sqlparse library, examples are `not like`, `users` and `'String value'`).
-All regular expressions are used in a caseinsensitive way, and a full match is performed (no `^` and `$` required).
+All regular expressions are used in a case-insensitive way, and a full match is performed (no `^` and `$` required).
 
 For the example query "SELECT \* FROM users WHERE name = 'test';":
 | Field | Value | No error✅ / Error❌ | Reason |
