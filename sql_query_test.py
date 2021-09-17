@@ -3,7 +3,7 @@
 import unittest
 
 from sql_query import SQLQuery
-
+from translator import Translator
 
 # @formatter:off
 class TestSQLQuery(unittest.TestCase):
@@ -289,6 +289,62 @@ class TestSQLQuery(unittest.TestCase):
 
         query = self.single_query("select DISTICT CITY from users where name not like 'test%'")
         self.assertEqual(query.match_regex(".*like"), "not like")
+
+    def test_docs_example(self):
+        query = self.single_query("SELECT * FROM users WHERE name = 'test';")
+        self.assertEqual(
+            query.match_multi_regex(
+                forbidden_symbolregex=["users"],
+                mandatory_symbolregex=[],
+                fullregex=[],
+            ),
+            (Translator.Text.SUBMISSION_FORBIDDEN_REGEX, "users"),
+        )
+
+        self.assertEqual(
+            query.match_multi_regex(
+                forbidden_symbolregex=[],
+                mandatory_symbolregex=["customers"],
+                fullregex=[],
+            ),
+            (Translator.Text.SUBMISSION_MANDATORY_REGEX, "customers"),
+        )
+
+        self.assertEqual(
+            query.match_multi_regex(
+                forbidden_symbolregex=[],
+                mandatory_symbolregex=[],
+                fullregex=["select"],
+            ),
+            (Translator.Text.SUBMISSION_REGEX_MISMATCH, "select"),
+        )
+
+        self.assertEqual(
+            query.match_multi_regex(
+                forbidden_symbolregex=["test"],
+                mandatory_symbolregex=[],
+                fullregex=[],
+            ),
+            None,
+        )
+
+        self.assertEqual(
+            query.match_multi_regex(
+                forbidden_symbolregex=[],
+                mandatory_symbolregex=[".test."],
+                fullregex=[],
+            ),
+            None,
+        )
+
+        self.assertEqual(
+            query.match_multi_regex(
+                forbidden_symbolregex=[],
+                mandatory_symbolregex=[],
+                fullregex=["select .*"],
+            ),
+            None,
+        )
 
 
 # @formatter:on
