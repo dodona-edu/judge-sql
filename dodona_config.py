@@ -58,7 +58,7 @@ class DodonaConfig(SimpleNamespace):
     def sanity_check(self) -> None:
         """perform sanity checks
 
-        This function checsk if the Python file is executed correctly. The current working dir
+        This function checks if the Python file is executed correctly. The current working dir
         should be the same directory that is passed as the 'workdir' property in the Dodona config.
         Also, this Python file (and all other Python judge files) should be located in the 'judge' dir.
         """

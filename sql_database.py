@@ -63,8 +63,8 @@ class SQLDatabase:
         """create solutionfile and submissionfile
 
         If no solutionfile/ submissionfile has been generated before
-        (usally because it is the first testcase), the sourcefile is
-        copied to these filelocations.
+        (usually because it is the first testcase), the source file is
+        copied to these file locations.
 
         :return: current SQLDatabase instance
         """
@@ -91,13 +91,13 @@ class SQLDatabase:
         self.connection = None
 
     def solution_cursor(self) -> Cursor:
-        """:return: a cursor for the solutionfile database"""
+        """:return: a cursor for the solution file database"""
         self.close()
         self.connection = sqlite3.connect(self.solutionfile)
         return self.connection.cursor()
 
     def submission_cursor(self) -> Cursor:
-        """:return: a cursor for the submissionfile database"""
+        """:return: a cursor for the submission file database"""
         self.close()
         self.connection = sqlite3.connect(self.submissionfile)
         return self.connection.cursor()
@@ -114,7 +114,7 @@ class SQLDatabase:
     def get_table_layout(self, config: DodonaConfig, table: str) -> tuple[SQLQueryResult, SQLQueryResult]:
         """retrieve the table layout for both the solution and submission
 
-        :param config: the dodonda judge config
+        :param config: the Dodona judge config
         :param table: name of table to request layout for
         :return: (solution_layout, submission_layout) containing the pragma table info
         """
@@ -128,7 +128,7 @@ class SQLDatabase:
     def get_table_content(self, config: DodonaConfig, table: str) -> tuple[SQLQueryResult, SQLQueryResult]:
         """retrieve the table content for both the solution and submission
 
-        :param config: the dodonda judge config
+        :param config: the Dodona judge config
         :param table: name of table to request content for
         :return: (solution_content, submission_content) containing the table contents
         """

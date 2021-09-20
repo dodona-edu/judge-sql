@@ -58,11 +58,11 @@ class SQLQuery:
     """a class for managing an input query (used for both solution and submission queries)"""
 
     def __init__(self, without_comments: str):
-        """create SQLQuery based on fromatted string
+        """create SQLQuery based on formatted string
 
         This constructor should not be used directly, use 'from_raw_input' instead.
 
-        :param formatted: formatted sql query string
+        :param without_comments: formatted sql query string
         """
         self.without_comments = without_comments
         self.parsed = sqlparse.parse(without_comments)[0]

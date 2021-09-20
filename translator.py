@@ -48,7 +48,7 @@ class Translator:
     def from_str(cls, language: str) -> "Translator":
         """created a Translator instance
 
-        If the language is not detectected correctly or not supported
+        If the language is not detected correctly or not supported
         the translator defaults to English (EN).
 
         :param language: Dodona language string "nl" or "en"
@@ -61,10 +61,10 @@ class Translator:
         return cls(cls.Language.EN)
 
     def human_error(self, error: ErrorType) -> str:
-        """translate an ErrorType enum into a human-readeable string
+        """translate an ErrorType enum into a human-readable string
 
         :param error: ErrorType enum
-        :return: translated human-readeable string
+        :return: translated human-readable string
         """
         return self.error_translations[self.language][error]
 
@@ -119,7 +119,7 @@ class Translator:
         Language.EN: {
             Text.ADD_A_SEMICOLON: "Add a semicolon ';' at the end of each SQL query.",
             Text.INVALID_SINGLE_QUOTE_TABLE_NAME: "Error: "
-            "The database contains a tablename ({table}) containing a single quote.",
+            "The database contains a table name ({table}) containing a single quote.",
             Text.SUBMISSION_WRONG_QUERY_TYPE: "Error: "
             "the submitted query is of a different type ({submitted}) than expected.",
             Text.SUBMISSION_FORBIDDEN_REGEX: "Error: the submitted query should not contain `{value}`.",

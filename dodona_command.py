@@ -56,7 +56,7 @@ class MessageFormat(str, Enum):
 
 
 class AnnotationSeverity(str, Enum):
-    """Dodona serverity of an annotation"""
+    """Dodona severity of an annotation"""
 
     ERROR = "error"
     WARNING = "warning"
@@ -86,7 +86,7 @@ class DodonaException(Exception):
         super().__init__()
         self.status = status
         if recover_at is None:
-            # class Jugement is not yet defined, use this hack to retrieve the class at runtime
+            # class Judgement is not yet defined, use this hack to retrieve the class at runtime
             self.recover_at = globals()["Judgement"]
             self.escalate_status = False
         else:
@@ -165,7 +165,7 @@ class DodonaCommand(ABC):
     def handle_dodona_exception(self, exception: DodonaException) -> bool:
         """handle a DodonaException
 
-        This function returns a boolean that is True if the exeption should
+        This function returns a boolean that is True if the exception should
         not get propagated to parent codeblocks. This should only be True
         if the current with block's type matches the type defined in recover_at,
         this means that all higher levels of Dodona objects can update their

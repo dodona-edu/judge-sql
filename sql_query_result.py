@@ -39,7 +39,7 @@ class SQLQueryResult:
     def from_cursor(cls, max_rows: int, cursor: Cursor) -> "SQLQueryResult":
         """process sql query results and wrap in SQLQueryResult
 
-        The column names are stored seperate from the dataframe, because an
+        The column names are stored separate from the dataframe, because an
         sql query might return multiple columns with the same name.
 
         :param max_rows: max number of rows to retrieve
