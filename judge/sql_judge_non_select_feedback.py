@@ -2,17 +2,17 @@
 
 from types import SimpleNamespace
 
-from sql_query import SQLQuery
-from translator import Translator
-from dodona_config import DodonaConfig
-from dodona_command import (
+from .dodona_command import (
     Test,
     DodonaException,
     ErrorType,
     MessagePermission,
     MessageFormat,
 )
-from sql_database import SQLDatabase
+from .dodona_config import DodonaConfig
+from .sql_database import SQLDatabase
+from .sql_query import SQLQuery
+from .translator import Translator
 
 
 def non_select_feedback(

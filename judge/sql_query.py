@@ -1,11 +1,11 @@
 """input query parsing"""
 
 import re
-from typing import Union
+from typing import Optional
 
 import sqlparse
 
-from translator import Translator
+from .translator import Translator
 
 
 def flatten_symbols(parsed: sqlparse.sql.Statement) -> list[str]:
@@ -105,7 +105,7 @@ class SQLQuery:
         forbidden_symbolregex: list[str],
         mandatory_symbolregex: list[str],
         fullregex: list[str],
-    ) -> Union[None, tuple[Translator.Text, str]]:
+    ) -> Optional[tuple[Translator.Text, str]]:
         """checks if query complies to all given regexs
 
         :return: first non-complying match, or none if none are found
@@ -128,7 +128,7 @@ class SQLQuery:
 
         return None
 
-    def match_regex(self, regex: str) -> Union[None, str]:
+    def match_regex(self, regex: str) -> Optional[str]:
         """checks if query contains a symbol matching the regex (case insensitive)
 
         :return: word matching the regex, if not found return None
@@ -141,18 +141,13 @@ class SQLQuery:
 
         return None
 
-    def match_array(self, words: list[str]) -> Union[None, str]:
+    def match_array(self, words: list[str]) -> Optional[str]:
         """checks if query contains symbol that is in the list (case insensitive)
 
         :return: word that is in the list, if not found return None
         """
-        lowercase_words = [word.lower() for word in words]
-
-        for symbol in self.symbols:
-            if symbol.lower() in lowercase_words:
-                return symbol
-
-        return None
+        lowercase_words = set(map(lambda w: w.lower(), words))
+        return next((sym for sym in set(self.symbols) if sym in lowercase_words), None)
 
     @classmethod
     def from_raw_input(cls, raw_input: str) -> list["SQLQuery"]:
