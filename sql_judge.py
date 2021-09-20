@@ -156,7 +156,7 @@ with Judgement():
         ):
             pass
 
-    if config.startup_script != "":
+    if config.pargma_startup_queries != "":
         try:
             config.database_files = [
                 (
