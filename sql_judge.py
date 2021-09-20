@@ -18,7 +18,7 @@ from dodona_command import (
 from dodona_config import DodonaConfig
 from sql_query import SQLQuery
 from sql_query_result import SQLQueryResult
-from sql_database import SQLDatabase, sql_run_pargma_startup_queries
+from sql_database import SQLDatabase, sql_run_pragma_startup_queries
 from sql_judge_select_feedback import select_feedback
 from sql_judge_non_select_feedback import non_select_feedback
 from translator import Translator
@@ -44,8 +44,8 @@ with Judgement():
     # Set 'allow_different_column_order' to True if not set
     config.allow_different_column_order = bool(getattr(config, "allow_different_column_order", True))
 
-    # Set 'pargma_startup_queries' to "" if not set
-    config.pargma_startup_queries = str(getattr(config, "pargma_startup_queries", ""))
+    # Set 'pragma_startup_queries' to "" if not set
+    config.pragma_startup_queries = str(getattr(config, "pargma_startup_queries", ""))
 
     # Set 'pre_execution_forbidden_symbolregex' to [".*sqlite_(temp_)?(master|schema).*", "pragma"] if not set
     defaults = [".*sqlite_(temp_)?(master|schema).*", "pragma"]
@@ -156,12 +156,12 @@ with Judgement():
         ):
             pass
 
-    if config.pargma_startup_queries != "":
+    if config.pragma_startup_queries != "":
         try:
             config.database_files = [
                 (
                     db_name,
-                    sql_run_pargma_startup_queries(db_file, config.workdir, db_name, config.pargma_startup_queries),
+                    sql_run_pragma_startup_queries(db_file, config.workdir, db_name, config.pragma_startup_queries),
                 )
                 for db_name, db_file in config.database_files
             ]

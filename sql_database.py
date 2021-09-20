@@ -11,7 +11,7 @@ from sql_query import SQLQuery
 from sql_query_result import SQLQueryResult
 
 
-def sql_run_pargma_startup_queries(sourcefile: str, workdir: str, db_name: str, script: str) -> str:
+def sql_run_pragma_startup_queries(sourcefile: str, workdir: str, db_name: str, script: str) -> str:
     """run a pragma script on the database before using the database in the exercise
 
     :param sourcefile: exercise's sqlite start database file

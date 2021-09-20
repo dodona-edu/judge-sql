@@ -113,7 +113,7 @@ If these settings are not defined, the default value is chosen.
 | `semicolon_warning`                    | Show warning if there isn't a semicolon at the end of each query.                                                           | `true`/`false`      | `true`                                              |
 | `strict_identical_order_by`            | If solution (doesn't) contain(s) `ORDER BY`, student queries also (don't) have to contain it.                               | `true`/`false`      | `true`                                              |
 | `allow_different_column_order`         | Allow submitted query to return columns in different order than the solution.                                               | `true`/`false`      | `true`                                              |
-| `pargma_startup_queries`               | Run the provided PRAGMA queries on all test databases before starting the tests.                                            | string              | `""`                                                |
+| `pragma_startup_queries`               | Run the provided PRAGMA queries on all test databases before starting the tests.                                            | string              | `""`                                                |
 | `pre_execution_forbidden_symbolregex`  | Disallow the usage of some word groups in queries (check runs before query execution).                                      | list of regex       | `[".*sqlite_(temp_)?(master\|schema).*", "pragma"]` |
 | `pre_execution_mandatory_symbolregex`  | Require the usage of some word groups in queries (check runs before query execution).                                       | list of regex       | `[]`                                                |
 | `pre_execution_fullregex`              | Require the query to match the provided regex (check runs before query execution).                                          | list of regex       | `[]`                                                |
@@ -167,7 +167,7 @@ or
     "strict_identical_order_by": false,
     "allow_different_column_order": false,
     "post_execution_forbidden_symbolregex": ["dummy", ".*like.*"], 
-    "pargma_startup_queries": "PRAGMA case_sensitive_like=ON;"
+    "pragma_startup_queries": "PRAGMA case_sensitive_like=ON;"
   }
 }
 ```
