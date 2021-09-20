@@ -3,7 +3,7 @@
 import unittest
 
 from sql_query import SQLQuery
-
+from translator import Translator
 
 # @formatter:off
 class TestSQLQuery(unittest.TestCase):
@@ -164,14 +164,16 @@ class TestSQLQuery(unittest.TestCase):
             query.canonical, "SELECT '\n\n\n', ( count ( name ) ) [aaaaa], [name] as 'test' FROM ( sqlite_master ) ;"
         )
 
-    def test_is_select(self):
+    def test_is_select_is_pragma(self):
         query = self.single_query("  SELeCT\n*\tFROm   USERS  \n\r")
         self.assertEqual(query.canonical, "SELeCT * FROm USERS")
         self.assertEqual(query.is_select, True)
+        self.assertEqual(query.is_pragma, False)
 
         query = self.single_query("\nSELECT *\n    from\n       users\n")
         self.assertEqual(query.canonical, "SELECT * from users")
         self.assertEqual(query.is_select, True)
+        self.assertEqual(query.is_pragma, False)
 
         query = self.single_query(
             """
@@ -182,6 +184,7 @@ class TestSQLQuery(unittest.TestCase):
         )
         self.assertEqual(query.canonical, "INSERT INTO table2 SELECT * FROM table1 WHERE condition ;")
         self.assertEqual(query.is_select, False)
+        self.assertEqual(query.is_pragma, False)
 
         query = self.single_query(
             """
@@ -192,6 +195,12 @@ class TestSQLQuery(unittest.TestCase):
         )
         self.assertEqual(query.canonical, "SELECT * FROM table1 WHERE condition ;")
         self.assertEqual(query.is_select, True)
+        self.assertEqual(query.is_pragma, False)
+
+        query = self.single_query("PRAGMA CASE_SENSITIVE_LIKE=ON;")
+        self.assertEqual(query.canonical, "PRAGMA CASE_SENSITIVE_LIKE = ON ;")
+        self.assertEqual(query.is_select, False)
+        self.assertEqual(query.is_pragma, True)
 
     def test_is_ordered(self):
         query = self.single_query(
@@ -280,6 +289,62 @@ class TestSQLQuery(unittest.TestCase):
 
         query = self.single_query("select DISTICT CITY from users where name not like 'test%'")
         self.assertEqual(query.match_regex(".*like"), "not like")
+
+    def test_docs_example(self):
+        query = self.single_query("SELECT * FROM users WHERE name = 'test';")
+        self.assertEqual(
+            query.match_multi_regex(
+                forbidden_symbolregex=["users"],
+                mandatory_symbolregex=[],
+                fullregex=[],
+            ),
+            (Translator.Text.SUBMISSION_FORBIDDEN_REGEX, "users"),
+        )
+
+        self.assertEqual(
+            query.match_multi_regex(
+                forbidden_symbolregex=[],
+                mandatory_symbolregex=["customers"],
+                fullregex=[],
+            ),
+            (Translator.Text.SUBMISSION_MANDATORY_REGEX, "customers"),
+        )
+
+        self.assertEqual(
+            query.match_multi_regex(
+                forbidden_symbolregex=[],
+                mandatory_symbolregex=[],
+                fullregex=["select"],
+            ),
+            (Translator.Text.SUBMISSION_REGEX_MISMATCH, "select"),
+        )
+
+        self.assertEqual(
+            query.match_multi_regex(
+                forbidden_symbolregex=["test"],
+                mandatory_symbolregex=[],
+                fullregex=[],
+            ),
+            None,
+        )
+
+        self.assertEqual(
+            query.match_multi_regex(
+                forbidden_symbolregex=[],
+                mandatory_symbolregex=[".test."],
+                fullregex=[],
+            ),
+            None,
+        )
+
+        self.assertEqual(
+            query.match_multi_regex(
+                forbidden_symbolregex=[],
+                mandatory_symbolregex=[],
+                fullregex=["select .*"],
+            ),
+            None,
+        )
 
 
 # @formatter:on
