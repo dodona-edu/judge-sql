@@ -166,7 +166,8 @@ or
     "semicolon_warning": false,
     "strict_identical_order_by": false,
     "allow_different_column_order": false,
-    "post_execution_forbidden_symbolregex": ["dummy", ".*like.*"]
+    "post_execution_forbidden_symbolregex": ["dummy", ".*like.*"], 
+    "pargma_startup_queries": "PRAGMA case_sensitive_like=ON;"
   }
 }
 ```

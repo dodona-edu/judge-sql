@@ -14,8 +14,8 @@ from sql_query_result import SQLQueryResult
 def sql_run_pargma_startup_queries(sourcefile: str, workdir: str, db_name: str, script: str) -> str:
     """run a pragma script on the database before using the database in the exercise
 
-    :param sourcefile: exercise's sqlite start databse file
-    :param workdir: dodona workdir that is used to store the updated version of the database
+    :param sourcefile: exercise's sqlite start database file
+    :param workdir: Dodona workdir that is used to store the updated version of the database
     :param db_name: name of the database
     :param script: script that should be executed on the database
     :return: the filename of the updated database
@@ -50,7 +50,7 @@ class SQLDatabase:
         """construct SQLDatabase
 
         :param sourcefile: exercise's sqlite start databse file
-        :param workdir: dodona workdir that is used to store the changed versions of the database
+        :param workdir: Dodona workdir that is used to store the changed versions of the database
         :param db_name: name of the database
         """
         self.sourcefile = sourcefile
