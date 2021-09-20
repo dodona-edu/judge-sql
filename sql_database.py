@@ -91,13 +91,13 @@ class SQLDatabase:
         self.connection = None
 
     def solution_cursor(self) -> Cursor:
-        """:return: a cursor for the solution file database"""
+        """:return: a cursor for the solutionfile database"""
         self.close()
         self.connection = sqlite3.connect(self.solutionfile)
         return self.connection.cursor()
 
     def submission_cursor(self) -> Cursor:
-        """:return: a cursor for the submission file database"""
+        """:return: a cursor for the submissionfile database"""
         self.close()
         self.connection = sqlite3.connect(self.submissionfile)
         return self.connection.cursor()
