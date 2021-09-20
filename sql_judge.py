@@ -45,7 +45,7 @@ with Judgement():
     config.allow_different_column_order = bool(getattr(config, "allow_different_column_order", True))
 
     # Set 'pragma_startup_queries' to "" if not set
-    config.pragma_startup_queries = str(getattr(config, "pargma_startup_queries", ""))
+    config.pragma_startup_queries = str(getattr(config, "pragma_startup_queries", ""))
 
     # Set 'pre_execution_forbidden_symbolregex' to [".*sqlite_(temp_)?(master|schema).*", "pragma"] if not set
     defaults = [".*sqlite_(temp_)?(master|schema).*", "pragma"]
