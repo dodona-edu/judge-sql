@@ -128,14 +128,14 @@ The `..._symbolregex` lists are used to check each individual "symbol" (these sy
 All regular expressions are used in a case-insensitive way, and a full match is performed (no `^` and `$` required).
 
 For the example query "SELECT \* FROM users WHERE name = 'test';":
-| Field | Value | No error✅ / Error❌ | Reason |
-| --------------------------- | ----- | -------------- | ---- |
-| `..._forbidden_symbolregex` | ["users"] | ❌ | symbol found |
-| `..._mandatory_symbolregex` | ["customers"] | ❌ | symbol not found |
-| `..._fullregex` | ["select"] | ❌ | not a full match |
-| `..._forbidden_symbolregex` | ["test"] | ✅ | not a full match |
-| `..._mandatory_symbolregex` | [".test."] | ✅ | symbol found (`'test'`) |
-| `..._fullregex` | ["select .*"] | ✅ | full match |
+| Field                       | Value         | No error✅ / Error❌ | Reason                  |
+| --------------------------- | ------------- | :----------------: | ----------------------- |
+| `..._forbidden_symbolregex` | ["users"]     | ❌                  | symbol found            |
+| `..._mandatory_symbolregex` | ["customers"] | ❌                  | symbol not found        |
+| `..._fullregex`             | ["select"]    | ❌                  | not a full match        |
+| `..._forbidden_symbolregex` | ["test"]      | ✅                  | not a full match        |
+| `..._mandatory_symbolregex` | [".test."]    | ✅                  | symbol found (`'test'`) |
+| `..._fullregex`             | ["select .*"] | ✅                  | full match              |
 
 ### Example of modified settings
 
