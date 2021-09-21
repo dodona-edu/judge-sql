@@ -4,7 +4,7 @@ import unittest
 
 import pandas as pd
 
-from sql_query_result import SQLQueryResult
+from judge.sql_query_result import SQLQueryResult
 
 
 class TestSQLQueryResult(unittest.TestCase):
@@ -59,7 +59,3 @@ class TestSQLQueryResult(unittest.TestCase):
 
         self.assertEqual(query_result.csv_out, "Name,Test,Name\n" "juli,2,14\n" "nick,2,15\n" "tom,2,10")
         self.assertEqual(query_result.types_out, "Name [TEXT]\n" "Test [INTEGER]\n" "Name [INTEGER]")
-
-
-if __name__ == "__main__":
-    unittest.main()

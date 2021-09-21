@@ -3,7 +3,7 @@
 import os
 import sys
 
-from dodona_command import (
+from judge.dodona_command import (
     AnnotationSeverity,
     Judgement,
     Tab,
@@ -15,13 +15,13 @@ from dodona_command import (
     MessagePermission,
     MessageFormat,
 )
-from dodona_config import DodonaConfig
-from sql_query import SQLQuery
-from sql_query_result import SQLQueryResult
-from sql_database import SQLDatabase, sql_run_pragma_startup_queries
-from sql_judge_select_feedback import select_feedback
-from sql_judge_non_select_feedback import non_select_feedback
-from translator import Translator
+from judge.dodona_config import DodonaConfig
+from judge.sql_query import SQLQuery
+from judge.sql_query_result import SQLQueryResult
+from judge.sql_database import SQLDatabase, sql_run_pragma_startup_queries
+from judge.sql_judge_select_feedback import select_feedback
+from judge.sql_judge_non_select_feedback import non_select_feedback
+from judge.translator import Translator
 
 # extract info from exercise configuration
 config = DodonaConfig.from_json(sys.stdin)

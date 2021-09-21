@@ -2,13 +2,13 @@
 
 import os
 import sqlite3
-
+from shutil import copyfile
 from sqlite3 import Cursor
 from types import TracebackType
-from shutil import copyfile
-from dodona_config import DodonaConfig
-from sql_query import SQLQuery
-from sql_query_result import SQLQueryResult
+
+from .dodona_config import DodonaConfig
+from .sql_query import SQLQuery
+from .sql_query_result import SQLQueryResult
 
 
 def sql_run_pragma_startup_queries(sourcefile: str, workdir: str, db_name: str, script: str) -> str:
