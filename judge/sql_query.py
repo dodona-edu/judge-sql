@@ -141,13 +141,15 @@ class SQLQuery:
 
         return None
 
-    def match_array(self, words: list[str]) -> Optional[str]:
-        """checks if query contains symbol that is in the list (case insensitive)
+    def find_first_symbol(self, words: list[str]) -> Optional[str]:
+        """
+        Finds the first symbol that occurs in the list of words.
 
-        :return: word that is in the list, if not found return None
+        :param words: haystack
+        :return: the first symbol that matches, None if nothing matches
         """
         lowercase_words = set(map(lambda w: w.lower(), words))
-        return next((sym for sym in set(self.symbols) if sym in lowercase_words), None)
+        return next((sym for sym in self.symbols if sym in lowercase_words), None)
 
     @classmethod
     def from_raw_input(cls, raw_input: str) -> list["SQLQuery"]:

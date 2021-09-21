@@ -82,7 +82,7 @@ def non_select_feedback(
         if len(incorrect_name) + len(diff_layout) + len(diff_content) > 0:
             return
 
-        affected_table = solution_query.match_array(correct)
+        affected_table = solution_query.find_first_symbol(correct)
 
         if affected_table is None:
             return
