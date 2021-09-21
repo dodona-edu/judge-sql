@@ -2,4 +2,4 @@
 
 DIR="$(dirname $0)"
 
-pytest -n auto --cov --cov-branch --cov-report html "tests/"
+python -m unittest discover $DIR "*_test.py" $@
