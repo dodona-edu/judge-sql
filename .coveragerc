@@ -1,7 +1,0 @@
-[run]
-omit =
-    .github/*
-    htmlcov/*
-    */site-packages/*
-    tests/*
-    venv/*

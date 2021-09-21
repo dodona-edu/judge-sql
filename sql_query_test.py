@@ -2,9 +2,10 @@
 
 import unittest
 
-from judge.sql_query import SQLQuery
-from judge.translator import Translator
+from sql_query import SQLQuery
+from translator import Translator
 
+# @formatter:off
 class TestSQLQuery(unittest.TestCase):
     def single_query(self, raw: str):
         queries = SQLQuery.from_raw_input(raw)
@@ -344,3 +345,9 @@ class TestSQLQuery(unittest.TestCase):
             ),
             None,
         )
+
+
+# @formatter:on
+
+if __name__ == "__main__":
+    unittest.main()

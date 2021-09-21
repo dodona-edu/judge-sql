@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import numpy as np
 
-from .dodona_command import (
+from dodona_command import (
     Context,
     DodonaException,
     MessagePermission,
@@ -13,10 +13,10 @@ from .dodona_command import (
     ErrorType,
     MessageFormat,
 )
-from .dodona_config import DodonaConfig
-from .sql_query import SQLQuery
-from .sql_query_result import SQLQueryResult
-from .translator import Translator
+from sql_query_result import SQLQueryResult
+from translator import Translator
+from sql_query import SQLQuery
+from dodona_config import DodonaConfig
 
 
 def select_feedback(

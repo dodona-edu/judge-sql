@@ -5,7 +5,7 @@ import sys
 from abc import ABC
 from enum import Enum
 from types import SimpleNamespace, TracebackType
-from typing import Union, Optional
+from typing import Union
 
 
 class ErrorType(str, Enum):
@@ -146,7 +146,7 @@ class DodonaCommand(ABC):
         return {"command": f"close-{self.name()}", **self.close_args.__dict__}
 
     @staticmethod
-    def __print_command(result: Optional[dict]) -> None:
+    def __print_command(result: Union[None, dict]) -> None:
         """print the provided to stdout as JSON
 
         :param result: dict that will be JSON encoded and printed to stdout
