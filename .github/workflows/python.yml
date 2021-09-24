@@ -22,7 +22,9 @@ jobs:
           ${{ runner.os }}-pip-
     - name: Install dependencies
       run: pip3 install -r requirements.txt
-    -   name: Install dependencies
-        run: pip3 install -r requirements-dev.txt
+    - name: Install dependencies
+      run: pip3 install -r requirements-dev.txt
+    - name: Analysing the code with flake8
+      run: flakehell lint **/*.py
     - name: Run tests
-      run: ./run-tests.sh
+      run: ./devel/run-tests.sh

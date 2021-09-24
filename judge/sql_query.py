@@ -1,4 +1,4 @@
-"""input query parsing"""
+"""input query parsing."""
 
 import re
 from typing import Optional
@@ -9,14 +9,18 @@ from .translator import Translator
 
 
 def flatten_symbols(parsed: sqlparse.sql.Statement) -> list[str]:
-    """flatten sqlparse sql statement into a list of symbols
+    """Flatten sqlparse sql statement into a list of symbols.
 
     A symbol might exist out of multiple words (eg. 'not like', '" string with spaces  "').
 
-    :return: list of symbols
+    Args:
+        parsed: a parsed sql statement
+
+    Returns:
+        list of symbols
     """
 
-    def _flatten_symbols(statement):
+    def _flatten_symbols(statement: sqlparse.sql.Statement) -> list[str]:
         if not statement.is_group:
             return [statement.value]
 
@@ -39,11 +43,14 @@ def flatten_symbols(parsed: sqlparse.sql.Statement) -> list[str]:
 
 
 def format_join_symbols(symbols: list[str]) -> str:
-    """join a list of symbols into a formatted query
+    """Join a list of symbols into a formatted query.
 
-    :return: formatted query
+    Args:
+        symbols: list of symbols
+
+    Returns:
+        formatted query
     """
-
     result = ""
     for symbol in symbols:
         if len(result) > 0 and symbol == ",":
@@ -55,14 +62,15 @@ def format_join_symbols(symbols: list[str]) -> str:
 
 
 class SQLQuery:
-    """a class for managing an input query (used for both solution and submission queries)"""
+    """A class for managing an input query (used for both solution and submission queries)."""
 
-    def __init__(self, without_comments: str):
-        """create SQLQuery based on formatted string
+    def __init__(self, without_comments: str) -> None:
+        """Create SQLQuery based on formatted string.
 
         This constructor should not be used directly, use 'from_raw_input' instead.
 
-        :param without_comments: formatted sql query string
+        Args:
+            without_comments: formatted sql query string
         """
         self.without_comments = without_comments
         self.parsed = sqlparse.parse(without_comments)[0]
@@ -72,24 +80,40 @@ class SQLQuery:
         self._is_ordered = None
 
     @property
-    def type(self) -> str:
-        """query type (eg. ALTER, CREATE, DELETE, DROP, INSERT, REPLACE, SELECT, UPDATE, UPSERT ...)"""
+    def query_type(self) -> str:
+        """Return query type.
+
+        Returns:
+            the query type (eg. ALTER, CREATE, DELETE, DROP, INSERT, REPLACE, SELECT, UPDATE, UPSERT ...)
+        """
         return str(self.parsed.get_type())
 
     @property
     def is_select(self) -> bool:
-        """is query a SELECT query?"""
+        """Check if query is a SELECT query.
+
+        Returns:
+            True if query type is "SELECT".
+        """
         return str(self.parsed.get_type()) == "SELECT"
 
     @property
     def is_pragma(self) -> bool:
-        """is query a PRAGMA query?"""
+        """Check if query is a PRAGMA query.
+
+        Returns:
+            True if query starts with "PRAGMA".
+        """
         # self.parsed.get_type() would return "UNKNOWN" here
         return self.canonical.upper().startswith("PRAGMA")
 
     @property
     def is_ordered(self) -> bool:
-        """does query order its results?"""
+        """Check if query orders its results.
+
+        Returns:
+            True if query contains "ORDER BY".
+        """
         if self._is_ordered is not None:
             return self._is_ordered
         self._is_ordered = any(part.match(sqlparse.tokens.Keyword, r"ORDER\s+BY", regex=True) for part in self.parsed)
@@ -97,7 +121,11 @@ class SQLQuery:
 
     @property
     def has_ending_semicolon(self) -> bool:
-        """does query end with a semicolon?"""
+        """Check if query ends with a semicolon.
+
+        Returns:
+            True if query ends with a semicolon.
+        """
         return len(self.symbols) > 0 and self.symbols[-1] == ";"
 
     def match_multi_regex(
@@ -106,17 +134,23 @@ class SQLQuery:
         mandatory_symbolregex: list[str],
         fullregex: list[str],
     ) -> Optional[tuple[Translator.Text, str]]:
-        """checks if query complies to all given regexs
+        """Check if query complies to all given regexs.
 
-        :return: first non-complying match, or none if none are found
+        Args:
+            forbidden_symbolregex: list of regexs that should not match any symbol
+            mandatory_symbolregex: list of regexs that should match at least one symbol
+            fullregex: list of regexs that should match the full regex
+
+        Returns:
+            first non-complying match, or none if none are found
         """
         for regex in forbidden_symbolregex:
-            match = self.match_regex(regex)
+            match = self.first_match_regex(regex)
             if match is not None:
                 return Translator.Text.SUBMISSION_FORBIDDEN_REGEX, match
 
         for regex in mandatory_symbolregex:
-            match = self.match_regex(regex)
+            match = self.first_match_regex(regex)
             if match is None:
                 return Translator.Text.SUBMISSION_MANDATORY_REGEX, regex
 
@@ -128,10 +162,14 @@ class SQLQuery:
 
         return None
 
-    def match_regex(self, regex: str) -> Optional[str]:
-        """checks if query contains a symbol matching the regex (case insensitive)
+    def first_match_regex(self, regex: str) -> Optional[str]:
+        """Find the first symbol that matches the regex (case insensitive).
 
-        :return: word matching the regex, if not found return None
+        Args:
+            regex: the regex string used to match the symbols
+
+        Returns:
+            the first symbol that matches, None if nothing matches
         """
         reg = re.compile(regex, re.IGNORECASE)
 
@@ -141,22 +179,27 @@ class SQLQuery:
 
         return None
 
-    def find_first_symbol(self, words: list[str]) -> Optional[str]:
-        """
-        Finds the first symbol that occurs in the list of words.
+    def first_match_array(self, words: list[str]) -> Optional[str]:
+        """Find the first symbol that occurs in the list of words.
 
-        :param words: haystack
-        :return: the first symbol that matches, None if nothing matches
+        Args:
+            words: haystack
+
+        Returns:
+            the first symbol that matches, None if nothing matches
         """
         lowercase_words = set(map(lambda w: w.lower(), words))
         return next((symbol for symbol in self.symbols if symbol.lower() in lowercase_words), None)
 
     @classmethod
-    def from_raw_input(cls, raw_input: str) -> list["SQLQuery"]:
-        """create list of SQLQuery objects starting from raw query input
+    def from_raw_input(cls: type["SQLQuery"], raw_input: str) -> list["SQLQuery"]:
+        """Create list of SQLQuery objects starting from raw query input.
 
-        :param raw_input: raw submission or solution query input (; separated)
-        :return: list of individual sql queries
+        Args:
+            raw_input: raw submission or solution query input (; separated)
+
+        Returns:
+            list of individual sql queries
         """
         raw_input = raw_input.strip()
         without_comments = sqlparse.format(

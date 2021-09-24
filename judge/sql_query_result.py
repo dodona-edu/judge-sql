@@ -1,4 +1,4 @@
-"""sql query tabular result utils"""
+"""sql query tabular result utils."""
 
 import io
 from sqlite3 import Cursor
@@ -17,16 +17,17 @@ python_type_to_sqlite_type = {
 
 
 class SQLQueryResult:
-    """a class for managing a query's results"""
+    """a class for managing a query's results."""
 
-    def __init__(self, dataframe: pd.DataFrame, columns: list[str], types: list[type]):
-        """create new SQLQueryResult
+    def __init__(self, dataframe: pd.DataFrame, columns: list[str], types: list[type]) -> None:
+        """Create new SQLQueryResult.
 
         Should not be used directly (other than testing). Use 'from_cursor' instead.
 
-        :param dataframe: pandas dataframe containing query's result content
-        :param columns: list of column names (used for csv header)
-        :param types: list of column types (used for checking sql types)
+        Args:
+            dataframe: pandas dataframe containing query's result content
+            columns: list of column names (used for csv header)
+            types: list of column types (used for checking sql types)
         """
         assert len(dataframe.columns) == len(columns)
         assert len(dataframe.columns) == len(types)
@@ -36,15 +37,18 @@ class SQLQueryResult:
         self.types = types
 
     @classmethod
-    def from_cursor(cls, max_rows: int, cursor: Cursor) -> "SQLQueryResult":
-        """process sql query results and wrap in SQLQueryResult
+    def from_cursor(cls: type["SQLQueryResult"], max_rows: int, cursor: Cursor) -> "SQLQueryResult":
+        """Process sql query results and wrap in SQLQueryResult.
 
         The column names are stored separate from the dataframe, because an
         sql query might return multiple columns with the same name.
 
-        :param max_rows: max number of rows to retrieve
-        :param cursor: cursor that was used to perform query and can now be used to retrieve results
-        :return: the results wrapped in a SQLQueryResult object
+        Args:
+            max_rows: max number of rows to retrieve
+            cursor: cursor that was used to perform query and can now be used to retrieve results
+
+        Returns:
+            the results wrapped in a SQLQueryResult object
         """
         rows = cursor.fetchmany(max_rows)
 
@@ -57,9 +61,10 @@ class SQLQueryResult:
         return cls(dataframe, columns, types)
 
     def sort_rows(self, sort_on: list[str]) -> None:
-        """sort the rows based on a list of column names
+        """Sort the rows based on a list of column names.
 
-        :param sort_on: list of column names to sort on
+        Args:
+            sort_on: list of column names to sort on
         """
         if self.dataframe.empty or len(sort_on) == 0:
             return
@@ -67,13 +72,14 @@ class SQLQueryResult:
         self.dataframe.sort_values(by=self.dataframe.columns[indices].tolist(), inplace=True)
 
     def index_columns(self, column_index: list[str]) -> None:
-        """change order of columns based on provided list of columns
+        """Change order of columns based on provided list of columns.
 
         Change the column-order based on the position of the column name in the
         'column_index' list. All columns that are not in the 'column_index' list
         are maintained as columns, but are moved to the end of the column list.
 
-        :param column_index: list of column names that should be placed first
+        Args:
+            column_index: list of column names that should be placed first
         """
         original_indices = {}
         for i, column in enumerate(self.columns):
@@ -94,14 +100,22 @@ class SQLQueryResult:
 
     @property
     def csv_out(self) -> str:
-        """csv representation of the query result (including column names in header) as a string"""
+        """CSV representation of the query result (including column names in header) as a string.
+
+        Returns:
+            a csv encoded version of the retrieved sql rows, including a header
+        """
         csv_output = io.StringIO()
         self.dataframe.to_csv(csv_output, header=self.columns, index=False)
         return csv_output.getvalue().strip()
 
     @property
     def types_out(self) -> str:
-        """text representation of the query column names and types"""
+        """Text representation of the query column names and types.
+
+        Returns:
+            string representation of all returned column names and their types
+        """
         type_description = "\n".join(
             f"{c} [{python_type_to_sqlite_type[t]}]" for (c, t) in zip(self.columns, self.types)
         )

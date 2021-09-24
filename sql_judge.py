@@ -1,26 +1,26 @@
-"""sql judge main script"""
+"""sql judge main script."""
 
 import os
 import sys
 
 from judge.dodona_command import (
-    AnnotationSeverity,
-    Judgement,
-    Tab,
-    Context,
-    TestCase,
     Annotation,
+    AnnotationSeverity,
+    Context,
     DodonaException,
     ErrorType,
-    MessagePermission,
+    Judgement,
     MessageFormat,
+    MessagePermission,
+    Tab,
+    TestCase,
 )
 from judge.dodona_config import DodonaConfig
+from judge.sql_database import SQLDatabase, sql_run_pragma_startup_queries
+from judge.sql_judge_non_select_feedback import non_select_feedback
+from judge.sql_judge_select_feedback import select_feedback
 from judge.sql_query import SQLQuery
 from judge.sql_query_result import SQLQueryResult
-from judge.sql_database import SQLDatabase, sql_run_pragma_startup_queries
-from judge.sql_judge_select_feedback import select_feedback
-from judge.sql_judge_non_select_feedback import non_select_feedback
 from judge.translator import Translator
 
 # extract info from exercise configuration
@@ -67,7 +67,7 @@ with Judgement():
             (str(filename), os.path.join(config.resources, filename)) for filename in config.database_files
         ]
 
-        for filename, file in config.database_files:
+        for _, file in config.database_files:
             if not os.path.exists(file):
                 raise DodonaException(
                     config.translator.error_status(ErrorType.INTERNAL_ERROR),
@@ -189,13 +189,13 @@ with Judgement():
 
             submission_query = config.submission_queries[query_nr]
 
-            if solution_query.type != submission_query.type:
+            if solution_query.query_type != submission_query.query_type:
                 raise DodonaException(
                     config.translator.error_status(ErrorType.RUNTIME_ERROR),
                     permission=MessagePermission.STUDENT,
                     description=config.translator.translate(
                         Translator.Text.SUBMISSION_WRONG_QUERY_TYPE,
-                        submitted=submission_query.type,
+                        submitted=submission_query.query_type,
                     ),
                     format=MessageFormat.CALLOUT_DANGER,
                 )
@@ -226,7 +226,7 @@ with Judgement():
                     with SQLDatabase(db_file, config.workdir, db_name) as db:
                         cursor = db.solution_cursor()
 
-                        #### RUN SOLUTION QUERY
+                        # RUN SOLUTION QUERY
                         try:
                             cursor.execute(solution_query.without_comments)
                         except Exception as err:
@@ -237,12 +237,12 @@ with Judgement():
                                 format=MessageFormat.CODE,
                             ) from err
 
-                        #### RENDER SOLUTION QUERY OUTPUT
+                        # RENDER SOLUTION QUERY OUTPUT
                         expected_output = SQLQueryResult.from_cursor(config.max_rows, cursor)
 
                         cursor = db.submission_cursor()
 
-                        #### RUN SUBMISSION QUERY
+                        # RUN SUBMISSION QUERY
                         try:
                             cursor.execute(submission_query.without_comments)
                         except Exception as err:
@@ -253,7 +253,7 @@ with Judgement():
                                 format=MessageFormat.CODE,
                             ) from err
 
-                        #### RENDER SUBMISSION QUERY OUTPUT
+                        # RENDER SUBMISSION QUERY OUTPUT
                         generated_output = SQLQueryResult.from_cursor(config.max_rows, cursor)
 
                     if not solution_query.is_select:

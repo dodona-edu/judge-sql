@@ -1,4 +1,4 @@
-"""manage sqlite solution and submission database"""
+"""Manage sqlite solution and submission database."""
 
 import os
 import sqlite3
@@ -12,13 +12,19 @@ from .sql_query_result import SQLQueryResult
 
 
 def sql_run_pragma_startup_queries(sourcefile: str, workdir: str, db_name: str, script: str) -> str:
-    """run a pragma script on the database before using the database in the exercise
+    """Run a pragma script on the database before using the database in the exercise.
 
-    :param sourcefile: exercise's sqlite start database file
-    :param workdir: Dodona workdir that is used to store the updated version of the database
-    :param db_name: name of the database
-    :param script: script that should be executed on the database
-    :return: the filename of the updated database
+    Args:
+        sourcefile: exercise's sqlite start database file
+        workdir: Dodona workdir that is used to store the updated version of the database
+        db_name: name of the database
+        script: script that should be executed on the database
+
+    Returns:
+        the filename of the updated database
+
+    Raises:
+        Exception: something went wrong while executing startup queries
     """
     for query in SQLQuery.from_raw_input(script):
         if not query.is_pragma:
@@ -37,7 +43,7 @@ def sql_run_pragma_startup_queries(sourcefile: str, workdir: str, db_name: str, 
 
 
 class SQLDatabase:
-    """wrapper class for the sqlite3 connections & file management
+    """Wrapper class for the sqlite3 connections & file management.
 
     This class manages a solution and a submission file that are based on the
     exercise's "starting-point"/ init database. The user queries should be applied on the
@@ -46,12 +52,13 @@ class SQLDatabase:
     when used with non-select sql queries (eg. CREATE & INSERT).
     """
 
-    def __init__(self, sourcefile: str, workdir: str, db_name: str):
-        """construct SQLDatabase
+    def __init__(self, sourcefile: str, workdir: str, db_name: str) -> None:
+        """Construct SQLDatabase.
 
-        :param sourcefile: exercise's sqlite start databse file
-        :param workdir: Dodona workdir that is used to store the changed versions of the database
-        :param db_name: name of the database
+        Args:
+            sourcefile: exercise's sqlite start databse file
+            workdir: Dodona workdir that is used to store the changed versions of the database
+            db_name: name of the database
         """
         self.sourcefile = sourcefile
         self.solutionfile = os.path.join(workdir, f"{db_name}.solution")
@@ -60,13 +67,14 @@ class SQLDatabase:
         self.connection = None
 
     def __enter__(self) -> "SQLDatabase":
-        """create solutionfile and submissionfile
+        """Create solutionfile and submissionfile.
 
         If no solutionfile/ submissionfile has been generated before
         (usually because it is the first testcase), the source file is
         copied to these file locations.
 
-        :return: current SQLDatabase instance
+        Returns:
+            current SQLDatabase instance
         """
         if not os.path.isfile(self.solutionfile):
             copyfile(self.sourcefile, self.solutionfile)
@@ -80,30 +88,48 @@ class SQLDatabase:
         exc_val: BaseException,
         exc_tb: TracebackType,
     ) -> None:
-        """commit & close current database connection on exit"""
+        """Commit & close current database connection on exit.
+
+        Args:
+            exc_type: exception type
+            exc_val: exception value
+            exc_tb: exception traceback
+        """
         self.close()
 
     def close(self) -> None:
-        """commit & close current database connection"""
+        """Commit & close current database connection."""
         if self.connection is not None:
             self.connection.commit()
             self.connection.close()
         self.connection = None
 
     def solution_cursor(self) -> Cursor:
-        """:return: a cursor for the solutionfile database"""
+        """Create a cursor for the solution database.
+
+        Returns:
+            a cursor for the solutionfile database
+        """
         self.close()
         self.connection = sqlite3.connect(self.solutionfile)
         return self.connection.cursor()
 
     def submission_cursor(self) -> Cursor:
-        """:return: a cursor for the submissionfile database"""
+        """Create a cursor for the submission database.
+
+        Returns:
+            a cursor for the submissionfile database
+        """
         self.close()
         self.connection = sqlite3.connect(self.submissionfile)
         return self.connection.cursor()
 
     def joined_cursor(self) -> Cursor:
-        """:return: a cursor for the a database in which both the solution and submission are attached"""
+        """Create a cursor for the solution and submission databases.
+
+        Returns:
+            a cursor for the a database in which both the solution and submission are attached
+        """
         self.close()
         self.connection = sqlite3.connect(":memory:")
         cursor = self.connection.cursor()
@@ -112,11 +138,14 @@ class SQLDatabase:
         return cursor
 
     def get_table_layout(self, config: DodonaConfig, table: str) -> tuple[SQLQueryResult, SQLQueryResult]:
-        """retrieve the table layout for both the solution and submission
+        """Retrieve the table layout for both the solution and submission.
 
-        :param config: the Dodona judge config
-        :param table: name of table to request layout for
-        :return: (solution_layout, submission_layout) containing the pragma table info
+        Args:
+            config: the Dodona judge config
+            table: name of table to request layout for
+
+        Returns:
+            (solution_layout, submission_layout) containing the pragma table info
         """
         cursor = self.joined_cursor()
         cursor.execute(f"PRAGMA solution.table_info('{table}')")
@@ -126,11 +155,14 @@ class SQLDatabase:
         return solution_layout, submission_layout
 
     def get_table_content(self, config: DodonaConfig, table: str) -> tuple[SQLQueryResult, SQLQueryResult]:
-        """retrieve the table content for both the solution and submission
+        """Retrieve the table content for both the solution and submission.
 
-        :param config: the Dodona judge config
-        :param table: name of table to request content for
-        :return: (solution_content, submission_content) containing the table contents
+        Args:
+            config: the Dodona judge config
+            table: name of table to request content for
+
+        Returns:
+            (solution_content, submission_content) containing the table contents
         """
         cursor = self.joined_cursor()
         cursor.execute(f"SELECT * FROM solution.'{table}'")
@@ -202,7 +234,7 @@ class SQLDatabase:
     """
 
     def diff(self) -> tuple[list[str], list[str], list[str], list[str]]:
-        """determine the difference between the solution and submission sqlite databases
+        """Determine the difference between the solution and submission sqlite databases.
 
         First all table names are checked, tables with a name that includes the character '
         are returned in 'incorrect_name'. Then, from the correctly named tables, all tables
@@ -210,8 +242,9 @@ class SQLDatabase:
         Finally, the remaining table's content is compared and a list of tables with differing
         contents is returned as 'diff_content'.
 
-        :return: (incorrect_name, diff_layout, diff_content, correct) names of tables that have invalid names,
-        are non-identical with regards to layout, are non-identical with regards to content and are identical
+        Returns:
+            (incorrect_name, diff_layout, diff_content, correct) names of tables that have invalid names,
+            are non-identical with regards to layout, are non-identical with regards to content and are identical
         """
         cursor = self.joined_cursor()
 

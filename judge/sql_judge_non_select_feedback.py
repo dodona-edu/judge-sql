@@ -1,13 +1,13 @@
-"""sql feedback for non-select queries"""
+"""sql feedback for non-select queries."""
 
 from types import SimpleNamespace
 
 from .dodona_command import (
-    Test,
     DodonaException,
     ErrorType,
-    MessagePermission,
     MessageFormat,
+    MessagePermission,
+    Test,
 )
 from .dodona_config import DodonaConfig
 from .sql_database import SQLDatabase
@@ -17,8 +17,19 @@ from .translator import Translator
 
 def non_select_feedback(
     config: DodonaConfig, testcase: SimpleNamespace, db_name: str, db_file: str, solution_query: SQLQuery
-):
-    """run tests based on execution results of a select query"""
+) -> None:
+    """Run tests based on execution results of a select query.
+
+    Args:
+        config: parsed config received from Dodona
+        testcase: testcase object used to return values to Dodona
+        db_name: the name of the database
+        db_file: the location of the database file
+        solution_query: the parsed solution query
+
+    Raises:
+        DodonaException: custom exception that is automatically handled by the 'with' blocks
+    """
     with SQLDatabase(db_file, config.workdir, db_name) as database:
         incorrect_name, diff_layout, diff_content, correct = database.diff()
 
@@ -82,7 +93,7 @@ def non_select_feedback(
         if len(incorrect_name) + len(diff_layout) + len(diff_content) > 0:
             return
 
-        affected_table = solution_query.find_first_symbol(correct)
+        affected_table = solution_query.first_match_array(correct)
 
         if affected_table is None:
             return
