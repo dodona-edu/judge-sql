@@ -71,6 +71,6 @@ class DodonaConfig(SimpleNamespace):
         cwd = os.getcwd()
         assert os.path.realpath(cwd) == os.path.realpath(self.workdir)
 
-        # Make sure that this file is located in the judge folder
-        script_path = os.path.dirname(os.path.realpath(__file__))
+        # Make sure that this file is located in a subfolder of the judge folder
+        script_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
         assert os.path.realpath(script_path) == os.path.realpath(self.judge)
