@@ -2,17 +2,17 @@
 
 from types import SimpleNamespace
 
-from sql_query import SQLQuery
-from translator import Translator
-from dodona_config import DodonaConfig
-from dodona_command import (
+from .dodona_command import (
     Test,
     DodonaException,
     ErrorType,
     MessagePermission,
     MessageFormat,
 )
-from sql_database import SQLDatabase
+from .dodona_config import DodonaConfig
+from .sql_database import SQLDatabase
+from .sql_query import SQLQuery
+from .translator import Translator
 
 
 def non_select_feedback(
@@ -82,7 +82,7 @@ def non_select_feedback(
         if len(incorrect_name) + len(diff_layout) + len(diff_content) > 0:
             return
 
-        affected_table = solution_query.match_array(correct)
+        affected_table = solution_query.find_first_symbol(correct)
 
         if affected_table is None:
             return
