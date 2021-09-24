@@ -149,7 +149,7 @@ class SQLQuery:
         :return: the first symbol that matches, None if nothing matches
         """
         lowercase_words = set(map(lambda w: w.lower(), words))
-        return next((sym for sym in self.symbols if sym in lowercase_words), None)
+        return next((symbol for symbol in self.symbols if symbol.lower() in lowercase_words), None)
 
     @classmethod
     def from_raw_input(cls, raw_input: str) -> list["SQLQuery"]:
