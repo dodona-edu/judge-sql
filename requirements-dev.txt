@@ -1,3 +1,26 @@
 pytest==6.1.2
 pytest-cov==2.10.1
 pytest-xdist==2.3.0
+flake8==3.9.2
+black==21.9b0
+pylint==2.11.1
+
+# flake8 deps
+flakehell
+flake8-annotations
+flake8-bandit
+flake8-black
+flake8-bugbear
+flake8-builtins
+flake8-comprehensions
+darglint
+flake8-docstrings
+flake8-eradicate
+flake8-isort
+flake8-mutable
+flake8-pytest-style
+mccabe
+pep8-naming
+pycodestyle
+pyflakes
+pylint

@@ -1,4 +1,4 @@
-"""sql feedback for select queries"""
+"""sql feedback for select queries."""
 
 from types import SimpleNamespace
 
@@ -7,11 +7,11 @@ import numpy as np
 from .dodona_command import (
     Context,
     DodonaException,
+    ErrorType,
+    Message,
+    MessageFormat,
     MessagePermission,
     Test,
-    Message,
-    ErrorType,
-    MessageFormat,
 )
 from .dodona_config import DodonaConfig
 from .sql_query import SQLQuery
@@ -26,8 +26,20 @@ def select_feedback(
     generated_output: SQLQueryResult,
     solution_query: SQLQuery,
     submission_query: SQLQuery,
-):
-    """run tests based on database status after running a non-select query"""
+) -> None:
+    """Run tests based on database status after running a non-select query.
+
+    Args:
+        config: parsed config received from Dodona
+        testcase: testcase object used to return values to Dodona
+        expected_output: select query expected output
+        generated_output: select query generated output
+        solution_query: the parsed solution query
+        submission_query: the parsed submission query
+
+    Raises:
+        DodonaException: custom exception that is automatically handled by the 'with' blocks
+    """
     if config.allow_different_column_order:
         expected_output.index_columns(generated_output.columns)
 

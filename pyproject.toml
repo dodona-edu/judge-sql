@@ -1,0 +1,32 @@
+[tool.isort]
+profile = "black"
+
+[tool.black]
+line-length = 120
+
+[tool.flakehell]
+baseline = "baseline.txt" # TODO: reduce number of exceptions in "baseline.txt"
+exclude = ["README.md", "tests/*"]
+format = "colored"
+max_line_length = 120
+show_source = true
+extended_default_ignore=[]  # fix https://github.com/flakehell/flakehell/issues/10
+
+[tool.flakehell.plugins]
+flake8-annotations = ["+*", "-ANN101"]
+flake8-bandit = ["+*"]
+flake8-black = ["+*"]
+flake8-bugbear = ["+*"]
+flake8-builtins = ["+*"]
+flake8-comprehensions = ["+*"]
+flake8-darglint = ["+*"]
+flake8-docstrings = ["+*"]
+flake8-eradicate = ["+*"]
+flake8-isort = ["+*"]
+flake8-mutable = ["+*"]
+flake8-pytest-style = ["+*"]
+mccabe = ["+*"]
+pep8-naming = ["+*", "-N818"]
+pycodestyle = ["+*", "-W503"]
+pyflakes = ["+*"]
+pylint = ["+*"]

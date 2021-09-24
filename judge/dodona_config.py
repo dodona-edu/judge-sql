@@ -1,14 +1,13 @@
-"""Dodona Judge configuration"""
+"""Dodona Judge configuration."""
 
 import json
 import os
 from types import SimpleNamespace
-from typing import TextIO
+from typing import Any, TextIO
 
 
-# pylint: disable=too-many-instance-attributes
 class DodonaConfig(SimpleNamespace):
-    """a class for containing all Dodona Judge configuration
+    """a class for containing all Dodona Judge configuration.
 
     Attributes:
         memory_limit:           An integer, the memory limit in bytes. The docker container
@@ -30,10 +29,11 @@ class DodonaConfig(SimpleNamespace):
         workdir:                Full path to the directory in which all user code should be executed.
     """
 
-    def __init__(self, **kargs):
-        """store all parameters & set correct type for 'known' Dodona judge configuration fields
+    def __init__(self, **kargs: dict[str, Any]) -> None:
+        """Store all parameters & set correct type for 'known' Dodona judge configuration fields.
 
-        :param kargs: the named parameters in the form of a dict
+        Args:
+            kargs: the named parameters in the form of a dict
         """
         super().__init__(**kargs)
         self.memory_limit = int(self.memory_limit)
@@ -46,26 +46,31 @@ class DodonaConfig(SimpleNamespace):
         self.workdir = str(self.workdir)
 
     @classmethod
-    def from_json(cls, json_file: TextIO) -> "DodonaConfig":
-        """decode json filestream into a DodonaConfig object
+    def from_json(cls: type["DodonaConfig"], json_file: TextIO) -> "DodonaConfig":
+        """Decode json filestream into a DodonaConfig object.
 
-        :param json_file: input json-encoded filestream
-        :return: decoded Dodona judge config
+        Args:
+            json_file: input json-encoded filestream
+
+        Returns:
+            decoded Dodona judge config
         """
         simple = json.load(json_file, object_hook=lambda d: SimpleNamespace(**d))
         return cls(**simple.__dict__)
 
     def sanity_check(self) -> None:
-        """perform sanity checks
+        """Perform sanity checks.
 
-        This function checks if the Python file is executed correctly. The current working dir
-        should be the same directory that is passed as the 'workdir' property in the Dodona config.
-        Also, this Python file (and all other Python judge files) should be located in the 'judge' dir.
+        This function checks if the Python file is executed correctly.
+        The current working dir should be the same directory that is
+        passed as the 'workdir' property in the Dodona config. Also,
+        this Python file (and all other Python judge files) should be
+        located in the 'judge' dir.
         """
         # Make sure that the current working dir is the workdir
-        # cwd = os.getcwd()
-        # assert os.path.realpath(cwd) == os.path.realpath(self.workdir)
+        cwd = os.getcwd()
+        assert os.path.realpath(cwd) == os.path.realpath(self.workdir)
 
         # Make sure that this file is located in the judge folder
-        # script_path = os.path.dirname(os.path.realpath(__file__))
-        # assert os.path.realpath(script_path) == os.path.realpath(self.judge)
+        script_path = os.path.dirname(os.path.realpath(__file__))
+        assert os.path.realpath(script_path) == os.path.realpath(self.judge)

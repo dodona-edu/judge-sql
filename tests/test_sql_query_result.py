@@ -1,5 +1,3 @@
-# pylint: disable=missing-docstring
-
 import unittest
 
 import pandas as pd
@@ -30,6 +28,7 @@ class TestSQLQueryResult(unittest.TestCase):
             "col1 [INTEGER]\n" "col3 [TEXT]\n" "col2 [INTEGER]",
         )
 
+        self.assertEqual(query_result.columns, ["col1", "col3", "col2"])
         query_result.index_columns(["col3", "col1", "non_existing"])  # should keep all columns & not add non_existing
         query_result.sort_rows(["col3", "col1", "non_existing"])
 
@@ -56,6 +55,11 @@ class TestSQLQueryResult(unittest.TestCase):
 
         query_result.index_columns(["Name", "Test"])  # should keep both columns & keep ordering (stable)
         query_result.sort_rows(["Name"])
+
+        self.assertEqual(query_result.csv_out, "Name,Test,Name\n" "juli,2,14\n" "nick,2,15\n" "tom,2,10")
+        self.assertEqual(query_result.types_out, "Name [TEXT]\n" "Test [INTEGER]\n" "Name [INTEGER]")
+
+        query_result.sort_rows([])  # noop
 
         self.assertEqual(query_result.csv_out, "Name,Test,Name\n" "juli,2,14\n" "nick,2,15\n" "tom,2,10")
         self.assertEqual(query_result.types_out, "Name [TEXT]\n" "Test [INTEGER]\n" "Name [INTEGER]")

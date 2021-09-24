@@ -1,9 +1,8 @@
-# pylint: disable=missing-docstring
-
 import unittest
 
 from judge.sql_query import SQLQuery
 from judge.translator import Translator
+
 
 class TestSQLQuery(unittest.TestCase):
     def single_query(self, raw: str):
@@ -56,6 +55,7 @@ class TestSQLQuery(unittest.TestCase):
         self.assertEqual(query.has_ending_semicolon, True)
         self.assertEqual(query.is_select, True)
         self.assertEqual(query.is_ordered, True)
+        self.assertEqual(query.is_ordered, True)  # result should be cached
 
     def test_query_2(self):
         query = self.single_query('--SELECT\n   INSERT INTO table2 /**/  SELECT * FROM Users Where ";#ORDER BY" = 1;')
@@ -236,58 +236,103 @@ class TestSQLQuery(unittest.TestCase):
 
     def test_query_type(self):
         query = self.single_query('select * from users WHERE zip LIKE "test"')
-        self.assertEqual(query.type, "SELECT")
+        self.assertEqual(query.query_type, "SELECT")
 
         query = self.single_query('INSERT INTO table_name (column) VALUES ("value");')
-        self.assertEqual(query.type, "INSERT")
+        self.assertEqual(query.query_type, "INSERT")
 
         query = self.single_query("DELETE FROM table_name WHERE condition;")
-        self.assertEqual(query.type, "DELETE")
+        self.assertEqual(query.query_type, "DELETE")
 
         query = self.single_query("INSERT INTO table2 SELECT * FROM table1 WHERE condition;")
-        self.assertEqual(query.type, "INSERT")
+        self.assertEqual(query.query_type, "INSERT")
 
     def test_match_keywords(self):
         query = self.single_query('select * from users WHERE zip LIKE "test"')
-        self.assertEqual(query.match_regex("LIKE"), "LIKE")
+        self.assertEqual(query.symbols, ["select", "*", "from", "users", "WHERE", "zip", "LIKE", '"test"'])
+        self.assertEqual(query.first_match_regex("LIKE"), "LIKE")
+
+        query = self.single_query("DELETE FROM ARTISTS WHERE NAME LIKE '%Santana%';")
+        self.assertEqual(query.symbols, ["DELETE", "FROM", "ARTISTS", "WHERE", "NAME", "LIKE", "'%Santana%'", ";"])
+        self.assertEqual(query.first_match_array(["ARTISTS"]), "ARTISTS")
+        self.assertEqual(query.first_match_array(["artists"]), "ARTISTS")
+        self.assertEqual(query.first_match_array(["arTiSts"]), "ARTISTS")
+        self.assertEqual(query.first_match_array(["NAME", "arTiSts"]), "ARTISTS")
 
         query = self.single_query('select * from users WHERE zip = "LIKE"')
-        self.assertEqual(query.match_regex("select"), "select")
-        self.assertEqual(query.match_regex("sel"), None)
-        self.assertEqual(query.match_regex("sel..."), "select")
-        self.assertEqual(query.match_regex("from"), "from")
-        self.assertEqual(query.match_regex("users"), "users")
-        self.assertEqual(query.match_regex("WHERE"), "WHERE")
-        self.assertEqual(query.match_regex("zip"), "zip")
-        self.assertEqual(query.match_regex('"LIKE"'), '"LIKE"')
-        self.assertEqual(query.match_regex("LIKE"), None)
+        self.assertEqual(query.symbols, ["select", "*", "from", "users", "WHERE", "zip", "=", '"LIKE"'])
+        self.assertEqual(query.first_match_regex("select"), "select")
+        self.assertEqual(query.first_match_regex("sel"), None)
+        self.assertEqual(query.first_match_regex("sel..."), "select")
+        self.assertEqual(query.first_match_regex("from"), "from")
+        self.assertEqual(query.first_match_regex("users"), "users")
+        self.assertEqual(query.first_match_regex("WHERE"), "WHERE")
+        self.assertEqual(query.first_match_regex("zip"), "zip")
+        self.assertEqual(query.first_match_regex('"LIKE"'), '"LIKE"')
+        self.assertEqual(query.first_match_regex("LIKE"), None)
+
+        self.assertEqual(query.first_match_array(["select"]), "select")
+        self.assertEqual(query.first_match_array(["sel..."]), None)
+        self.assertEqual(query.first_match_array(['"LIKE"']), '"LIKE"')
+        self.assertEqual(query.first_match_array(["LIKE"]), None)
+        self.assertEqual(query.first_match_array(["LIKE", "select"]), "select")
+        self.assertEqual(query.first_match_array(["SELECT"]), "select")
 
         query = self.single_query('select (SELECT COUNT(*) FROM table WHERE zip = "LIKE") from users')
-        self.assertEqual(query.match_regex("select"), "select")
-        self.assertEqual(query.match_regex("count"), "COUNT")
-        self.assertEqual(query.match_regex("from"), "FROM")
-        self.assertEqual(query.match_regex("table"), "table")
-        self.assertEqual(query.match_regex("WHERE"), "WHERE")
-        self.assertEqual(query.match_regex("zip"), "zip")
-        self.assertEqual(query.match_regex("users"), "users")
+        self.assertEqual(
+            query.symbols,
+            [
+                "select",
+                "(",
+                "SELECT",
+                "COUNT",
+                "(",
+                "*",
+                ")",
+                "FROM",
+                "table",
+                "WHERE",
+                "zip",
+                "=",
+                '"LIKE"',
+                ")",
+                "from",
+                "users",
+            ],
+        )
+        self.assertEqual(query.first_match_regex("select"), "select")
+        self.assertEqual(query.first_match_regex("count"), "COUNT")
+        self.assertEqual(query.first_match_regex("from"), "FROM")
+        self.assertEqual(query.first_match_regex("table"), "table")
+        self.assertEqual(query.first_match_regex("WHERE"), "WHERE")
+        self.assertEqual(query.first_match_regex("zip"), "zip")
+        self.assertEqual(query.first_match_regex("users"), "users")
 
         query = self.single_query("select CITY as like from users")
-        self.assertEqual(query.match_regex("select"), "select")
-        self.assertEqual(query.match_regex("CITY"), "CITY")
-        self.assertEqual(query.match_regex("as"), "as")
-        self.assertEqual(query.match_regex("like"), "like")
-        self.assertEqual(query.match_regex("from"), "from")
-        self.assertEqual(query.match_regex("users"), "users")
+        self.assertEqual(query.symbols, ["select", "CITY", "as", "like", "from", "users"])
+        self.assertEqual(query.first_match_regex("select"), "select")
+        self.assertEqual(query.first_match_regex("CITY"), "CITY")
+        self.assertEqual(query.first_match_regex("as"), "as")
+        self.assertEqual(query.first_match_regex("like"), "like")
+        self.assertEqual(query.first_match_regex("from"), "from")
+        self.assertEqual(query.first_match_regex("users"), "users")
 
         query = self.single_query("select DISTICT CITY from users")
-        self.assertEqual(query.match_regex("select"), "select")
-        self.assertEqual(query.match_regex("DISTICT"), "DISTICT")
-        self.assertEqual(query.match_regex("CITY"), "CITY")
-        self.assertEqual(query.match_regex("from"), "from")
-        self.assertEqual(query.match_regex("users"), "users")
+        self.assertEqual(query.symbols, ["select", "DISTICT", "CITY", "from", "users"])
+        self.assertEqual(query.first_match_regex("select"), "select")
+        self.assertEqual(query.first_match_regex("DISTICT"), "DISTICT")
+        self.assertEqual(query.first_match_regex("CITY"), "CITY")
+        self.assertEqual(query.first_match_regex("from"), "from")
+        self.assertEqual(query.first_match_regex("users"), "users")
 
         query = self.single_query("select DISTICT CITY from users where name not like 'test%'")
-        self.assertEqual(query.match_regex(".*like"), "not like")
+        self.assertEqual(
+            query.symbols, ["select", "DISTICT", "CITY", "from", "users", "where", "name", "not like", "'test%'"]
+        )
+        self.assertEqual(query.first_match_regex(".*like"), "not like")
+
+        self.assertEqual(query.first_match_array(["SELECT", "CITY"]), "select")
+        self.assertEqual(query.first_match_array(["users", "DISTICT"]), "DISTICT")
 
     def test_docs_example(self):
         query = self.single_query("SELECT * FROM users WHERE name = 'test';")
