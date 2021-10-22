@@ -94,7 +94,7 @@ class Translator:
             "human": self.human_error(error),
         }
 
-    def translate(self, message: Text, **kwargs: dict[str, Any]) -> str:
+    def translate(self, message: Text, **kwargs: Any) -> str:
         """Translate a Text enum into a string.
 
         Args:
