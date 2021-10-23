@@ -228,15 +228,15 @@ class SQLDatabase:
     count_different_rows_sql = """
     SELECT (
         SELECT count(1) FROM (
-            SELECT * FROM solution.'{table}' A
+            SELECT *, count(*) FROM solution.'{table}' A GROUP BY {column_indices}
             EXCEPT
-            SELECT * FROM submission.'{table}' B
+            SELECT *, count(*) FROM submission.'{table}' B GROUP BY {column_indices}
         )
     ) + (
         SELECT count(1) FROM (
-            SELECT * FROM submission.'{table}' B
+            SELECT *, count(*) FROM submission.'{table}' B GROUP BY {column_indices}
             EXCEPT
-            SELECT * FROM solution.'{table}' A
+            SELECT *, count(*) FROM solution.'{table}' A GROUP BY {column_indices}
         )
     )
     """
@@ -267,15 +267,22 @@ class SQLDatabase:
             elif solution != submission or solution != identical:
                 diff_layout += [table]
             else:
-                check_content += [table]
+                check_content += [(table, identical)]
 
         cursor.execute(
-            "UNION ALL\n".join([self.count_different_rows_sql.format(table=table) for table in check_content])
+            "UNION ALL\n".join(
+                [
+                    self.count_different_rows_sql.format(
+                        table=table, column_indices=",".join(str(x) for x in range(1, column_count + 1))
+                    )
+                    for table, column_count in check_content
+                ]
+            )
         )
 
         counts = [count for (count,) in cursor.fetchall()]
         diff_content = []
-        for i, table in enumerate(check_content):
+        for i, (table, _) in enumerate(check_content):
             if counts[i] != 0:
                 diff_content += [table]
             else:
