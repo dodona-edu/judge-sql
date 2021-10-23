@@ -101,7 +101,7 @@ class DodonaException(Exception):
         self,
         status: dict[str, str],
         recover_at: type = None,
-        **kwargs: dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Create DodonaException.
 
@@ -157,7 +157,7 @@ class DodonaCommand(ABC):
     }
     """
 
-    def __init__(self, **kwargs: dict[str, Any]) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         """Create DodonaCommand.
 
         Args:
@@ -325,7 +325,7 @@ class Judgement(DodonaCommandWithStatus):
 class Tab(DodonaCommand):
     """Dodona Tab."""
 
-    def __init__(self, title: str, **kwargs: dict[str, Any]) -> None:
+    def __init__(self, title: str, **kwargs: Any) -> None:
         """Create Tab.
 
         Args:
@@ -342,7 +342,7 @@ class Context(DodonaCommandWithAccepted):
 class TestCase(DodonaCommandWithAccepted):
     """Dodona TestCase."""
 
-    def __init__(self, *args: list[Any], **kwargs: dict[str, Any]) -> None:
+    def __init__(self, *args: list[Any], **kwargs: Any) -> None:
         """Create TestCase.
 
         If a single positional argument is passed, this is assumed to be the message.
@@ -376,7 +376,7 @@ class TestCase(DodonaCommandWithAccepted):
 class Test(DodonaCommandWithStatus):
     """Dodona Test."""
 
-    def __init__(self, description: Union[str, dict], expected: str, **kwargs: dict[str, Any]) -> None:
+    def __init__(self, description: Union[str, dict], expected: str, **kwargs: Any) -> None:
         """Create Test.
 
         Args:
@@ -390,7 +390,7 @@ class Test(DodonaCommandWithStatus):
 class Message(DodonaCommand):
     """Dodona Message."""
 
-    def __init__(self, *args: list[Any], **kwargs: dict[str, Any]) -> None:
+    def __init__(self, *args: list[Any], **kwargs: Any) -> None:
         """Create Message.
 
         If a single positional argument is passed, this is assumed to be the message.
@@ -434,7 +434,7 @@ class Message(DodonaCommand):
 class Annotation(DodonaCommand):
     """Dodona Annotation."""
 
-    def __init__(self, row: int, text: str, **kwargs: dict[str, Any]) -> None:
+    def __init__(self, row: int, text: str, **kwargs: Any) -> None:
         """Create Annotation.
 
         Args:

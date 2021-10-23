@@ -197,39 +197,47 @@ class SQLDatabase:
     --- DIFFERENT SCHEME ---
     SELECT
         s.name,
-        count(1) as identical,
+        (
+            SELECT
+                count(1)
+            FROM
+                pragma_table_info(s.name, 'solution') solTable,
+                pragma_table_info(s.name, 'submission') subTable
+            WHERE
+                solTable.name=subTable.name AND
+                solTable.type=subTable.type AND
+                solTable.'notnull'=subTable.'notnull' AND
+                (
+                    solTable.dflt_value=subTable.dflt_value OR
+                    (
+                        solTable.dflt_value IS NULL AND
+                        subTable.dflt_value IS NULL
+                    )
+                ) AND
+                solTable.pk=subTable.pk
+        ) as identical,
         (SELECT count(1) FROM pragma_table_info(s.name, 'solution')) as solution,
         (SELECT count(1) FROM pragma_table_info(s.name, 'submission')) as submission
     FROM
-        solution.sqlite_master as s,
-        pragma_table_info(s.name, 'solution') solTable,
-        pragma_table_info(s.name, 'submission') subTable
+        solution.sqlite_master as s
     WHERE
         s.type = 'table' AND
-        s.name NOT LIKE 'sqlite_%' AND
-        solTable.name=subTable.name AND
-        solTable.type=subTable.type AND
-        solTable.'notnull'=subTable.'notnull' AND
-        (
-            solTable.dflt_value=subTable.dflt_value OR
-            (
-                solTable.dflt_value IS NULL AND
-                subTable.dflt_value IS NULL
-            )
-        ) AND
-        solTable.pk=subTable.pk
-    GROUP BY s.name;
+        s.name NOT LIKE 'sqlite_%'
     """
 
     count_different_rows_sql = """
-    SELECT count(1) FROM (
-        SELECT * FROM solution.'{table}' A
-        EXCEPT
-        SELECT * FROM submission.'{table}' B
-        UNION ALL
-        SELECT * FROM submission.'{table}' B
-        EXCEPT
-        SELECT * FROM solution.'{table}' A
+    SELECT (
+        SELECT count(1) FROM (
+            SELECT * FROM solution.'{table}' A
+            EXCEPT
+            SELECT * FROM submission.'{table}' B
+        )
+    ) + (
+        SELECT count(1) FROM (
+            SELECT * FROM submission.'{table}' B
+            EXCEPT
+            SELECT * FROM solution.'{table}' A
+        )
     )
     """
 
@@ -251,8 +259,7 @@ class SQLDatabase:
         cursor.execute(self.count_identical_columns_sql)
 
         incorrect_name, diff_layout, check_content, correct = [], [], [], []
-        temp = cursor.fetchall()
-        for row in temp:
+        for row in cursor.fetchall():
             table, identical, solution, submission = row
 
             if "'" in table:
