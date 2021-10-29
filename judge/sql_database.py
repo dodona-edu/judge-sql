@@ -48,7 +48,7 @@ class SQLDatabase:
     This class manages a solution and a submission file that are based on the
     exercise's "starting-point"/ init database. The user queries should be applied on the
     submission file and the solution queries should be applied on the solution file.
-    This class also provides functions for comparing the two databases. This class is usefull
+    This class also provides functions for comparing the two databases. This class is useful
     when used with non-select sql queries (eg. CREATE & INSERT).
     """
 
@@ -56,7 +56,7 @@ class SQLDatabase:
         """Construct SQLDatabase.
 
         Args:
-            sourcefile: exercise's sqlite start databse file
+            sourcefile: exercise's sqlite start database file
             workdir: Dodona workdir that is used to store the changed versions of the database
             db_name: name of the database
         """

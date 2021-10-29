@@ -29,13 +29,13 @@ class DodonaConfig(SimpleNamespace):
         workdir:                Full path to the directory in which all user code should be executed.
     """
 
-    def __init__(self, **kargs: dict[str, Any]) -> None:
+    def __init__(self, **kwargs: dict[str, Any]) -> None:
         """Store all parameters & set correct type for 'known' Dodona judge configuration fields.
 
         Args:
-            kargs: the named parameters in the form of a dict
+            kwargs: the named parameters in the form of a dict
         """
-        super().__init__(**kargs)
+        super().__init__(**kwargs)
         self.memory_limit = int(self.memory_limit)
         self.time_limit = int(self.time_limit)
         self.programming_language = str(self.programming_language)
