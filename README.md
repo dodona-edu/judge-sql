@@ -159,7 +159,7 @@ For the example query `SELECT \* FROM users WHERE name = 'test';`:
 
 ```json
 {
-  ...  
+  ...
   "evaluation": {
     "solution_sql": "./my_answers.sql",
     "database_dir": "./databases/",
@@ -168,7 +168,7 @@ For the example query `SELECT \* FROM users WHERE name = 'test';`:
     "strict_identical_order_by": false,
     "allow_different_column_order": false
   },
-  ...  
+  ...
 }
 ```
 
@@ -176,7 +176,7 @@ or
 
 ```json
 {
-  ... 
+  ...
   "evaluation": {
     "solution_sql": "./mijn_oplossing.sql",
     "database_files": [
@@ -190,7 +190,7 @@ or
     "post_execution_forbidden_symbolregex": ["dummy", ".*like.*"], 
     "pragma_startup_queries": "PRAGMA case_sensitive_like=ON;"
   },
-  ...  
+  ...
 }
 ```
 
