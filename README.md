@@ -26,27 +26,44 @@
 - Differences between submission and solution table are highlighted
 - ...
 
+## Table of Contents
+* [Recommended exercise directory structure](#recommended-exercise-directory-structure)
+* [Recommended `dirconfig.json`](#recommended--dirconfigjson-)
+* [Recommended `config.json` (example with default settings)](#recommended--configjson---example-with-default-settings-)
+* [Optional `evaluation` settings in `config.json`](#optional--evaluation--settings-in--configjson-)
+  + [Regex match settings](#regex-match-settings)
+  + [Example of modified settings](#example-of-modified-settings)
+* [Generator scripts](#generator-scripts)
+  + [Generate empty database with Python script](#generate-empty-database-with-python-script)
+  + [Generate database based on changes from previous exercises from scratch](#generate-database-based-on-changes-from-previous-exercises-from-scratch)
+  + [Generate updated database based with changes from previous exercises](#generate-updated-database-based-with-changes-from-previous-exercises)
+* [Recommended database tools for SQLite](#recommended-database-tools-for-sqlite)
+* [How to generate a database diagram with table relationships?](#how-to-generate-a-database-diagram-with-table-relationships-)
+  + [Add database schema overview to each exercise](#add-database-schema-overview-to-each-exercise)
+* [Testing](#testing)
+* [Contributors](#contributors)
+
 ## Recommended exercise directory structure
 
 > [More info about repository directory structure](https://docs.dodona.be/en/references/repository-directory-structure/#example-of-a-valid-repository-structure)
 
-Add your solution (`solution.sql` file) and database(s) (`.sqlite`) to the **`evaluation`** folder. The `solution.sql`
+Add your solution file (`solution.sql`) and database(s) (`.sqlite`) to the **`evaluation`** folder. The `solution.sql`
 file can contain multiple queries. You can define a different name for the solution in the `config.json` file. If you
 add multiple databases, the queries will be executed on all databases. The names of the databases don't matter. Absolute
 necessary files are marked with `▶` in the tree structure below.
 
 ```text
 +-- README.md                            # Optional: Describes the repository
++-- dirconfig.json                       # Shared config for all exercises in subdirs
 +-- 📂public                            # Optional: Contains files that belong to the course or series
 |   +-- database_diagram.png             # Optional: An database diagram image to reuse throughout the course
-+-- dirconfig.json                       # Shared config for all exercises in subdirs
 +-- 📂sql-exercises                     # We could group exercises in a folder
 |   +-- 📂first_select_query            # Folder name for the exercise
-|   |   +-- config.json                  # ▶ Configuration of the exercise
+|   |   +-- config.json                  # ▶ Configuration of the exercise (explained later)
 |   |   +-- 📂evaluation                # -- 🔽️ ADD YOUR DATABASE AND SOLUTION HERE 🔽 --
 |   |   |   +-- my_database.sqlite       # ▶ The database file
 |   |   |   +-- solution.sql             # ▶ The SQL model solution file
-|   |   +-- 📂solution                  # Optional: This will be visible in Dodona
+|   |   +-- 📂solution                  # Optional: This will be visible in Dodona for teachers
 |   |   |   +-- solution.sql             # Optional: The SQL model solution file
 |   |   +-- 📂preparation               # Optional folder
 |   |   |   +-- generator.py             # Optional: Script to generate database
@@ -92,7 +109,8 @@ necessary files are marked with `▶` in the tree structure below.
     }
   },
   "type": "exercise",
-  "programming_language": "sql",
+  "programming_language": "sql", 
+  "access": "public",
   "labels": ["sqlite", "database"],
   "evaluation": {
     "handler": "sql"
@@ -127,7 +145,7 @@ The `pre_execution_forbidden_symbolregex`, `pre_execution_mandatory_symbolregex`
 The `..._symbolregex` lists are used to check each individual "symbol" (these symbols are detected by sqlparse library, examples are `not like`, `users` and `'String value'`).
 All regular expressions are used in a case-insensitive way, and a full match is performed (no `^` and `$` required).
 
-For the example query "SELECT \* FROM users WHERE name = 'test';":
+For the example query `SELECT \* FROM users WHERE name = 'test';`:
 | Field                       | Value         | No error✅ / Error❌ | Reason                  |
 | --------------------------- | ------------- | :----------------: | ----------------------- |
 | `..._forbidden_symbolregex` | ["users"]     | ❌                  | symbol found            |
@@ -141,6 +159,7 @@ For the example query "SELECT \* FROM users WHERE name = 'test';":
 
 ```json
 {
+  ...  
   "evaluation": {
     "solution_sql": "./my_answers.sql",
     "database_dir": "./databases/",
@@ -148,7 +167,8 @@ For the example query "SELECT \* FROM users WHERE name = 'test';":
     "semicolon_warning": false,
     "strict_identical_order_by": false,
     "allow_different_column_order": false
-  }
+  },
+  ...  
 }
 ```
 
@@ -156,6 +176,7 @@ or
 
 ```json
 {
+  ... 
   "evaluation": {
     "solution_sql": "./mijn_oplossing.sql",
     "database_files": [
@@ -168,7 +189,8 @@ or
     "allow_different_column_order": false,
     "post_execution_forbidden_symbolregex": ["dummy", ".*like.*"], 
     "pragma_startup_queries": "PRAGMA case_sensitive_like=ON;"
-  }
+  },
+  ...  
 }
 ```
 
@@ -182,28 +204,27 @@ folder.
 This example creates an empty database in the `evaluation` folder.
 
 ```python
-# import the sqlite3 module from the Python Standard Library
+# Import the sqlite3 module from the Python Standard Library
 import sqlite3
 
-# create the database file and create a cursor object
+# Create the database file and create a cursor object
 connection = sqlite3.connect("../evaluation/empty.sqlite")
 cursor = connection.cursor()
 
-# define and execute an SQL command to create an empty database
+# Define and execute an SQL command to create an empty database
 sql_command_create_dummy_table = """CREATE TABLE dummy_table(dummy_field int);"""
 sql_command_remove_dummy_tabel = """DROP TABLE dummy_table;"""
 cursor.execute(sql_command_create_dummy_table)
 cursor.execute(sql_command_remove_dummy_tabel)
 
-# commit changes and close the connection to the database file
+# Commit changes and close the connection to the database file
 connection.commit()
 connection.close()
 ```
 
 ### Generate database based on changes from previous exercises from scratch
 
-Place the `previous_solution.sql` in the `preparation` folder. Use this script if you want to start with an empty
-database and update it with the results previous exercises (only applicable for write queries).
+Place the `previous_solution.sql` in the `preparation` folder. Use this script if you want to start with an empty database (overwrites existing database) and update it with the results of previous exercises (only applicable for write queries). After creation, contents and schema of newly created database is printed.
 
 <details>
   <summary>Click <b>here</b> to show to code.</summary>
@@ -229,7 +250,7 @@ def execute_sql_from_file(filename: str):
             print("Command skipped: ", msg)
 
 
-db_filename = "../evaluation/your_database.sqlite"
+db_filename = "../evaluation/YOUR_DATABASE.sqlite"  # Change
 
 if os.path.exists(db_filename):
     os.remove(db_filename)
@@ -240,7 +261,7 @@ cursor = connection.cursor()
 execute_sql_from_file("previous_solution.sql")
 
 # Print contents and properties of YOUR_TABLE_NAME
-table_name = "YOUR_TABLE_NAME"
+table_name = "YOUR_TABLE_NAME"  # Change
 print(pd.read_sql(f"SELECT * FROM {table_name};", connection))
 print(pd.read_sql(f"PRAGMA TABLE_INFO({table_name});", connection))
 
@@ -252,8 +273,8 @@ connection.close()
 
 ### Generate updated database based with changes from previous exercises
 
-Place the `previous_solution.sql` in the `preparation` folder. Use this script if you want to update an existing
-database (only applicable for write queries).
+Place the `previous_solution.sql` and the original database in the `preparation` folder. Use this script if you want to update an existing
+database (only applicable for write queries). The updated database will be in the `evaluation` folder.
 
 <details>
   <summary>Click <b>here</b> to show to code.</summary>
@@ -279,8 +300,8 @@ def execute_sql_from_file(filename: str):
             print("Command skipped: ", msg)
 
 
-original_db = "./my_origi_db.sqlite"
-modified_db = "../evaluation/my_new_db.sqlite"
+original_db = "./MY_ORIGI_DB.sqlite"  # Change
+modified_db = "../evaluation/MY_NEW_DB.sqlite"  # Change
 
 if os.path.exists(modified_db):
     os.remove(modified_db)
@@ -298,7 +319,7 @@ cursor = connection.cursor()
 execute_sql_from_file("previous_solution.sql")
 
 # Print contents and properties of YOUR_TABLE_NAME
-table_name = "YOUR_TABLE_NAME"
+table_name = "YOUR_TABLE_NAME"  # Change
 print(pd.read_sql(f"SELECT * FROM {table_name};", connection))
 print(pd.read_sql(f"PRAGMA TABLE_INFO({table_name});", connection))
 
