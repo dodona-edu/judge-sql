@@ -56,7 +56,7 @@ necessary files are marked with `▶` in the tree structure below.
 +-- README.md                            # Optional: Describes the repository
 +-- dirconfig.json                       # Shared config for all exercises in subdirs
 +-- 📂public                            # Optional: Contains files that belong to the course or series
-|   +-- database_diagram.png             # Optional: An database diagram image to reuse throughout the course
+|   +-- database_diagram.png             # Optional: A database diagram image to reuse throughout the course
 +-- 📂sql-exercises                     # We could group exercises in a folder
 |   +-- 📂first_select_query            # Folder name for the exercise
 |   |   +-- config.json                  # ▶ Configuration of the exercise (explained later)
@@ -227,7 +227,7 @@ connection.close()
 Place the `previous_solution.sql` in the `preparation` folder. Use this script if you want to start with an empty database (overwrites existing database) and update it with the results of previous exercises (only applicable for write queries). After creation, contents and schema of newly created database is printed.
 
 <details>
-  <summary>Click <b>here</b> to show to code.</summary>
+  <summary>Click <b>here</b> to show the code.</summary>
 
 ```python
 import os
@@ -277,7 +277,7 @@ Place the `previous_solution.sql` and the original database in the `preparation`
 database (only applicable for write queries). The updated database will be in the `evaluation` folder.
 
 <details>
-  <summary>Click <b>here</b> to show to code.</summary>
+  <summary>Click <b>here</b> to show the code.</summary>
 
 ```python
 import os
@@ -333,7 +333,7 @@ connection.close()
 
 - [DB Browser for SQLite](https://sqlitebrowser.org/dl/) (free and open source)
 - [DbVisualizer free version](https://www.dbvis.com/download/)
-- PyCharm Professional ([free for students and teachers](https://www.jetbrains.com/community/education/#students))
+- [PyCharm Professional](https://www.jetbrains.com/pycharm/) ([free for students and teachers](https://www.jetbrains.com/community/education/#students))
 
 ## How to generate a database diagram with table relationships?
 
