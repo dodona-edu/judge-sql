@@ -5,6 +5,8 @@
 > In addition, the judge also analyzes the SQL query itself and points out possible errors.
 > The differences between the two tables of the generated results and the expected results are shown with the necessary formatting in Dodona's feedback.
 >
+> ![judge-sql](judge-sql.png)
+>
 > This Dodona course contains some sample exercises that were used in developing the HTML judge:
 >
 > * https://dodona.ugent.be/en/courses/699/
