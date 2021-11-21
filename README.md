@@ -1,5 +1,21 @@
 # SQL judge for [Dodona](https://dodona.ugent.be/)
 
+> The SQL-judge compares a student's solution based on the result, so the students' query does not have to be the same as the query of the model solution, as long as the result is the same. For each exercise a database must be provided and for queries it is sufficient to provide an example query in order to test submitted solutions. The SQL judge supports both query evaluation (DML) and structural database building (DDL).
+>
+> In addition, the judge also analyzes the SQL query itself and points out possible errors.
+> The differences between the two tables of the generated results and the expected results are shown with the necessary formatting in Dodona's feedback.
+>
+> ![judge-sql](judge-sql.png)
+>
+> This Dodona course contains some sample exercises that were used in developing the HTML judge:
+>
+> * https://dodona.ugent.be/en/courses/699/
+>
+> There are a number of sample exercises on Dodona's sample exercises repository to demonstrate the use of the judge:
+>
+> * https://github.com/dodona-edu/example-exercises
+>
+
 ## Judge features
 
 - Comparison based on solution query
