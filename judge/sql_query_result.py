@@ -55,7 +55,7 @@ class SQLQueryResult:
         dataframe = pd.DataFrame(rows)
         columns, types = [], []
         if len(rows) > 0:
-            columns = [column[0] for column in cursor.description or []]
+            columns = [column[0].upper() for column in cursor.description or []]
             types = [type(x) for x in rows[0]]
 
         return cls(dataframe, columns, types)
