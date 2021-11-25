@@ -16,15 +16,17 @@ jobs:
     - name: Cache the dependencies
       uses: actions/cache@v2
       with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+        path: ${{ env.pythonLocation }}
+        key: ${{ env.pythonLocation }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/dev-requirements.txt') }}
     - name: Install dependencies
-      run: pip3 install -r requirements.txt
+      run: ./devel/install_deps.sh
     - name: Install dependencies
-      run: pip3 install -r requirements-dev.txt
+      run: ./devel/install_dev_deps.sh
     - name: Analysing the code with flake8
-      run: flakehell lint **/*.py
+      run: ./devel/check.sh
     - name: Run tests
       run: ./devel/run-tests.sh
+    - name: Code Coverage
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}

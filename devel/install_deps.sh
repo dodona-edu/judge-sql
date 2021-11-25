@@ -2,4 +2,4 @@
 
 ROOT="$(dirname $(dirname $0))"
 
-flakehell lint **/*.py
+pip3 install -r "$ROOT/requirements.txt"
