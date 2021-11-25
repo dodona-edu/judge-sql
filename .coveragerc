@@ -5,3 +5,4 @@ omit =
     */site-packages/*
     tests/*
     venv/*
+source = .
