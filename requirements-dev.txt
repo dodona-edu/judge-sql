@@ -23,4 +23,3 @@ mccabe
 pep8-naming
 pycodestyle
 pyflakes
-pylint
