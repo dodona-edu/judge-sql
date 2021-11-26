@@ -88,7 +88,7 @@ class SQLQueryResult:
         argsort = []
         for column in column_index:
             if column not in original_indices or len(original_indices[column]) == 0:
-                continue
+                continue  # pragma: no cover (due to bug in coverage reporting)
 
             argsort += [original_indices[column].pop(0)]
 
