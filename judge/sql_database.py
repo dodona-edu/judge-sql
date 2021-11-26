@@ -61,8 +61,11 @@ class SQLDatabase:
             db_name: name of the database
         """
         self.sourcefile = sourcefile
+
         self.solutionfile = os.path.join(workdir, f"{db_name}.solution")
         self.submissionfile = os.path.join(workdir, f"{db_name}.submission")
+
+        os.makedirs(os.path.dirname(self.solutionfile), exist_ok=True)
 
         self.connection = None
 
