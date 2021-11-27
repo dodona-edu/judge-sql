@@ -3,6 +3,7 @@ import os
 import runpy
 import tempfile
 import unittest
+import shutil
 from io import StringIO
 
 from .fake_in_out import fake_in_out
@@ -59,16 +60,17 @@ class TestEndToEnd(unittest.TestCase):
                 )
 
     def run_all_repo_tests(self, repo_path: str):
-        LEARN_OUTPUT = os.environ.get("LEARN_OUTPUT", "NO") == "YES"
+        test_exercises_path = os.path.join(self.root_path, "tests", "e2e_repos", repo_path)
+        test_stdout_path = os.path.join(self.root_path, "tests", "e2e_stdout", repo_path)
 
+        LEARN_OUTPUT = os.environ.get("LEARN_OUTPUT", "NO") == "YES"
         if LEARN_OUTPUT:
             print("\n------------------------------------------")
             print("WARNING: LEARN_OUTPUT is enabled")
             print("> 'stdout' and 'stderr' files will get updated to match the execution output")
             print("------------------------------------------")
 
-        test_exercises_path = os.path.join(self.root_path, "tests", "e2e_repos", repo_path)
-        test_stdout_path = os.path.join(self.root_path, "tests", "e2e_stdout", repo_path)
+            shutil.rmtree(test_stdout_path)
 
         os.makedirs(test_stdout_path, exist_ok=True)
 
@@ -88,4 +90,3 @@ class TestEndToEnd(unittest.TestCase):
 
     def test_e2e(self):
         self.run_all_repo_tests(os.path.join("test-sql-judge"))
-        # TODO: add test-repo here
