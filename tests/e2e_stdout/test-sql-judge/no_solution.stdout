@@ -1,0 +1,19 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "append-message",
+ "message": {
+  "description": "Could not find solution file: '<exercise_path>/evaluation/./solution.sql'.",
+  "format": "text",
+  "permission": "staff"
+ }
+}
+{
+ "accepted": false,
+ "command": "close-judgement",
+ "status": {
+  "enum": "internal error",
+  "human": "Interne fout"
+ }
+}

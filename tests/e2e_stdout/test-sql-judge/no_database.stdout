@@ -1,0 +1,19 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "append-message",
+ "message": {
+  "description": "Could not find database files. Make sure that the database directory contains '*.sqlite' files or a valid 'database_files' option is provided.",
+  "format": "text",
+  "permission": "staff"
+ }
+}
+{
+ "accepted": false,
+ "command": "close-judgement",
+ "status": {
+  "enum": "internal error",
+  "human": "Interne fout"
+ }
+}

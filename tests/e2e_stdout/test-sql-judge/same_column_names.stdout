@@ -1,0 +1,56 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "start-tab",
+ "title": "Query 1"
+}
+{
+ "command": "start-context"
+}
+{
+ "command": "start-testcase",
+ "description": {
+  "description": "-- sqlite3 databank-informatica1.sqlite\nSELECT product.description, product_code.description\nFROM product,\n     product_code\nWHERE product.product_code = prod_code;",
+  "format": "sql"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output in csv formaat",
+ "expected": "DESCRIPTION,DESCRIPTION\n104-Key Keyboard,Hardware\n10Gb Ram,Firmware\n1Ghz Sun Blade Computer,Hardware\n24 inch Digital Monitor,Hardware\n300Mhz Pentium Computer,Hardware\n512X IDE DVD-ROM,Hardware\n686 7Ghz Computer,Hardware\nA1 900 watts Speakers,Hardware\nAccounting Application,Software\nClient Server Testing,Books\nComputer Tool Kit,Misc\nCorporate Expense Survey,Misc\nDirectory Server,Software\nFlat screen Monitor,Hardware\nIdentity Server,Software\nJava Application Development Environment,Software\nJava EE 6 Application Development Environment,Software\nJax WS Application Development Environment,Software\nLearn Java in 1/2 hour,Books\nLearn NetBeans,Books\nLearn Solaris 10,Books\nMini Computer Speakers,Hardware\nNetBeans Development Environment,Software\nNetwork Cable,Cables\nPrinter Cable,Cables\nSolaris x86 Computer,Hardware\nSound Card,Firmware\nSun Studio C++,Software\nUltra Spacr 999Mhz Computer,Hardware\nWriting Web Service Applications,Books",
+ "format": "csv"
+}
+{
+ "command": "close-test",
+ "generated": "DESCRIPTION,DESCRIPTION\n104-Key Keyboard,Hardware\n10Gb Ram,Firmware\n1Ghz Sun Blade Computer,Hardware\n24 inch Digital Monitor,Hardware\n300Mhz Pentium Computer,Hardware\n512X IDE DVD-ROM,Hardware\n686 7Ghz Computer,Hardware\nA1 900 watts Speakers,Hardware\nAccounting Application,Software\nClient Server Testing,Books\nComputer Tool Kit,Misc\nCorporate Expense Survey,Misc\nDirectory Server,Software\nFlat screen Monitor,Hardware\nIdentity Server,Software\nJava Application Development Environment,Software\nJava EE 6 Application Development Environment,Software\nJax WS Application Development Environment,Software\nLearn Java in 1/2 hour,Books\nLearn NetBeans,Books\nLearn Solaris 10,Books\nMini Computer Speakers,Hardware\nNetBeans Development Environment,Software\nNetwork Cable,Cables\nPrinter Cable,Cables\nSolaris x86 Computer,Hardware\nSound Card,Firmware\nSun Studio C++,Software\nUltra Spacr 999Mhz Computer,Hardware\nWriting Web Service Applications,Books",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output SQL types",
+ "expected": "DESCRIPTION [TEXT]\nDESCRIPTION [TEXT]"
+}
+{
+ "command": "close-test",
+ "generated": "DESCRIPTION [TEXT]\nDESCRIPTION [TEXT]",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "command": "close-testcase"
+}
+{
+ "command": "close-context"
+}
+{
+ "command": "close-tab"
+}
+{
+ "command": "close-judgement"
+}

@@ -1,0 +1,56 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "start-tab",
+ "title": "Query 1"
+}
+{
+ "command": "start-context"
+}
+{
+ "command": "start-testcase",
+ "description": {
+  "description": "-- sqlite3 databank-informatica1.sqlite\nSELECT CUSTOMER.NAME, PRODUCT.DESCRIPTION\nFROM PURCHASE_ORDER,\n     PRODUCT,\n     MANUFACTURER,\n     CUSTOMER\nWHERE PURCHASE_ORDER.PRODUCT_ID = PRODUCT.PRODUCT_ID\n  AND PRODUCT.MANUFACTURER_ID = MANUFACTURER.MANUFACTURER_ID\n  AND PURCHASE_ORDER.CUSTOMER_ID = CUSTOMER.CUSTOMER_ID\n  AND MANUFACTURER.CITY LIKE 'San%'\nORDER BY CUSTOMER.NAME;",
+  "format": "sql"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output in csv formaat",
+ "expected": "NAME,DESCRIPTION\nBob Hosting Corp.,24 inch Digital Monitor\nEarly CentralComp,104-Key Keyboard\nNew Enterprises,Accounting Application\nNew Enterprises,1Ghz Sun Blade Computer",
+ "format": "csv"
+}
+{
+ "command": "close-test",
+ "generated": "NAME,DESCRIPTION\nBob Hosting Corp.,24 inch Digital Monitor\nEarly CentralComp,104-Key Keyboard\nNew Enterprises,Accounting Application\nNew Enterprises,1Ghz Sun Blade Computer",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output SQL types",
+ "expected": "NAME [TEXT]\nDESCRIPTION [TEXT]"
+}
+{
+ "command": "close-test",
+ "generated": "NAME [TEXT]\nDESCRIPTION [TEXT]",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "command": "close-testcase"
+}
+{
+ "command": "close-context"
+}
+{
+ "command": "close-tab"
+}
+{
+ "command": "close-judgement"
+}

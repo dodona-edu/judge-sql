@@ -1,0 +1,3 @@
+[submodule "tests/e2e_repos/test-sql-judge"]
+	path = tests/e2e_repos/test-sql-judge
+	url = https://github.com/BTWS2/test-sql-judge.git

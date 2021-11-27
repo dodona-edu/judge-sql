@@ -1,0 +1,106 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "start-tab",
+ "title": "Query 1"
+}
+{
+ "command": "start-context"
+}
+{
+ "command": "start-testcase",
+ "description": {
+  "description": "-- sqlite3 databank-informatica1.sqlite\nSELECT *\nFROM CUSTOMER;",
+  "format": "sql"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output in csv formaat",
+ "expected": "CUSTOMER_ID,DISCOUNT_CODE,ZIP,NAME,ADDRESSLINE1,ADDRESSLINE2,CITY,STATE,PHONE,FAX,EMAIL,CREDIT_LIMIT\n1,N,95117,Jumbo Eagle Corp,111 E. Las Olivas Blvd,Suite 51,Fort Lauderdale,FL,305-555-0188,305-555-0189,jumboeagle@example.com,100000\n2,M,95035,New Enterprises,9754 Main Street,P.O. Box 567,Miami,FL,305-555-0148,305-555-0149,www.new.example.com,50000\n3,L,12347,Small Bill Company,8585 South Upper Murray Drive,P.O. Box 456,Alanta,GA,555-555-0175,555-555-0176,www.smallbill.example.com,90000\n25,M,85638,Wren Computers,8989 Red Albatross Drive,Suite 9897,Houston,TX,214-555-0133,214-555-0134,www.wrencomp.example.com,25000\n36,H,94401,Bob Hosting Corp.,65653 Lake Road,Suite 2323,San Mateo,CA,650-555-0160,650-555-0161,www.bobhostcorp.example.com,65000\n106,L,95035,Early CentralComp,829 E Flex Drive,Suite 853,San Jose,CA,408-555-0157,408-555-0150,www.centralcomp.example.com,26500\n149,L,95117,John Valley Computers,4381 Kelly Valley Ave,Suite 77,Santa Clara,CA,408-555-0169,408-555-0167,www.johnvalley.example.com,70000\n409,L,10095,Old Media Productions,4400 527th Street,Suite 562,New York,NY,212-555-0110,212-555-0111,www.oldmedia.example.com,10000\n410,M,10096,Yankee Computer Repair Ltd,9653 211th Ave,Floor 4,New York,NY,212-555-0191,212-555-0197,www.nycompltd@repair.example.com,25000\n722,N,48124,Big Car Parts,52963 Notouter Dr,Suite 35,Detroit,MI,313-555-0144,313-555-0145,www.bparts.example.com,50000\n753,H,48128,Zed Motor Co,2267 NE Michigan Ave,Building 21,Dearborn,MI,313-555-0151,313-555-0152,www.parts@ford.example.com,5000000\n777,L,48128,West Valley Inc.,88 Northsouth Drive,Building C,Dearborn,MI,313-555-0172,313-555-0171,www.westv.example.com,100000\n863,N,94401,Big Network Systems,456 444th Street,Suite 45,Redwood City,CA,650-555-0181,650-555-0180,www.bignet.example.com,25000",
+ "format": "csv"
+}
+{
+ "command": "close-test",
+ "generated": "CUSTOMER_ID,DISCOUNT_CODE,ZIP,NAME,ADDRESSLINE1,ADDRESSLINE2,CITY,STATE,PHONE,FAX,EMAIL,CREDIT_LIMIT\n1,N,95117,Jumbo Eagle Corp,111 E. Las Olivas Blvd,Suite 51,Fort Lauderdale,FL,305-555-0188,305-555-0189,jumboeagle@example.com,100000\n2,M,95035,New Enterprises,9754 Main Street,P.O. Box 567,Miami,FL,305-555-0148,305-555-0149,www.new.example.com,50000\n3,L,12347,Small Bill Company,8585 South Upper Murray Drive,P.O. Box 456,Alanta,GA,555-555-0175,555-555-0176,www.smallbill.example.com,90000\n25,M,85638,Wren Computers,8989 Red Albatross Drive,Suite 9897,Houston,TX,214-555-0133,214-555-0134,www.wrencomp.example.com,25000\n36,H,94401,Bob Hosting Corp.,65653 Lake Road,Suite 2323,San Mateo,CA,650-555-0160,650-555-0161,www.bobhostcorp.example.com,65000\n106,L,95035,Early CentralComp,829 E Flex Drive,Suite 853,San Jose,CA,408-555-0157,408-555-0150,www.centralcomp.example.com,26500\n149,L,95117,John Valley Computers,4381 Kelly Valley Ave,Suite 77,Santa Clara,CA,408-555-0169,408-555-0167,www.johnvalley.example.com,70000\n409,L,10095,Old Media Productions,4400 527th Street,Suite 562,New York,NY,212-555-0110,212-555-0111,www.oldmedia.example.com,10000\n410,M,10096,Yankee Computer Repair Ltd,9653 211th Ave,Floor 4,New York,NY,212-555-0191,212-555-0197,www.nycompltd@repair.example.com,25000\n722,N,48124,Big Car Parts,52963 Notouter Dr,Suite 35,Detroit,MI,313-555-0144,313-555-0145,www.bparts.example.com,50000\n753,H,48128,Zed Motor Co,2267 NE Michigan Ave,Building 21,Dearborn,MI,313-555-0151,313-555-0152,www.parts@ford.example.com,5000000\n777,L,48128,West Valley Inc.,88 Northsouth Drive,Building C,Dearborn,MI,313-555-0172,313-555-0171,www.westv.example.com,100000\n863,N,94401,Big Network Systems,456 444th Street,Suite 45,Redwood City,CA,650-555-0181,650-555-0180,www.bignet.example.com,25000",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output SQL types",
+ "expected": "CUSTOMER_ID [INTEGER]\nDISCOUNT_CODE [TEXT]\nZIP [TEXT]\nNAME [TEXT]\nADDRESSLINE1 [TEXT]\nADDRESSLINE2 [TEXT]\nCITY [TEXT]\nSTATE [TEXT]\nPHONE [TEXT]\nFAX [TEXT]\nEMAIL [TEXT]\nCREDIT_LIMIT [INTEGER]"
+}
+{
+ "command": "close-test",
+ "generated": "CUSTOMER_ID [INTEGER]\nDISCOUNT_CODE [TEXT]\nZIP [TEXT]\nNAME [TEXT]\nADDRESSLINE1 [TEXT]\nADDRESSLINE2 [TEXT]\nCITY [TEXT]\nSTATE [TEXT]\nPHONE [TEXT]\nFAX [TEXT]\nEMAIL [TEXT]\nCREDIT_LIMIT [INTEGER]",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "command": "close-testcase"
+}
+{
+ "command": "close-context"
+}
+{
+ "command": "close-tab"
+}
+{
+ "command": "start-tab",
+ "title": "Query 2"
+}
+{
+ "command": "start-context"
+}
+{
+ "command": "start-testcase",
+ "description": {
+  "description": "-- sqlite3 databank-informatica1.sqlite\nSELECT NAME, PHONE\nFROM CUSTOMER;",
+  "format": "sql"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output in csv formaat",
+ "expected": "NAME,PHONE\nBig Car Parts,313-555-0144\nBig Network Systems,650-555-0181\nBob Hosting Corp.,650-555-0160\nEarly CentralComp,408-555-0157\nJohn Valley Computers,408-555-0169\nJumbo Eagle Corp,305-555-0188\nNew Enterprises,305-555-0148\nOld Media Productions,212-555-0110\nSmall Bill Company,555-555-0175\nWest Valley Inc.,313-555-0172\nWren Computers,214-555-0133\nYankee Computer Repair Ltd,212-555-0191\nZed Motor Co,313-555-0151",
+ "format": "csv"
+}
+{
+ "command": "close-test",
+ "generated": "NAME,PHONE\nBig Car Parts,313-555-0144\nBig Network Systems,650-555-0181\nBob Hosting Corp.,650-555-0160\nEarly CentralComp,408-555-0157\nJohn Valley Computers,408-555-0169\nJumbo Eagle Corp,305-555-0188\nNew Enterprises,305-555-0148\nOld Media Productions,212-555-0110\nSmall Bill Company,555-555-0175\nWest Valley Inc.,313-555-0172\nWren Computers,214-555-0133\nYankee Computer Repair Ltd,212-555-0191\nZed Motor Co,313-555-0151",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output SQL types",
+ "expected": "NAME [TEXT]\nPHONE [TEXT]"
+}
+{
+ "command": "close-test",
+ "generated": "NAME [TEXT]\nPHONE [TEXT]",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "command": "close-testcase"
+}
+{
+ "command": "close-context"
+}
+{
+ "command": "close-tab"
+}
+{
+ "command": "close-judgement"
+}
