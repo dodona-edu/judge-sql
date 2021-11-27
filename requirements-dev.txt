@@ -1,6 +1,7 @@
 pytest==6.2.5
 pytest-cov==3.0.0
 pytest-xdist==2.4.0
+pytest-subtests==0.5.0
 flake8==3.9.2
 black==21.11b1
 pylint==2.11.1
@@ -23,4 +24,3 @@ mccabe
 pep8-naming
 pycodestyle
 pyflakes
-pylint
