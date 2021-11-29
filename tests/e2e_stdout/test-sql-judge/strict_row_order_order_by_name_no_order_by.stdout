@@ -1,0 +1,64 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "start-tab",
+ "title": "Query 1"
+}
+{
+ "command": "start-context"
+}
+{
+ "command": "start-testcase",
+ "description": {
+  "description": "-- sqlite3 databank-informatica1.sqlite\nSELECT NAME, PHONE\nFROM CUSTOMER;",
+  "format": "sql"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output in csv formaat",
+ "expected": "NAME,PHONE\nBig Car Parts,313-555-0144\nBig Network Systems,650-555-0181\nBob Hosting Corp.,650-555-0160\nEarly CentralComp,408-555-0157\nJohn Valley Computers,408-555-0169\nJumbo Eagle Corp,305-555-0188\nNew Enterprises,305-555-0148\nOld Media Productions,212-555-0110\nSmall Bill Company,555-555-0175\nWest Valley Inc.,313-555-0172\nWren Computers,214-555-0133\nYankee Computer Repair Ltd,212-555-0191\nZed Motor Co,313-555-0151",
+ "format": "csv"
+}
+{
+ "command": "append-message",
+ "message": {
+  "description": "Het query resultaat bevat de juiste rijen, maar in de verkeerde volgorde.",
+  "format": "callout-info"
+ }
+}
+{
+ "command": "close-test",
+ "generated": "NAME,PHONE\nJumbo Eagle Corp,305-555-0188\nNew Enterprises,305-555-0148\nSmall Bill Company,555-555-0175\nWren Computers,214-555-0133\nBob Hosting Corp.,650-555-0160\nEarly CentralComp,408-555-0157\nJohn Valley Computers,408-555-0169\nOld Media Productions,212-555-0110\nYankee Computer Repair Ltd,212-555-0191\nBig Car Parts,313-555-0144\nZed Motor Co,313-555-0151\nWest Valley Inc.,313-555-0172\nBig Network Systems,650-555-0181",
+ "status": {
+  "enum": "wrong",
+  "human": "Test gefaald"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output SQL types",
+ "expected": "NAME [TEXT]\nPHONE [TEXT]"
+}
+{
+ "command": "close-test",
+ "generated": "NAME [TEXT]\nPHONE [TEXT]",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "accepted": false,
+ "command": "close-testcase"
+}
+{
+ "command": "close-context"
+}
+{
+ "command": "close-tab"
+}
+{
+ "command": "close-judgement"
+}

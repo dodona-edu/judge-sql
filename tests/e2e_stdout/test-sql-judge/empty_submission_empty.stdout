@@ -1,0 +1,32 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "annotate-code",
+ "row": 0,
+ "text": "Voeg een puntkomma ';' toe aan het einde van elke SQL query.",
+ "type": "warning"
+}
+{
+ "command": "start-tab",
+ "title": "Query 1"
+}
+{
+ "command": "append-message",
+ "message": {
+  "description": "Fout: de ingediende oplossing bestaat uit minder query's (0) dan verwacht (1). Zorg ervoor dat elke query correct eindigt op een puntkomma.",
+  "format": "callout-danger",
+  "permission": "student"
+ }
+}
+{
+ "command": "close-tab"
+}
+{
+ "accepted": false,
+ "command": "close-judgement",
+ "status": {
+  "enum": "runtime error",
+  "human": "Gecrasht bij testen"
+ }
+}
