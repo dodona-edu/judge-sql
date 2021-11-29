@@ -1,0 +1,57 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "start-tab",
+ "title": "Query 1"
+}
+{
+ "command": "start-context"
+}
+{
+ "command": "start-testcase",
+ "description": {
+  "description": "-- sqlite3 databank-informatica1.sqlite\nSELECT PHONE, NAME\nFROM CUSTOMER;",
+  "format": "sql"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output in csv formaat",
+ "expected": "NAME,PHONE\nBig Car Parts,313-555-0144\nBig Network Systems,650-555-0181\nBob Hosting Corp.,650-555-0160\nEarly CentralComp,408-555-0157\nJohn Valley Computers,408-555-0169\nJumbo Eagle Corp,305-555-0188\nNew Enterprises,305-555-0148\nOld Media Productions,212-555-0110\nSmall Bill Company,555-555-0175\nWest Valley Inc.,313-555-0172\nWren Computers,214-555-0133\nYankee Computer Repair Ltd,212-555-0191\nZed Motor Co,313-555-0151",
+ "format": "csv"
+}
+{
+ "command": "close-test",
+ "generated": "PHONE,NAME\n212-555-0110,Old Media Productions\n212-555-0191,Yankee Computer Repair Ltd\n214-555-0133,Wren Computers\n305-555-0148,New Enterprises\n305-555-0188,Jumbo Eagle Corp\n313-555-0144,Big Car Parts\n313-555-0151,Zed Motor Co\n313-555-0172,West Valley Inc.\n408-555-0157,Early CentralComp\n408-555-0169,John Valley Computers\n555-555-0175,Small Bill Company\n650-555-0160,Bob Hosting Corp.\n650-555-0181,Big Network Systems",
+ "status": {
+  "enum": "wrong",
+  "human": "Test gefaald"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output SQL types",
+ "expected": "NAME [TEXT]\nPHONE [TEXT]"
+}
+{
+ "command": "close-test",
+ "generated": "PHONE [TEXT]\nNAME [TEXT]",
+ "status": {
+  "enum": "wrong",
+  "human": "Test gefaald"
+ }
+}
+{
+ "accepted": false,
+ "command": "close-testcase"
+}
+{
+ "command": "close-context"
+}
+{
+ "command": "close-tab"
+}
+{
+ "command": "close-judgement"
+}

@@ -1,0 +1,26 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "start-tab",
+ "title": "Query 1"
+}
+{
+ "command": "append-message",
+ "message": {
+  "description": "Fout: de ingediende query mag niet `LIKE` bevatten.",
+  "format": "callout-danger",
+  "permission": "student"
+ }
+}
+{
+ "command": "close-tab"
+}
+{
+ "accepted": false,
+ "command": "close-judgement",
+ "status": {
+  "enum": "runtime error",
+  "human": "Gecrasht bij testen"
+ }
+}

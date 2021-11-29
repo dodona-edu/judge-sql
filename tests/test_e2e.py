@@ -15,7 +15,7 @@ class TestEndToEnd(unittest.TestCase):
         self.maxDiff = None
         self.root_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
-    def run_sql_judge(self, exercise_path: str, stdout_path: str, learning_mode: bool = False):
+    def run_sql_judge(self, exercise_path: str, submission_path: str, stdout_path: str, learning_mode: bool = False):
         evaluation_path = os.path.join(exercise_path, "evaluation")
         config_path = os.path.join(exercise_path, "config.json")
 
@@ -23,8 +23,6 @@ class TestEndToEnd(unittest.TestCase):
 
         with open(config_path, "r") as config_file:
             config.update(json.load(config_file).get("evaluation", {}))
-
-        submission_path = os.path.join(evaluation_path, str(config.get("solution_sql", "./solution.sql")))
 
         with tempfile.TemporaryDirectory() as cwd_path:
             config.update(
@@ -76,17 +74,26 @@ class TestEndToEnd(unittest.TestCase):
 
         for folder in os.listdir(test_exercises_path):
             exercise_path = os.path.join(test_exercises_path, folder)
-            stdout_path = os.path.join(test_stdout_path, f"{folder}.stdout")
 
             if not os.path.isdir(exercise_path):
                 continue
 
-            with self.subTest(folder):
-                self.run_sql_judge(
-                    exercise_path,
-                    stdout_path,
-                    LEARN_OUTPUT,
-                )
+            solution_path = os.path.join(exercise_path, "solution")
+
+            for submission in os.listdir(solution_path):
+                if not submission.endswith(".sql"):
+                    continue
+
+                submission_path = os.path.join(solution_path, submission)
+                stdout_path = os.path.join(test_stdout_path, f"{folder}_{submission.removesuffix('.sql')}.stdout")
+
+                with self.subTest(exercise=folder, submission=submission):
+                    self.run_sql_judge(
+                        exercise_path,
+                        submission_path,
+                        stdout_path,
+                        LEARN_OUTPUT,
+                    )
 
     def test_e2e(self):
         self.run_all_repo_tests(os.path.join("test-sql-judge"))
