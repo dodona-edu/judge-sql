@@ -4,4 +4,4 @@ ROOT="$(dirname $(dirname $0))"
 
 cd "$ROOT"
 
-git submodule foreach git pull origin main
+git submodule foreach git fetch origin main
