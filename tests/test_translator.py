@@ -28,7 +28,7 @@ class TestTranslator(unittest.TestCase):
         )
 
     def test_error_status(self):
-        self.assertEqual(
+        self.assertDictEqual(
             Translator.from_str("nl").error_status(ErrorType.CORRECT),
             {
                 "enum": ErrorType.CORRECT,
@@ -36,7 +36,7 @@ class TestTranslator(unittest.TestCase):
             },
         )
 
-        self.assertEqual(
+        self.assertDictEqual(
             Translator.from_str("en").error_status(ErrorType.CORRECT),
             {
                 "enum": ErrorType.CORRECT,

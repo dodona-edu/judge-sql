@@ -1,9 +1,9 @@
 import json
 import os
 import runpy
+import shutil
 import tempfile
 import unittest
-import shutil
 from io import StringIO
 
 from .fake_in_out import fake_in_out
@@ -42,7 +42,7 @@ class TestEndToEnd(unittest.TestCase):
             with fake_in_out(StringIO(json.dumps(config))) as (out, err):
                 runpy.run_path(os.path.join(self.root_path, "sql_judge.py"))
 
-        self.assertEqual(err.getvalue().strip(), "")
+        self.assertMultiLineEqual(err.getvalue().strip(), "")
 
         if learning_mode:
             with open(stdout_path, "w") as stdout:
@@ -52,7 +52,7 @@ class TestEndToEnd(unittest.TestCase):
                 raise FileNotFoundError(f"Missing stdout file: {stdout_path}")
 
             with open(stdout_path, "r") as stdout:
-                self.assertEqual(
+                self.assertMultiLineEqual(
                     out.getvalue().strip().replace(exercise_path, "<exercise_path>"),
                     stdout.read(),
                 )
