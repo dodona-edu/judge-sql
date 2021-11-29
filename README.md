@@ -150,14 +150,16 @@ If these settings are not defined, the default value is chosen.
 | `pragma_startup_queries`               | Run the provided PRAGMA queries on all test databases before starting the tests.                                            | string              | `""`                                                |
 | `pre_execution_forbidden_symbolregex`  | Disallow the usage of some word groups in queries (check runs before query execution).                                      | list of regex       | `[".*sqlite_(temp_)?(master\|schema).*", "pragma"]` |
 | `pre_execution_mandatory_symbolregex`  | Require the usage of some word groups in queries (check runs before query execution).                                       | list of regex       | `[]`                                                |
-| `pre_execution_fullregex`              | Require the query to match the provided regex (check runs before query execution).                                          | list of regex       | `[]`                                                |
+| `pre_execution_forbidden_fullregex`    | Disallow the query to match the provided regex (check runs before query execution).                                         | list of regex       | `[]`                                                |
+| `pre_execution_mandatory_fullregex`    | Require the query to match the provided regex (check runs before query execution).                                          | list of regex       | `[]`                                                |
 | `post_execution_forbidden_symbolregex` | Disallow the usage of some word groups in queries (check runs after query execution and only if all other tests succeeded). | list of regex       | `[]`                                                |
 | `post_execution_mandatory_symbolregex` | Require the usage of some word groups in queries (check runs after query execution and only if all other tests succeeded).  | list of regex       | `[]`                                                |
-| `post_execution_fullregex`             | Require the query to match the provided regex (check runs after query execution and only if all other tests succeeded).     | list of regex       | `[]`                                                |
+| `post_execution_forbidden_fullregex`   | Disallow the query to match the provided regex (check runs after query execution and only if all other tests succeeded).    | list of regex       | `[]`                                                |
+| `post_execution_mandatory_fullregex`   | Require the query to match the provided regex (check runs after query execution and only if all other tests succeeded).     | list of regex       | `[]`                                                |
 
 ### Regex match settings
 
-The `pre_execution_forbidden_symbolregex`, `pre_execution_mandatory_symbolregex`, `pre_execution_fullregex`, `post_execution_forbidden_symbolregex`, `post_execution_mandatory_symbolregex` and `post_execution_fullregex` regex lists can be used to set extra checks for the submission query.
+The `pre_execution_forbidden_symbolregex`, `pre_execution_mandatory_symbolregex`, `pre_execution_forbidden_fullregex`, `pre_execution_mandatory_fullregex`, `post_execution_forbidden_symbolregex`, `post_execution_mandatory_symbolregex`, `post_execution_forbidden_fullregex` and `post_execution_mandatory_fullregex` regex lists can be used to set extra checks for the submission query.
 The `..._symbolregex` lists are used to check each individual "symbol" (these symbols are detected by sqlparse library, examples are `not like`, `users` and `'String value'`).
 All regular expressions are used in a case-insensitive way, and a full match is performed (no `^` and `$` required).
 
@@ -166,10 +168,12 @@ For the example query `SELECT \* FROM users WHERE name = 'test';`:
 | --------------------------- | ------------- | :----------------: | ----------------------- |
 | `..._forbidden_symbolregex` | ["users"]     | ❌                  | symbol found            |
 | `..._mandatory_symbolregex` | ["customers"] | ❌                  | symbol not found        |
-| `..._fullregex`             | ["select"]    | ❌                  | not a full match        |
+| `..._forbidden_fullregex`   | [".*"]        | ❌                  | a full match            |
+| `..._mandatory_fullregex`   | ["select"]    | ❌                  | not a full match        |
 | `..._forbidden_symbolregex` | ["test"]      | ✅                  | not a full match        |
 | `..._mandatory_symbolregex` | [".test."]    | ✅                  | symbol found (`'test'`) |
-| `..._fullregex`             | ["select .*"] | ✅                  | full match              |
+| `..._forbidden_fullregex`   | ["insert .*"] | ✅                  | not a full match        |
+| `..._mandatory_fullregex`   | ["select .*"] | ✅                  | full match              |
 
 ### Example of modified settings
 

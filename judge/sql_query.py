@@ -132,14 +132,16 @@ class SQLQuery:
         self,
         forbidden_symbolregex: list[str],
         mandatory_symbolregex: list[str],
-        fullregex: list[str],
+        forbidden_fullregex: list[str],
+        mandatory_fullregex: list[str],
     ) -> Optional[tuple[Translator.Text, str]]:
         """Check if query complies to all given regexs.
 
         Args:
             forbidden_symbolregex: list of regexs that should not match any symbol
             mandatory_symbolregex: list of regexs that should match at least one symbol
-            fullregex: list of regexs that should match the full regex
+            forbidden_fullregex: list of regexs that should not match the full regex
+            mandatory_fullregex: list of regexs that should match the full regex
 
         Returns:
             first non-complying match, or none if none are found
@@ -147,18 +149,24 @@ class SQLQuery:
         for regex in forbidden_symbolregex:
             match = self.first_match_regex(regex)
             if match is not None:
-                return Translator.Text.SUBMISSION_FORBIDDEN_REGEX, match
+                return Translator.Text.SUBMISSION_FORBIDDEN_SYMBOLREGEX, match
 
         for regex in mandatory_symbolregex:
             match = self.first_match_regex(regex)
             if match is None:
-                return Translator.Text.SUBMISSION_MANDATORY_REGEX, regex
+                return Translator.Text.SUBMISSION_MANDATORY_SYMBOLREGEX, regex
 
-        for regex in fullregex:
+        for regex in forbidden_fullregex:
+            reg = re.compile(regex, re.IGNORECASE)
+
+            if reg.fullmatch(self.canonical):
+                return Translator.Text.SUBMISSION_FORBIDDEN_FULLREGEX, regex
+
+        for regex in mandatory_fullregex:
             reg = re.compile(regex, re.IGNORECASE)
 
             if not reg.fullmatch(self.canonical):
-                return Translator.Text.SUBMISSION_REGEX_MISMATCH, regex
+                return Translator.Text.SUBMISSION_MANDATORY_FULLREGEX, regex
 
         return None
 

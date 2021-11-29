@@ -340,34 +340,48 @@ class TestSQLQuery(unittest.TestCase):
             query.match_multi_regex(
                 forbidden_symbolregex=["users"],
                 mandatory_symbolregex=[],
-                fullregex=[],
+                forbidden_fullregex=[],
+                mandatory_fullregex=[],
             ),
-            (Translator.Text.SUBMISSION_FORBIDDEN_REGEX, "users"),
+            (Translator.Text.SUBMISSION_FORBIDDEN_SYMBOLREGEX, "users"),
         )
 
         self.assertEqual(
             query.match_multi_regex(
                 forbidden_symbolregex=[],
                 mandatory_symbolregex=["customers"],
-                fullregex=[],
+                forbidden_fullregex=[],
+                mandatory_fullregex=[],
             ),
-            (Translator.Text.SUBMISSION_MANDATORY_REGEX, "customers"),
+            (Translator.Text.SUBMISSION_MANDATORY_SYMBOLREGEX, "customers"),
         )
 
         self.assertEqual(
             query.match_multi_regex(
                 forbidden_symbolregex=[],
                 mandatory_symbolregex=[],
-                fullregex=["select"],
+                forbidden_fullregex=[".*"],
+                mandatory_fullregex=[],
             ),
-            (Translator.Text.SUBMISSION_REGEX_MISMATCH, "select"),
+            (Translator.Text.SUBMISSION_FORBIDDEN_FULLREGEX, ".*"),
+        )
+
+        self.assertEqual(
+            query.match_multi_regex(
+                forbidden_symbolregex=[],
+                mandatory_symbolregex=[],
+                forbidden_fullregex=[],
+                mandatory_fullregex=["select"],
+            ),
+            (Translator.Text.SUBMISSION_MANDATORY_FULLREGEX, "select"),
         )
 
         self.assertEqual(
             query.match_multi_regex(
                 forbidden_symbolregex=["test"],
                 mandatory_symbolregex=[],
-                fullregex=[],
+                forbidden_fullregex=[],
+                mandatory_fullregex=[],
             ),
             None,
         )
@@ -376,7 +390,8 @@ class TestSQLQuery(unittest.TestCase):
             query.match_multi_regex(
                 forbidden_symbolregex=[],
                 mandatory_symbolregex=[".test."],
-                fullregex=[],
+                forbidden_fullregex=[],
+                mandatory_fullregex=[],
             ),
             None,
         )
@@ -385,7 +400,18 @@ class TestSQLQuery(unittest.TestCase):
             query.match_multi_regex(
                 forbidden_symbolregex=[],
                 mandatory_symbolregex=[],
-                fullregex=["select .*"],
+                forbidden_fullregex=["insert .*"],
+                mandatory_fullregex=[],
+            ),
+            None,
+        )
+
+        self.assertEqual(
+            query.match_multi_regex(
+                forbidden_symbolregex=[],
+                mandatory_symbolregex=[],
+                forbidden_fullregex=[],
+                mandatory_fullregex=["select .*"],
             ),
             None,
         )

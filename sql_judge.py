@@ -52,15 +52,19 @@ with Judgement():
     config.pre_execution_forbidden_symbolregex = list(getattr(config, "pre_execution_forbidden_symbolregex", defaults))
     # Set 'pre_execution_mandatory_symbolregex' to [] if not set
     config.pre_execution_mandatory_symbolregex = list(getattr(config, "pre_execution_mandatory_symbolregex", []))
-    # Set 'pre_execution_fullregex' to [] if not set
-    config.pre_execution_fullregex = list(getattr(config, "pre_execution_fullregex", []))
+    # Set 'pre_execution_forbidden_fullregex' to [] if not set
+    config.pre_execution_forbidden_fullregex = list(getattr(config, "pre_execution_forbidden_fullregex", []))
+    # Set 'pre_execution_mandatory_fullregex' to [] if not set
+    config.pre_execution_mandatory_fullregex = list(getattr(config, "pre_execution_mandatory_fullregex", []))
 
     # Set 'post_execution_forbidden_symbolregex' to [] if not set
     config.post_execution_forbidden_symbolregex = list(getattr(config, "post_execution_forbidden_symbolregex", []))
     # Set 'post_execution_mandatory_symbolregex' to [] if not set
     config.post_execution_mandatory_symbolregex = list(getattr(config, "post_execution_mandatory_symbolregex", []))
-    # Set 'post_execution_fullregex' to [] if not set
-    config.post_execution_fullregex = list(getattr(config, "post_execution_fullregex", []))
+    # Set 'post_execution_forbidden_fullregex' to [] if not set
+    config.post_execution_forbidden_fullregex = list(getattr(config, "post_execution_forbidden_fullregex", []))
+    # Set 'post_execution_mandatory_fullregex' to [] if not set
+    config.post_execution_mandatory_fullregex = list(getattr(config, "post_execution_mandatory_fullregex", []))
 
     if hasattr(config, "database_files"):
         config.database_files = [
@@ -203,7 +207,8 @@ with Judgement():
             match = submission_query.match_multi_regex(
                 config.pre_execution_forbidden_symbolregex,
                 config.pre_execution_mandatory_symbolregex,
-                config.pre_execution_fullregex,
+                config.pre_execution_forbidden_fullregex,
+                config.pre_execution_mandatory_fullregex,
             )
             if match is not None:
                 raise DodonaException(
@@ -272,7 +277,8 @@ with Judgement():
                         match = submission_query.match_multi_regex(
                             config.post_execution_forbidden_symbolregex,
                             config.post_execution_mandatory_symbolregex,
-                            config.post_execution_fullregex,
+                            config.post_execution_forbidden_fullregex,
+                            config.post_execution_mandatory_fullregex,
                         )
                         if match is not None:
                             raise DodonaException(
