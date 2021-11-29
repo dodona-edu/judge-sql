@@ -1,0 +1,63 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "start-tab",
+ "title": "Query 1"
+}
+{
+ "command": "start-context"
+}
+{
+ "command": "start-testcase",
+ "description": {
+  "description": "-- sqlite3 empty.sqlite\nCREATE TABLE PEOPLE\n(\n    NAME   CHAR(10),\n    HIRED  DATE,\n    STORE  INTEGER,\n    HOURLY BOOL DEFAULT 1\n);",
+  "format": "sql"
+ }
+}
+{
+ "command": "start-test",
+ "description": {
+  "description": "Vergelijken van de tabel lay-out van `PEOPLE`.",
+  "format": "markdown"
+ },
+ "expected": "CID,NAME,TYPE,NOTNULL,DFLT_VALUE,PK\n0,NAME,CHAR(10),0,,0\n1,HIRED,DATE,0,,0\n2,STORE,INTEGER,0,,0\n3,HOURLY,BOOL,0,1,0",
+ "format": "csv"
+}
+{
+ "command": "close-test",
+ "generated": "CID,NAME,TYPE,NOTNULL,DFLT_VALUE,PK\n0,NAME,CHAR(10),0,,0\n1,HIRED,DATE,0,,0\n2,STORE,INTEGER,0,,0\n3,HOURLY,BOOL,0,1,0",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "command": "start-test",
+ "description": {
+  "description": "Vergelijken van de tabel inhoud van `PEOPLE`.",
+  "format": "markdown"
+ },
+ "expected": "",
+ "format": "csv"
+}
+{
+ "command": "close-test",
+ "generated": "",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "command": "close-testcase"
+}
+{
+ "command": "close-context"
+}
+{
+ "command": "close-tab"
+}
+{
+ "command": "close-judgement"
+}

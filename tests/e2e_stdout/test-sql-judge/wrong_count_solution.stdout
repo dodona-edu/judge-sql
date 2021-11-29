@@ -1,0 +1,57 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "start-tab",
+ "title": "Query 1"
+}
+{
+ "command": "start-context"
+}
+{
+ "command": "start-testcase",
+ "description": {
+  "description": "-- sqlite3 databank-informatica1.sqlite\nSELECT SUM(QUANTITY_ON_HAND)\nFROM PRODUCT\nWHERE PRODUCT_CODE = 'HW';",
+  "format": "sql"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output in csv formaat",
+ "expected": "SUM(QUANTITY_ON_HAND)\n802095",
+ "format": "csv"
+}
+{
+ "command": "close-test",
+ "generated": "SUM(QUANTITY_ON_HAND)\n7550",
+ "status": {
+  "enum": "wrong",
+  "human": "Test gefaald"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output SQL types",
+ "expected": "SUM(QUANTITY_ON_HAND) [INTEGER]"
+}
+{
+ "command": "close-test",
+ "generated": "SUM(QUANTITY_ON_HAND) [INTEGER]",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "accepted": false,
+ "command": "close-testcase"
+}
+{
+ "command": "close-context"
+}
+{
+ "command": "close-tab"
+}
+{
+ "command": "close-judgement"
+}
