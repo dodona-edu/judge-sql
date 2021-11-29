@@ -1,0 +1,56 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "start-tab",
+ "title": "Query 1"
+}
+{
+ "command": "start-context"
+}
+{
+ "command": "start-testcase",
+ "description": {
+  "description": "-- sqlite3 databank-informatica1.sqlite\nSELECT * from DISCOUNT_CODE;",
+  "format": "sql"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output in csv formaat",
+ "expected": "DISCOUNT_CODE,RATE\nH,16\nL,7\nM,11\nN,0",
+ "format": "csv"
+}
+{
+ "command": "close-test",
+ "generated": "DISCOUNT_CODE,RATE\nH,16\nL,7\nM,11\nN,0",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output SQL types",
+ "expected": "DISCOUNT_CODE [TEXT]\nRATE [INTEGER]"
+}
+{
+ "command": "close-test",
+ "generated": "DISCOUNT_CODE [TEXT]\nRATE [INTEGER]",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "command": "close-testcase"
+}
+{
+ "command": "close-context"
+}
+{
+ "command": "close-tab"
+}
+{
+ "command": "close-judgement"
+}

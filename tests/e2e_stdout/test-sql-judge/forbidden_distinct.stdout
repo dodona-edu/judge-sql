@@ -1,0 +1,56 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "start-tab",
+ "title": "Query 1"
+}
+{
+ "command": "start-context"
+}
+{
+ "command": "start-testcase",
+ "description": {
+  "description": "-- sqlite3 databank-informatica1.sqlite\nSELECT *\nFROM CUSTOMER\nWHERE CUSTOMER_ID = 1;",
+  "format": "sql"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output in csv formaat",
+ "expected": "CUSTOMER_ID,DISCOUNT_CODE,ZIP,NAME,ADDRESSLINE1,ADDRESSLINE2,CITY,STATE,PHONE,FAX,EMAIL,CREDIT_LIMIT\n1,N,95117,Jumbo Eagle Corp,111 E. Las Olivas Blvd,Suite 51,Fort Lauderdale,FL,305-555-0188,305-555-0189,jumboeagle@example.com,100000",
+ "format": "csv"
+}
+{
+ "command": "close-test",
+ "generated": "CUSTOMER_ID,DISCOUNT_CODE,ZIP,NAME,ADDRESSLINE1,ADDRESSLINE2,CITY,STATE,PHONE,FAX,EMAIL,CREDIT_LIMIT\n1,N,95117,Jumbo Eagle Corp,111 E. Las Olivas Blvd,Suite 51,Fort Lauderdale,FL,305-555-0188,305-555-0189,jumboeagle@example.com,100000",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output SQL types",
+ "expected": "CUSTOMER_ID [INTEGER]\nDISCOUNT_CODE [TEXT]\nZIP [TEXT]\nNAME [TEXT]\nADDRESSLINE1 [TEXT]\nADDRESSLINE2 [TEXT]\nCITY [TEXT]\nSTATE [TEXT]\nPHONE [TEXT]\nFAX [TEXT]\nEMAIL [TEXT]\nCREDIT_LIMIT [INTEGER]"
+}
+{
+ "command": "close-test",
+ "generated": "CUSTOMER_ID [INTEGER]\nDISCOUNT_CODE [TEXT]\nZIP [TEXT]\nNAME [TEXT]\nADDRESSLINE1 [TEXT]\nADDRESSLINE2 [TEXT]\nCITY [TEXT]\nSTATE [TEXT]\nPHONE [TEXT]\nFAX [TEXT]\nEMAIL [TEXT]\nCREDIT_LIMIT [INTEGER]",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "command": "close-testcase"
+}
+{
+ "command": "close-context"
+}
+{
+ "command": "close-tab"
+}
+{
+ "command": "close-judgement"
+}

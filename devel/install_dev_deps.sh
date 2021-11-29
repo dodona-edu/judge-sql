@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ROOT="$(dirname $(dirname $0))"
 

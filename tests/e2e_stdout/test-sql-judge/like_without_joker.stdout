@@ -1,0 +1,56 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "start-tab",
+ "title": "Query 1"
+}
+{
+ "command": "start-context"
+}
+{
+ "command": "start-testcase",
+ "description": {
+  "description": "-- sqlite3 databank-informatica1.sqlite\nSELECT NAME\nFROM CUSTOMER\nWHERE DISCOUNT_CODE = 'L';",
+  "format": "sql"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output in csv formaat",
+ "expected": "NAME\nEarly CentralComp\nJohn Valley Computers\nOld Media Productions\nSmall Bill Company\nWest Valley Inc.",
+ "format": "csv"
+}
+{
+ "command": "close-test",
+ "generated": "NAME\nEarly CentralComp\nJohn Valley Computers\nOld Media Productions\nSmall Bill Company\nWest Valley Inc.",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output SQL types",
+ "expected": "NAME [TEXT]"
+}
+{
+ "command": "close-test",
+ "generated": "NAME [TEXT]",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "command": "close-testcase"
+}
+{
+ "command": "close-context"
+}
+{
+ "command": "close-tab"
+}
+{
+ "command": "close-judgement"
+}
