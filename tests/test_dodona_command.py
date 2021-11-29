@@ -13,6 +13,11 @@ class TestDodonaCommand(unittest.TestCase):
         self.assertEqual(MessageFormat.TEXT, "text")
         self.assertEqual(AnnotationSeverity.ERROR, "error")
 
+        self.assertEqual(str(ErrorType.COMPILATION_ERROR), "compilation error")
+        self.assertEqual(str(MessagePermission.STUDENT), "student")
+        self.assertEqual(str(MessageFormat.TEXT), "text")
+        self.assertEqual(str(AnnotationSeverity.ERROR), "error")
+
     def test_constructors(self):
         self.assertDictEqual(
             CommandTestCase(

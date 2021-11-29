@@ -28,7 +28,7 @@ class ErrorType(str, Enum):
         Returns:
             string representation of enum
         """
-        return str(self)
+        return self
 
 
 class MessagePermission(str, Enum):
@@ -44,7 +44,7 @@ class MessagePermission(str, Enum):
         Returns:
             string representation of enum
         """
-        return str(self)
+        return self
 
 
 class MessageFormat(str, Enum):
@@ -67,7 +67,7 @@ class MessageFormat(str, Enum):
         Returns:
             string representation of enum
         """
-        return str(self)
+        return self
 
 
 class AnnotationSeverity(str, Enum):
@@ -83,7 +83,7 @@ class AnnotationSeverity(str, Enum):
         Returns:
             string representation of enum
         """
-        return str(self)
+        return self
 
 
 class DodonaException(Exception):
