@@ -45,7 +45,7 @@
 {
  "command": "append-message",
  "message": {
-  "description": "Fout: de ingediende query moet voldoen aan `((?!LIKE[\\s'\"]+[\\%_]+).)*`.",
+  "description": "Fout: de ingediende query mag niet voldoen aan `.*LIKE[\\s'\"]+[\\%_]+.*`.",
   "format": "callout-danger",
   "permission": "student"
  }
