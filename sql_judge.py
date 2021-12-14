@@ -177,7 +177,7 @@ with Judgement():
                 format=MessageFormat.CODE,
             ) from err
 
-    for query_nr, solution_query in enumerate(config.solution_queries):
+    for query_nr, solution_query in enumerate(config.solution_queries):  # noqa: C901
         with Tab(f"Query {1 + query_nr}"):
             if query_nr >= len(config.submission_queries):
                 raise DodonaException(

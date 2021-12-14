@@ -15,7 +15,7 @@ from .sql_query import SQLQuery
 from .translator import Translator
 
 
-def non_select_feedback(
+def non_select_feedback(  # noqa: C901
     config: DodonaConfig, testcase: SimpleNamespace, db_name: str, db_file: str, solution_query: SQLQuery
 ) -> None:
     """Run tests based on execution results of a select query.

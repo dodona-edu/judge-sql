@@ -6,7 +6,7 @@ from types import SimpleNamespace
 from typing import Any, TextIO
 
 
-class DodonaConfig(SimpleNamespace):
+class DodonaConfig(SimpleNamespace):  # noqa: R0902
     """a class for containing all Dodona Judge configuration.
 
     Attributes:
@@ -36,14 +36,14 @@ class DodonaConfig(SimpleNamespace):
             kwargs: the named parameters in the form of a dict
         """
         super().__init__(**kwargs)
-        self.memory_limit = int(self.memory_limit)
-        self.time_limit = int(self.time_limit)
-        self.programming_language = str(self.programming_language)
-        self.natural_language = str(self.natural_language)
-        self.resources = str(self.resources)
-        self.source = str(self.source)
-        self.judge = str(self.judge)
-        self.workdir = str(self.workdir)
+        self.memory_limit: int = int(self.memory_limit)
+        self.time_limit: int = int(self.time_limit)
+        self.programming_language: str = str(self.programming_language)
+        self.natural_language: str = str(self.natural_language)
+        self.resources: str = str(self.resources)
+        self.source: str = str(self.source)
+        self.judge: str = str(self.judge)
+        self.workdir: str = str(self.workdir)
 
     @classmethod
     def from_json(cls: type["DodonaConfig"], json_file: TextIO) -> "DodonaConfig":

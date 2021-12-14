@@ -22,7 +22,7 @@ class ErrorType(str, Enum):
     CORRECT = "correct"
     CORRECT_ANSWER = "correct answer"
 
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # noqa: E0307
         """Convert enum to string.
 
         Returns:
@@ -38,7 +38,7 @@ class MessagePermission(str, Enum):
     STAFF = "staff"
     ZEUS = "zeus"
 
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # noqa: E0307
         """Convert enum to string.
 
         Returns:
@@ -61,7 +61,7 @@ class MessageFormat(str, Enum):
     CODE = "code"
     SQL = "sql"
 
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # noqa: E0307
         """Convert enum to string.
 
         Returns:
@@ -77,7 +77,7 @@ class AnnotationSeverity(str, Enum):
     WARNING = "warning"
     INFO = "info"
 
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # noqa: E0307
         """Convert enum to string.
 
         Returns:
@@ -182,7 +182,7 @@ class DodonaCommand(ABC):
         """
         return {"command": f"start-{self.name()}", **self.start_args.__dict__}
 
-    def close_msg(self) -> dict:
+    def close_msg(self) -> Optional[dict]:
         """Create close message that is printed as JSON to stdout when exiting the 'with' block.
 
         Returns:
@@ -346,6 +346,7 @@ class TestCase(DodonaCommandWithAccepted):
         """Create TestCase.
 
         If a single positional argument is passed, this is assumed to be the message.
+
         Example:
             >>> with TestCase("This is the message"):
             ...     pass
@@ -356,6 +357,7 @@ class TestCase(DodonaCommandWithAccepted):
             ...     pass
 
         If keyword arguments are passed, these are assumed to be the message's content.
+
         Example:
             >>> with TestCase(
             ...     format=MessageFormat.SQL,
@@ -394,6 +396,7 @@ class Message(DodonaCommand):
         """Create Message.
 
         If a single positional argument is passed, this is assumed to be the message.
+
         Example:
         >>> with Message("This is the message"):
         ...     pass
@@ -402,7 +405,9 @@ class Message(DodonaCommand):
         ...     "description": "This is the message"
         ... }):
         ...     pass
+
         If keyword arguments are passed, these are assumed to be the message's content.
+
         Example:
         >>> with Message(
         ...     format=MessageFormat.SQL,

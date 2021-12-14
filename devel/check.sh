@@ -2,4 +2,6 @@
 
 ROOT="$(dirname $(dirname $0))"
 
-flakehell lint **/*.py
+cd "$ROOT"
+
+pytest --pylama $@
