@@ -111,12 +111,12 @@
 {
  "command": "start-test",
  "description": "Vergelijken van de query output in csv formaat",
- "expected": "NAME,PHONE\nBig Car Parts,313-555-0144\nBig Network Systems,650-555-0181\nBob Hosting Corp.,650-555-0160\nEarly CentralComp,408-555-0157\nJohn Valley Computers,408-555-0169\nJumbo Eagle Corp,305-555-0188\nNew Enterprises,305-555-0148\nOld Media Productions,212-555-0110\nSmall Bill Company,555-555-0175\nWest Valley Inc.,313-555-0172\nWren Computers,214-555-0133\nYankee Computer Repair Ltd,212-555-0191\nZed Motor Co,313-555-0151",
+ "expected": "NAME,PHONE\nJumbo Eagle Corp,305-555-0188\nNew Enterprises,305-555-0148\nSmall Bill Company,555-555-0175\nWren Computers,214-555-0133\nBob Hosting Corp.,650-555-0160\nEarly CentralComp,408-555-0157\nJohn Valley Computers,408-555-0169\nOld Media Productions,212-555-0110\nYankee Computer Repair Ltd,212-555-0191\nBig Car Parts,313-555-0144\nZed Motor Co,313-555-0151\nWest Valley Inc.,313-555-0172\nBig Network Systems,650-555-0181",
  "format": "csv"
 }
 {
  "command": "close-test",
- "generated": "NAME,PHONE\nBig Car Parts,313-555-0144\nBig Network Systems,650-555-0181\nBob Hosting Corp.,650-555-0160\nEarly CentralComp,408-555-0157\nJohn Valley Computers,408-555-0169\nJumbo Eagle Corp,305-555-0188\nNew Enterprises,305-555-0148\nOld Media Productions,212-555-0110\nSmall Bill Company,555-555-0175\nWest Valley Inc.,313-555-0172\nWren Computers,214-555-0133\nYankee Computer Repair Ltd,212-555-0191\nZed Motor Co,313-555-0151",
+ "generated": "NAME,PHONE\nJumbo Eagle Corp,305-555-0188\nNew Enterprises,305-555-0148\nSmall Bill Company,555-555-0175\nWren Computers,214-555-0133\nBob Hosting Corp.,650-555-0160\nEarly CentralComp,408-555-0157\nJohn Valley Computers,408-555-0169\nOld Media Productions,212-555-0110\nYankee Computer Repair Ltd,212-555-0191\nBig Car Parts,313-555-0144\nZed Motor Co,313-555-0151\nWest Valley Inc.,313-555-0172\nBig Network Systems,650-555-0181",
  "status": {
   "enum": "correct",
   "human": "Alle testen geslaagd"
@@ -154,12 +154,12 @@
 {
  "command": "start-test",
  "description": "Vergelijken van de query output in csv formaat",
- "expected": "NAME,PHONE\nBig Car Parts,313-555-0144\nBig Network Systems,650-555-0181\nBob Hosting Corp.,650-555-0160\nEarly CentralComp,408-555-0157\nElon Musk,305-555-0188\nGuido van Rossum,305-555-0148\nJohn Valley Computers,408-555-0169\nOld Media Productions,212-555-0110\nSmall Bill Company,555-555-0175\nWest Valley Inc.,313-555-0172\nWren Computers,214-555-0133\nYankee Computer Repair Ltd,212-555-0191\nZed Motor Co,313-555-0151",
+ "expected": "NAME,PHONE\nElon Musk,305-555-0188\nGuido van Rossum,305-555-0148\nSmall Bill Company,555-555-0175\nWren Computers,214-555-0133\nBob Hosting Corp.,650-555-0160\nEarly CentralComp,408-555-0157\nJohn Valley Computers,408-555-0169\nOld Media Productions,212-555-0110\nYankee Computer Repair Ltd,212-555-0191\nBig Car Parts,313-555-0144\nZed Motor Co,313-555-0151\nWest Valley Inc.,313-555-0172\nBig Network Systems,650-555-0181",
  "format": "csv"
 }
 {
  "command": "close-test",
- "generated": "NAME,PHONE\nBig Car Parts,313-555-0144\nBig Network Systems,650-555-0181\nBob Hosting Corp.,650-555-0160\nEarly CentralComp,408-555-0157\nElon Musk,305-555-0188\nGuido van Rossum,305-555-0148\nJohn Valley Computers,408-555-0169\nOld Media Productions,212-555-0110\nSmall Bill Company,555-555-0175\nWest Valley Inc.,313-555-0172\nWren Computers,214-555-0133\nYankee Computer Repair Ltd,212-555-0191\nZed Motor Co,313-555-0151",
+ "generated": "NAME,PHONE\nElon Musk,305-555-0188\nGuido van Rossum,305-555-0148\nSmall Bill Company,555-555-0175\nWren Computers,214-555-0133\nBob Hosting Corp.,650-555-0160\nEarly CentralComp,408-555-0157\nJohn Valley Computers,408-555-0169\nOld Media Productions,212-555-0110\nYankee Computer Repair Ltd,212-555-0191\nBig Car Parts,313-555-0144\nZed Motor Co,313-555-0151\nWest Valley Inc.,313-555-0172\nBig Network Systems,650-555-0181",
  "status": {
   "enum": "correct",
   "human": "Alle testen geslaagd"
