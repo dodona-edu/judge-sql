@@ -5,6 +5,7 @@ import sqlite3
 from shutil import copyfile
 from sqlite3 import Cursor
 from types import TracebackType
+from typing import Optional
 
 from .dodona_config import DodonaConfig
 from .sql_query import SQLQuery
@@ -67,7 +68,7 @@ class SQLDatabase:
 
         os.makedirs(os.path.dirname(self.solutionfile), exist_ok=True)
 
-        self.connection = None
+        self.connection: Optional[sqlite3.Connection] = None
 
     def __enter__(self) -> "SQLDatabase":
         """Create solutionfile and submissionfile.

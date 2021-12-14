@@ -3,7 +3,7 @@
 import re
 from typing import Optional
 
-import sqlparse
+import sqlparse  # type: ignore
 
 from .translator import Translator
 
@@ -26,7 +26,7 @@ def flatten_symbols(parsed: sqlparse.sql.Statement) -> list[str]:
 
         return [item for group in statement.tokens for item in _flatten_symbols(group)]
 
-    symbols = []
+    symbols: list[str] = []
     in_brackets = False
     for symbol in _flatten_symbols(parsed):
         if in_brackets and len(symbols) > 0:
@@ -77,7 +77,7 @@ class SQLQuery:
         self.symbols = flatten_symbols(self.parsed)
         self.canonical = format_join_symbols(self.symbols)
 
-        self._is_ordered = None
+        self._is_ordered: Optional[bool] = None
 
     @property
     def query_type(self) -> str:

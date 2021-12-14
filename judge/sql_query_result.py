@@ -3,7 +3,7 @@
 import io
 from sqlite3 import Cursor
 
-import pandas as pd
+import pandas as pd  # type: ignore
 
 NoneType = type(None)
 
@@ -81,7 +81,7 @@ class SQLQueryResult:
         Args:
             column_index: list of column names that should be placed first
         """
-        original_indices = {}
+        original_indices: dict[str, list[int]] = {}
         for i, column in enumerate(self.columns):
             original_indices.setdefault(column, []).append(i)
 

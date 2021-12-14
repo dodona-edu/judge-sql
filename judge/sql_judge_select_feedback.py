@@ -19,7 +19,7 @@ from .sql_query_result import SQLQueryResult
 from .translator import Translator
 
 
-def select_feedback(
+def select_feedback(  # noqa: R0913
     config: DodonaConfig,
     testcase: SimpleNamespace,
     expected_output: SQLQueryResult,

@@ -8,25 +8,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
-    - name: Cache the dependencies
-      uses: actions/cache@v2
-      with:
-        path: ${{ env.pythonLocation }}
-        key: ${{ env.pythonLocation }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/dev-requirements.txt') }}
-    - name: Install dependencies
-      run: ./devel/install_deps.sh
-    - name: Install dependencies
-      run: ./devel/install_dev_deps.sh
-    - name: Analysing the code with flake8
-      run: ./devel/check.sh
-    - name: Run tests
-      run: ./devel/run-tests.sh
-    - name: Code Coverage
-      uses: codecov/codecov-action@v2
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+      - name: Cache the dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ env.pythonLocation }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/dev-requirements.txt') }}
+      - name: Install dependencies
+        run: ./devel/install_deps.sh
+      - name: Install dependencies
+        run: ./devel/install_dev_deps.sh
+      - name: Running pylama
+        run: ./devel/check.sh
+      - name: Run tests
+        run: ./devel/run-tests.sh
+      - name: Code Coverage
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
