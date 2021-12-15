@@ -163,23 +163,6 @@ with Judgement():
         ):
             pass
 
-    if config.pragma_startup_queries != "":
-        try:
-            config.database_files = [
-                (
-                    db_name,
-                    sql_run_pragma_startup_queries(db_file, config.workdir, db_name, config.pragma_startup_queries),
-                )
-                for db_name, db_file in config.database_files
-            ]
-        except Exception as err:
-            raise DodonaException(
-                config.translator.error_status(ErrorType.INTERNAL_ERROR),
-                permission=MessagePermission.STAFF,
-                description=f"Startup script is not working ({type(err).__name__}):\n    {err}",
-                format=MessageFormat.CODE,
-            ) from err
-
     for query_nr, solution_query in enumerate(config.solution_queries):  # noqa: C901
         with Tab(f"Query {1 + query_nr}"):
             if query_nr >= len(config.submission_queries):
@@ -235,6 +218,17 @@ with Judgement():
                     with SQLDatabase(db_file, config.workdir, db_name) as db:
                         cursor = db.solution_cursor()
 
+                        try:
+                            if config.pragma_startup_queries != "":
+                                sql_run_pragma_startup_queries(cursor, config.pragma_startup_queries)
+                        except Exception as err:
+                            raise DodonaException(
+                                config.translator.error_status(ErrorType.INTERNAL_ERROR),
+                                permission=MessagePermission.STAFF,
+                                description=f"Startup script is not working ({type(err).__name__}):\n    {err}",
+                                format=MessageFormat.CODE,
+                            ) from err
+
                         # RUN SOLUTION QUERY
                         try:
                             cursor.execute(solution_query.without_comments)
@@ -250,6 +244,17 @@ with Judgement():
                         expected_output = SQLQueryResult.from_cursor(config.max_rows, cursor)
 
                         cursor = db.submission_cursor()
+
+                        try:
+                            if config.pragma_startup_queries != "":
+                                sql_run_pragma_startup_queries(cursor, config.pragma_startup_queries)
+                        except Exception as err:
+                            raise DodonaException(
+                                config.translator.error_status(ErrorType.INTERNAL_ERROR),
+                                permission=MessagePermission.STAFF,
+                                description=f"Startup script is not working ({type(err).__name__}):\n    {err}",
+                                format=MessageFormat.CODE,
+                            ) from err
 
                         # RUN SUBMISSION QUERY
                         try:

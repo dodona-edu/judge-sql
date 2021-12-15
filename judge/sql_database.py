@@ -11,17 +11,12 @@ from .sql_query import SQLQuery
 from .sql_query_result import SQLQueryResult
 
 
-def sql_run_pragma_startup_queries(sourcefile: str, workdir: str, db_name: str, script: str) -> str:
+def sql_run_pragma_startup_queries(cursor: sqlite3.Cursor, script: str) -> None:
     """Run a pragma script on the database before using the database in the exercise.
 
     Args:
-        sourcefile: exercise's sqlite start database file
-        workdir: Dodona workdir that is used to store the updated version of the database
-        db_name: name of the database
+        cursor: a cursor for the database
         script: script that should be executed on the database
-
-    Returns:
-        the filename of the updated database
 
     Raises:
         Exception: something went wrong while executing startup queries
@@ -32,14 +27,7 @@ def sql_run_pragma_startup_queries(sourcefile: str, workdir: str, db_name: str, 
                 f"Only PRAGMA queries are allowed in the startup script\nreceived '{query.canonical}' instead."
             )
 
-    newfile = os.path.join(workdir, db_name)
-    copyfile(sourcefile, newfile)
-    connection = sqlite3.connect(newfile)
-    cursor = connection.cursor()
     cursor.executescript(script)
-    connection.commit()
-    connection.close()
-    return newfile
 
 
 class SQLDatabase:

@@ -11,19 +11,19 @@
 {
  "command": "start-testcase",
  "description": {
-  "description": "-- sqlite3 databank-informatica1.sqlite\nSELECT CUSTOMER.NAME, PRODUCT.DESCRIPTION\nFROM PURCHASE_ORDER,\n     PRODUCT,\n     MANUFACTURER,\n     CUSTOMER\nWHERE PURCHASE_ORDER.PRODUCT_ID = PRODUCT.PRODUCT_ID\n  AND PRODUCT.MANUFACTURER_ID = MANUFACTURER.MANUFACTURER_ID\n  AND PURCHASE_ORDER.CUSTOMER_ID = CUSTOMER.CUSTOMER_ID\n  AND MANUFACTURER.CITY LIKE 'San%'\nORDER BY CUSTOMER.NAME;",
+  "description": "-- sqlite3 databank-informatica1.sqlite\nSELECT CITY FROM MANUFACTURER WHERE CITY LIKE 'San%';",
   "format": "sql"
  }
 }
 {
  "command": "start-test",
  "description": "Vergelijken van de query output in csv formaat",
- "expected": "NAME,DESCRIPTION\nBob Hosting Corp.,24 inch Digital Monitor\nEarly CentralComp,104-Key Keyboard\nNew Enterprises,Accounting Application\nNew Enterprises,1Ghz Sun Blade Computer",
+ "expected": "CITY\nSanta Clara\nSan Jose\nSan Mateo\nSan David\nSan Alfred\nSanta Clara",
  "format": "csv"
 }
 {
  "command": "close-test",
- "generated": "NAME,DESCRIPTION\nBob Hosting Corp.,24 inch Digital Monitor\nEarly CentralComp,104-Key Keyboard\nNew Enterprises,Accounting Application\nNew Enterprises,1Ghz Sun Blade Computer",
+ "generated": "CITY\nSanta Clara\nSan Jose\nSan Mateo\nSan David\nSan Alfred\nSanta Clara",
  "status": {
   "enum": "correct",
   "human": "Alle testen geslaagd"
@@ -32,11 +32,11 @@
 {
  "command": "start-test",
  "description": "Vergelijken van de query output SQL types",
- "expected": "NAME [TEXT]\nDESCRIPTION [TEXT]"
+ "expected": "CITY [TEXT]"
 }
 {
  "command": "close-test",
- "generated": "NAME [TEXT]\nDESCRIPTION [TEXT]",
+ "generated": "CITY [TEXT]",
  "status": {
   "enum": "correct",
   "human": "Alle testen geslaagd"
