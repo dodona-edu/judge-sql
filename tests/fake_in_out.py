@@ -1,3 +1,5 @@
+"""Fake input/output for testing."""
+
 import sys
 from contextlib import contextmanager
 from io import StringIO

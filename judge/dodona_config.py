@@ -3,7 +3,7 @@
 import json
 import os
 from types import SimpleNamespace
-from typing import Any, TextIO
+from typing import Any, Union
 
 
 class DodonaConfig(SimpleNamespace):  # noqa: R0902
@@ -29,7 +29,7 @@ class DodonaConfig(SimpleNamespace):  # noqa: R0902
         workdir:                Full path to the directory in which all user code should be executed.
     """
 
-    def __init__(self, **kwargs: dict[str, Any]) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         """Store all parameters & set correct type for 'known' Dodona judge configuration fields.
 
         Args:
@@ -51,19 +51,25 @@ class DodonaConfig(SimpleNamespace):  # noqa: R0902
         Args:
             other: other object to compare self against
         """
-        return self == other
+        if isinstance(other, str):
+            return super().__eq__(DodonaConfig.from_json(other))
+
+        if isinstance(other, dict):
+            return super().__eq__(DodonaConfig(**other))
+
+        return super().__eq__(other)
 
     @classmethod
-    def from_json(cls: type["DodonaConfig"], json_file: TextIO) -> "DodonaConfig":
-        """Decode json filestream into a DodonaConfig object.
+    def from_json(cls: type["DodonaConfig"], json_str: Union[str, bytes]) -> "DodonaConfig":
+        """Decode json string into a DodonaConfig object.
 
         Args:
-            json_file: input json-encoded filestream
+            json_str: input json-encoded string
 
         Returns:
             decoded Dodona judge config
         """
-        simple = json.load(json_file, object_hook=lambda d: SimpleNamespace(**d))
+        simple = json.loads(json_str, object_hook=lambda d: SimpleNamespace(**d))
         return cls(**simple.__dict__)
 
     def sanity_check(self) -> None:
