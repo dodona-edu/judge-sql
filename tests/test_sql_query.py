@@ -1,3 +1,5 @@
+"""Test SQLQuery."""
+
 import unittest
 
 from judge.sql_query import SQLQuery
@@ -5,6 +7,8 @@ from judge.translator import Translator
 
 
 class TestSQLQuery(unittest.TestCase):
+    """SQLQuery TestCase."""
+
     def single_query(self, raw: str):
         queries = SQLQuery.from_raw_input(raw)
         self.assertEqual(len(queries), 1)

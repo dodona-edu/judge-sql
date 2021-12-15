@@ -1,3 +1,5 @@
+"""Test Translator."""
+
 import unittest
 
 from judge.dodona_command import ErrorType
@@ -5,6 +7,8 @@ from judge.translator import Translator
 
 
 class TestTranslator(unittest.TestCase):
+    """Translator TestCase."""
+
     def test_translate(self):
         self.assertEqual(
             Translator.from_str("nl").translate(Translator.Text.ADD_A_SEMICOLON),

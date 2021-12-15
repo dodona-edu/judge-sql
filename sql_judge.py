@@ -24,7 +24,7 @@ from judge.sql_query_result import SQLQueryResult
 from judge.translator import Translator
 
 # extract info from exercise configuration
-config = DodonaConfig.from_json(sys.stdin)
+config = DodonaConfig.from_json(sys.stdin.read())
 
 with Judgement():
     config.sanity_check()

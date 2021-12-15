@@ -1,3 +1,5 @@
+"""Test SQLQueryResult."""
+
 import unittest
 
 import pandas as pd
@@ -6,6 +8,8 @@ from judge.sql_query_result import SQLQueryResult
 
 
 class TestSQLQueryResult(unittest.TestCase):
+    """SQLQueryResult TestCase."""
+
     def test_init1(self):
         query_result = SQLQueryResult(
             pd.DataFrame(

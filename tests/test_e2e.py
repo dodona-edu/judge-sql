@@ -1,3 +1,5 @@
+"""Test E2E."""
+
 import json
 import os
 import runpy
@@ -10,9 +12,11 @@ from .fake_in_out import fake_in_out
 
 
 class TestEndToEnd(unittest.TestCase):
+    """E2E TestCase."""
+
     def __init__(self, methodName: str) -> None:
         super().__init__(methodName=methodName)
-        self.maxDiff = None
+        self.maxDiff = None  # noqa: C0103
         self.root_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
     def run_sql_judge(self, exercise_path: str, submission_path: str, stdout_path: str, learning_mode: bool = False):
@@ -21,7 +25,7 @@ class TestEndToEnd(unittest.TestCase):
 
         config = {}
 
-        with open(config_path, "r") as config_file:
+        with open(config_path, "r", encoding="utf-8") as config_file:
             config.update(json.load(config_file).get("evaluation", {}))
 
         with tempfile.TemporaryDirectory() as cwd_path:
@@ -45,13 +49,13 @@ class TestEndToEnd(unittest.TestCase):
         self.assertMultiLineEqual(err.getvalue().strip(), "")
 
         if learning_mode:
-            with open(stdout_path, "w") as stdout:
+            with open(stdout_path, "w", encoding="utf-8") as stdout:
                 stdout.write(out.getvalue().strip().replace(exercise_path, "<exercise_path>"))
         else:
             if not os.path.exists(stdout_path):
                 raise FileNotFoundError(f"Missing stdout file: {stdout_path}")
 
-            with open(stdout_path, "r") as stdout:
+            with open(stdout_path, "r", encoding="utf-8") as stdout:
                 self.assertMultiLineEqual(
                     out.getvalue().strip().replace(exercise_path, "<exercise_path>"),
                     stdout.read(),
@@ -61,8 +65,8 @@ class TestEndToEnd(unittest.TestCase):
         test_exercises_path = os.path.join(self.root_path, "tests", "e2e_repos", repo_path)
         test_stdout_path = os.path.join(self.root_path, "tests", "e2e_stdout", repo_path)
 
-        LEARN_OUTPUT = os.environ.get("LEARN_OUTPUT", "NO") == "YES"
-        if LEARN_OUTPUT:
+        learning_mode = os.environ.get("LEARN_OUTPUT", "NO") == "YES"
+        if learning_mode:
             print("\n------------------------------------------")
             print("WARNING: LEARN_OUTPUT is enabled")
             print("> 'stdout' and 'stderr' files will get updated to match the execution output")
@@ -73,6 +77,9 @@ class TestEndToEnd(unittest.TestCase):
         os.makedirs(test_stdout_path, exist_ok=True)
 
         for folder in os.listdir(test_exercises_path):
+            if folder[0] == "_":
+                continue
+
             exercise_path = os.path.join(test_exercises_path, folder)
 
             if not os.path.isdir(exercise_path):
@@ -92,7 +99,7 @@ class TestEndToEnd(unittest.TestCase):
                         exercise_path,
                         submission_path,
                         stdout_path,
-                        LEARN_OUTPUT,
+                        learning_mode,
                     )
 
     def test_e2e(self):
