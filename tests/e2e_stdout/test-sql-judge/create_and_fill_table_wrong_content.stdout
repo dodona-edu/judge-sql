@@ -1,0 +1,104 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "start-tab",
+ "title": "Query 1"
+}
+{
+ "command": "start-context"
+}
+{
+ "command": "start-testcase",
+ "description": {
+  "description": "-- sqlite3 empty.sqlite\nCREATE TABLE PEOPLE\n(\n    NAME   CHAR(10),\n    HIRED  DATE,\n    STORE  INTEGER,\n    HOURLY BOOL DEFAULT 1\n);",
+  "format": "sql"
+ }
+}
+{
+ "command": "start-test",
+ "description": {
+  "description": "Vergelijken van de tabel lay-out van `PEOPLE`.",
+  "format": "markdown"
+ },
+ "expected": "CID,NAME,TYPE,NOTNULL,DFLT_VALUE,PK\n0,NAME,CHAR(10),0,,0\n1,HIRED,DATE,0,,0\n2,STORE,INTEGER,0,,0\n3,HOURLY,BOOL,0,1,0",
+ "format": "csv"
+}
+{
+ "command": "close-test",
+ "generated": "CID,NAME,TYPE,NOTNULL,DFLT_VALUE,PK\n0,NAME,CHAR(10),0,,0\n1,HIRED,DATE,0,,0\n2,STORE,INTEGER,0,,0\n3,HOURLY,BOOL,0,1,0",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "command": "start-test",
+ "description": {
+  "description": "Vergelijken van de tabel inhoud van `PEOPLE`.",
+  "format": "markdown"
+ },
+ "expected": "",
+ "format": "csv"
+}
+{
+ "command": "close-test",
+ "generated": "",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "command": "close-testcase"
+}
+{
+ "command": "close-context"
+}
+{
+ "command": "close-tab"
+}
+{
+ "command": "start-tab",
+ "title": "Query 2"
+}
+{
+ "command": "start-context"
+}
+{
+ "command": "start-testcase",
+ "description": {
+  "description": "-- sqlite3 empty.sqlite\nINSERT INTO PEOPLE VALUES\n    ('Johny', '2000-01-01', 1, 1),\n    ('Mary', '2000-01-01', 1, 0),\n    ('John', '2000-01-01', 2, 1),\n    ('Mary', '2000-01-01', 2, 0);",
+  "format": "sql"
+ }
+}
+{
+ "command": "start-test",
+ "description": {
+  "description": "Vergelijken van de tabel inhoud van `PEOPLE`.",
+  "format": "markdown"
+ },
+ "expected": "NAME,HIRED,STORE,HOURLY\nJohn,2000-01-01,1,1\nMary,2000-01-01,1,0\nJohn,2000-01-01,2,1\nMary,2000-01-01,2,0",
+ "format": "csv"
+}
+{
+ "command": "close-test",
+ "generated": "NAME,HIRED,STORE,HOURLY\nJohny,2000-01-01,1,1\nMary,2000-01-01,1,0\nJohn,2000-01-01,2,1\nMary,2000-01-01,2,0",
+ "status": {
+  "enum": "wrong",
+  "human": "Test gefaald"
+ }
+}
+{
+ "accepted": false,
+ "command": "close-testcase"
+}
+{
+ "command": "close-context"
+}
+{
+ "command": "close-tab"
+}
+{
+ "command": "close-judgement"
+}

@@ -1,0 +1,19 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "append-message",
+ "message": {
+  "description": "Could not find database file: '<exercise_path>/evaluation/./databases/does_not_exist.sqlite'.",
+  "format": "text",
+  "permission": "staff"
+ }
+}
+{
+ "accepted": false,
+ "command": "close-judgement",
+ "status": {
+  "enum": "internal error",
+  "human": "Interne fout"
+ }
+}

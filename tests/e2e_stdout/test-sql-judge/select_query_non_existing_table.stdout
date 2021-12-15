@@ -1,0 +1,44 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "start-tab",
+ "title": "Query 1"
+}
+{
+ "command": "start-context"
+}
+{
+ "command": "start-testcase",
+ "description": {
+  "description": "-- sqlite3 databank-informatica1.sqlite\nSELECT * from DISCOUNT_COODE;",
+  "format": "sql"
+ }
+}
+{
+ "command": "append-message",
+ "message": {
+  "description": "OperationalError:\n    no such table: DISCOUNT_COODE",
+  "format": "code",
+  "permission": "student"
+ }
+}
+{
+ "accepted": false,
+ "command": "close-testcase"
+}
+{
+ "accepted": false,
+ "command": "close-context"
+}
+{
+ "command": "close-tab"
+}
+{
+ "accepted": false,
+ "command": "close-judgement",
+ "status": {
+  "enum": "compilation error",
+  "human": "Ongeldige query"
+ }
+}
