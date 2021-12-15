@@ -44,7 +44,7 @@ def select_feedback(  # noqa: R0913
         expected_output.index_columns(generated_output.columns)
 
     # if SELECT is not ordered -> fix ordering by sorting all rows
-    if not solution_query.is_ordered:
+    if config.order_unordered_rows and not solution_query.is_ordered:
         sort_on = np.intersect1d(expected_output.columns, generated_output.columns)
         expected_output.sort_rows(sort_on)
         generated_output.sort_rows(sort_on)

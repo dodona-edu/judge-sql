@@ -38,6 +38,9 @@ with Judgement():
     # Set 'semicolon_warning' to True if not set
     config.semicolon_warning = bool(getattr(config, "semicolon_warning", True))
 
+    # Set 'order_unordered_rows' to False if not set
+    config.order_unordered_rows = bool(getattr(config, "order_unordered_rows", False))
+
     # Set 'strict_identical_order_by' to True if not set
     config.strict_identical_order_by = bool(getattr(config, "strict_identical_order_by", True))
 

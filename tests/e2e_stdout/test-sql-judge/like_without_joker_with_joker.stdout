@@ -18,12 +18,12 @@
 {
  "command": "start-test",
  "description": "Vergelijken van de query output in csv formaat",
- "expected": "NAME\nEarly CentralComp\nJohn Valley Computers\nOld Media Productions\nSmall Bill Company\nWest Valley Inc.",
+ "expected": "NAME\nSmall Bill Company\nEarly CentralComp\nJohn Valley Computers\nOld Media Productions\nWest Valley Inc.",
  "format": "csv"
 }
 {
  "command": "close-test",
- "generated": "NAME\nEarly CentralComp\nJohn Valley Computers\nOld Media Productions\nSmall Bill Company\nWest Valley Inc.",
+ "generated": "NAME\nSmall Bill Company\nEarly CentralComp\nJohn Valley Computers\nOld Media Productions\nWest Valley Inc.",
  "status": {
   "enum": "correct",
   "human": "Alle testen geslaagd"

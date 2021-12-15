@@ -18,12 +18,12 @@
 {
  "command": "start-test",
  "description": "Vergelijken van de query output in csv formaat",
- "expected": "DISCOUNT_CODE,RATE\nH,16\nL,7\nM,11\nN,0",
+ "expected": "DISCOUNT_CODE,RATE\nH,16\nM,11\nL,7\nN,0",
  "format": "csv"
 }
 {
  "command": "close-test",
- "generated": "DISCOUNT_CODE,RATE\nH,16\nL,7\nM,11\nN,0",
+ "generated": "DISCOUNT_CODE,RATE\nH,16\nM,11\nL,7\nN,0",
  "status": {
   "enum": "correct",
   "human": "Alle testen geslaagd"

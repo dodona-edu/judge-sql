@@ -4,4 +4,7 @@ ROOT="$(dirname $(dirname $0))"
 
 cd "$ROOT"
 
-pytest --pylama $@
+pytest \
+    --pylama \
+    --ignore="tests"\
+    $@
