@@ -3,7 +3,6 @@
 import os
 import sqlite3
 from shutil import copyfile
-from sqlite3 import Cursor
 from types import TracebackType
 from typing import Optional
 
@@ -108,7 +107,7 @@ class SQLDatabase:
             self.connection.close()
         self.connection = None
 
-    def solution_cursor(self) -> Cursor:
+    def solution_cursor(self) -> sqlite3.Cursor:
         """Create a cursor for the solution database.
 
         Returns:
@@ -118,7 +117,7 @@ class SQLDatabase:
         self.connection = sqlite3.connect(self.solutionfile)
         return self.connection.cursor()
 
-    def submission_cursor(self) -> Cursor:
+    def submission_cursor(self) -> sqlite3.Cursor:
         """Create a cursor for the submission database.
 
         Returns:
@@ -128,7 +127,7 @@ class SQLDatabase:
         self.connection = sqlite3.connect(self.submissionfile)
         return self.connection.cursor()
 
-    def joined_cursor(self) -> Cursor:
+    def joined_cursor(self) -> sqlite3.Cursor:
         """Create a cursor for the solution and submission databases.
 
         Returns:

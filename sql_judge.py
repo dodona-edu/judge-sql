@@ -229,7 +229,8 @@ with Judgement():
                     format=MessageFormat.SQL,
                     description=f"-- sqlite3 {db_name}\n{submission_query.without_comments}",
                 ) as testcase:
-                    expected_output, generated_output = None, None
+                    expected_output: SQLQueryResult
+                    generated_output: SQLQueryResult
 
                     with SQLDatabase(db_file, config.workdir, db_name) as db:
                         cursor = db.solution_cursor()

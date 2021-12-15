@@ -45,6 +45,14 @@ class DodonaConfig(SimpleNamespace):  # noqa: R0902
         self.judge: str = str(self.judge)
         self.workdir: str = str(self.workdir)
 
+    def __eq__(self, other):
+        """Check equality.
+
+        Args:
+            other: other object to compare self against
+        """
+        return self == other
+
     @classmethod
     def from_json(cls: type["DodonaConfig"], json_file: TextIO) -> "DodonaConfig":
         """Decode json filestream into a DodonaConfig object.
