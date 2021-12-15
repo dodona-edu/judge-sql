@@ -11,38 +11,53 @@
 {
  "command": "start-testcase",
  "description": {
-  "description": "-- sqlite3 databank-informatica1.sqlite\nSELECT CUSTOMER.NAME, PRODUCT.DESCRIPTION\nFROM PURCHASE_ORDER,\n     PRODUCT,\n     MANUFACTURER,\n     CUSTOMER\nWHERE PURCHASE_ORDER.PRODUCT_ID = PRODUCT.PRODUCT_ID\n  AND PRODUCT.MANUFACTURER_ID = MANUFACTURER.MANUFACTURER_ID\n  AND PURCHASE_ORDER.CUSTOMER_ID = CUSTOMER.CUSTOMER_ID\n  AND MANUFACTURER.CITY LIKE 'san%'\nORDER BY CUSTOMER.NAME;",
+  "description": "-- sqlite3 databank-informatica1.sqlite\nSELECT CITY FROM MANUFACTURER WHERE CITY LIKE 'san%';",
   "format": "sql"
  }
 }
 {
  "command": "start-test",
  "description": "Vergelijken van de query output in csv formaat",
- "expected": "NAME,DESCRIPTION\nBob Hosting Corp.,24 inch Digital Monitor\nEarly CentralComp,104-Key Keyboard\nNew Enterprises,Accounting Application\nNew Enterprises,1Ghz Sun Blade Computer",
+ "expected": "CITY\nSanta Clara\nSan Jose\nSan Mateo\nSan David\nSan Alfred\nSanta Clara",
  "format": "csv"
 }
 {
+ "command": "append-message",
+ "message": {
+  "description": "Verwachtte 1 kolommen, uw aantal kolommen is 0.",
+  "format": "callout-danger"
+ }
+}
+{
+ "command": "append-message",
+ "message": {
+  "description": "Verwachtte 6 rijen, uw aantal rijen is 0.",
+  "format": "callout-danger"
+ }
+}
+{
  "command": "close-test",
- "generated": "NAME,DESCRIPTION\nBob Hosting Corp.,24 inch Digital Monitor\nEarly CentralComp,104-Key Keyboard\nNew Enterprises,Accounting Application\nNew Enterprises,1Ghz Sun Blade Computer",
+ "generated": "",
  "status": {
-  "enum": "correct",
-  "human": "Alle testen geslaagd"
+  "enum": "wrong",
+  "human": "Test gefaald"
  }
 }
 {
  "command": "start-test",
  "description": "Vergelijken van de query output SQL types",
- "expected": "NAME [TEXT]\nDESCRIPTION [TEXT]"
+ "expected": "CITY [TEXT]"
 }
 {
  "command": "close-test",
- "generated": "NAME [TEXT]\nDESCRIPTION [TEXT]",
+ "generated": "",
  "status": {
-  "enum": "correct",
-  "human": "Alle testen geslaagd"
+  "enum": "wrong",
+  "human": "Test gefaald"
  }
 }
 {
+ "accepted": false,
  "command": "close-testcase"
 }
 {

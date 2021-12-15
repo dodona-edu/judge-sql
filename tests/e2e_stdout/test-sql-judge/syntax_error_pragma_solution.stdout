@@ -1,0 +1,44 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "start-tab",
+ "title": "Query 1"
+}
+{
+ "command": "start-context"
+}
+{
+ "command": "start-testcase",
+ "description": {
+  "description": "-- sqlite3 databank-informatica1.sqlite\nSELECT * FROM PURCHASE_ORDER;",
+  "format": "sql"
+ }
+}
+{
+ "command": "append-message",
+ "message": {
+  "description": "Startup script is not working (OperationalError):\n    unrecognized token: \"';\"",
+  "format": "code",
+  "permission": "staff"
+ }
+}
+{
+ "accepted": false,
+ "command": "close-testcase"
+}
+{
+ "accepted": false,
+ "command": "close-context"
+}
+{
+ "command": "close-tab"
+}
+{
+ "accepted": false,
+ "command": "close-judgement",
+ "status": {
+  "enum": "internal error",
+  "human": "Interne fout"
+ }
+}
