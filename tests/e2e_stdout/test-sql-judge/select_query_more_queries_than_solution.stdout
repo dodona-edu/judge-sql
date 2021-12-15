@@ -1,0 +1,19 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "append-message",
+ "message": {
+  "description": "Fout: de ingediende oplossing bestaat uit meer query's (2) dan verwacht (1). Zorg ervoor dat elke query correct eindigt op een puntkomma.",
+  "format": "callout-danger",
+  "permission": "student"
+ }
+}
+{
+ "accepted": false,
+ "command": "close-judgement",
+ "status": {
+  "enum": "runtime error",
+  "human": "Gecrasht bij testen"
+ }
+}

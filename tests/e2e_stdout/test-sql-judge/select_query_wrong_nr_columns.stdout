@@ -1,0 +1,64 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "start-tab",
+ "title": "Query 1"
+}
+{
+ "command": "start-context"
+}
+{
+ "command": "start-testcase",
+ "description": {
+  "description": "-- sqlite3 databank-informatica1.sqlite\nSELECT rate from DISCOUNT_CODE;",
+  "format": "sql"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output in csv formaat",
+ "expected": "RATE,DISCOUNT_CODE\n16,H\n11,M\n7,L\n0,N",
+ "format": "csv"
+}
+{
+ "command": "append-message",
+ "message": {
+  "description": "Verwachtte 2 kolommen, uw aantal kolommen is 1.",
+  "format": "callout-danger"
+ }
+}
+{
+ "command": "close-test",
+ "generated": "RATE\n16\n11\n7\n0",
+ "status": {
+  "enum": "wrong",
+  "human": "Test gefaald"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output SQL types",
+ "expected": "RATE [INTEGER]\nDISCOUNT_CODE [TEXT]"
+}
+{
+ "command": "close-test",
+ "generated": "RATE [INTEGER]",
+ "status": {
+  "enum": "wrong",
+  "human": "Test gefaald"
+ }
+}
+{
+ "accepted": false,
+ "command": "close-testcase"
+}
+{
+ "command": "close-context"
+}
+{
+ "command": "close-tab"
+}
+{
+ "command": "close-judgement"
+}

@@ -1,0 +1,64 @@
+{
+ "command": "start-judgement"
+}
+{
+ "command": "start-tab",
+ "title": "Query 1"
+}
+{
+ "command": "start-context"
+}
+{
+ "command": "start-testcase",
+ "description": {
+  "description": "-- sqlite3 databank-informatica1.sqlite\nSELECT * from DISCOUNT_CODE LIMIT 1;",
+  "format": "sql"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output in csv formaat",
+ "expected": "DISCOUNT_CODE,RATE\nH,16\nM,11\nL,7\nN,0",
+ "format": "csv"
+}
+{
+ "command": "append-message",
+ "message": {
+  "description": "Verwachtte 4 rijen, uw aantal rijen is 1.",
+  "format": "callout-danger"
+ }
+}
+{
+ "command": "close-test",
+ "generated": "DISCOUNT_CODE,RATE\nH,16",
+ "status": {
+  "enum": "wrong",
+  "human": "Test gefaald"
+ }
+}
+{
+ "command": "start-test",
+ "description": "Vergelijken van de query output SQL types",
+ "expected": "DISCOUNT_CODE [TEXT]\nRATE [INTEGER]"
+}
+{
+ "command": "close-test",
+ "generated": "DISCOUNT_CODE [TEXT]\nRATE [INTEGER]",
+ "status": {
+  "enum": "correct",
+  "human": "Alle testen geslaagd"
+ }
+}
+{
+ "accepted": false,
+ "command": "close-testcase"
+}
+{
+ "command": "close-context"
+}
+{
+ "command": "close-tab"
+}
+{
+ "command": "close-judgement"
+}
