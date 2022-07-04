@@ -3,7 +3,7 @@ pytest-cov==3.0.0
 pytest-xdist==2.5.0
 pytest-subtests==0.8.0
 
-black==22.3.0
+black==22.6.0
 isort==5.10.1
 
 pylama[all]==8.3.8
