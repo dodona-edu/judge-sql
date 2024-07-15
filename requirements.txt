@@ -1,2 +1,2 @@
-pandas==2.1.1
+pandas==2.2.2
 sqlparse==0.4.4
