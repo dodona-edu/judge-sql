@@ -111,7 +111,7 @@ necessary files are marked with `▶` in the tree structure below.
   "evaluation": {
     "handler": "sql",
     "time_limit": 10,
-    "memory_limit": 50000000
+    "memory_limit": 100000000
   },
   "labels": ["sqlite", "database"],
   "author": "Firstname Lastname <firstname_lastname@ugent.be>",
