@@ -163,7 +163,7 @@ with Judgement():
         ):
             pass
 
-    for query_nr, solution_query in enumerate(config.solution_queries):  # noqa: C901
+    for query_nr, solution_query in enumerate(config.solution_queries):
         with Tab(f"Query {1 + query_nr}"):
             if query_nr >= len(config.submission_queries):
                 raise DodonaException(
@@ -208,10 +208,13 @@ with Judgement():
                 )
 
             for db_name, db_file in config.database_files:
-                with Context(), TestCase(
-                    format=MessageFormat.SQL,
-                    description=f"-- sqlite3 {db_name}\n{submission_query.without_comments}",
-                ) as testcase:
+                with (
+                    Context(),
+                    TestCase(
+                        format=MessageFormat.SQL,
+                        description=f"-- sqlite3 {db_name}\n{submission_query.without_comments}",
+                    ) as testcase,
+                ):
                     expected_output: SQLQueryResult
                     generated_output: SQLQueryResult
 

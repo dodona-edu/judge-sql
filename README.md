@@ -264,10 +264,10 @@ import pandas as pd
 
 
 def execute_sql_from_file(filename: str):
-    with open(filename, 'r') as file:
+    with open(filename, "r") as file:
         sql_file = file.read()
 
-    sql_commands = sql_file.split(';')
+    sql_commands = sql_file.split(";")
 
     for command in sql_commands:
         try:
@@ -314,10 +314,10 @@ import pandas as pd
 
 
 def execute_sql_from_file(filename: str):
-    with open(filename, 'r') as file:
+    with open(filename, "r") as file:
         sql_file = file.read()
 
-    sql_commands = sql_file.split(';')
+    sql_commands = sql_file.split(";")
 
     for command in sql_commands:
         try:

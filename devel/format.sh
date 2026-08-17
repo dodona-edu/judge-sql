@@ -5,5 +5,5 @@ ROOT="$(dirname "$(dirname "$0")")"
 
 cd "$ROOT"
 
-isort .
-black . --line-length=120
+ruff check --fix .
+ruff format .
