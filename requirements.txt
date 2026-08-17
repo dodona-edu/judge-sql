@@ -1,6 +1,4 @@
-# pandas 2.1.1 is built against numpy 1.x; a plain `pip install` today pulls numpy 2.x, which fails at
-# import with "ValueError: numpy.dtype size changed". 1.26.4 is what the production dodona-sqlite image
-# ships, so pin it here to keep this file in step with the image.
+# Transitive pin, not a direct dependency: pandas 2.1.1 is built against numpy 1.x, so an unpinned install pulls numpy 2.x and fails at import with "ValueError: numpy.dtype size changed".
 numpy==1.26.4
 pandas==2.1.1
 sqlparse==0.4.4
