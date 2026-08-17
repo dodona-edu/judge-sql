@@ -117,6 +117,6 @@ class SQLQueryResult:
             string representation of all returned column names and their types
         """
         type_description = "\n".join(
-            f"{c} [{python_type_to_sqlite_type[t]}]" for (c, t) in zip(self.columns, self.types)
+            f"{c} [{python_type_to_sqlite_type[t]}]" for (c, t) in zip(self.columns, self.types, strict=True)
         )
         return type_description

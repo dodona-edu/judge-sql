@@ -1,7 +1,6 @@
 """input query parsing."""
 
 import re
-from typing import Optional
 
 import sqlparse  # type: ignore
 
@@ -77,7 +76,7 @@ class SQLQuery:
         self.symbols = flatten_symbols(self.parsed)
         self.canonical = format_join_symbols(self.symbols)
 
-        self._is_ordered: Optional[bool] = None
+        self._is_ordered: bool | None = None
 
     @property
     def query_type(self) -> str:
@@ -134,7 +133,7 @@ class SQLQuery:
         mandatory_symbolregex: list[str],
         forbidden_fullregex: list[str],
         mandatory_fullregex: list[str],
-    ) -> Optional[tuple[Translator.Text, str]]:
+    ) -> tuple[Translator.Text, str] | None:
         """Check if query complies to all given regexs.
 
         Args:
@@ -170,7 +169,7 @@ class SQLQuery:
 
         return None
 
-    def first_match_regex(self, regex: str) -> Optional[str]:
+    def first_match_regex(self, regex: str) -> str | None:
         """Find the first symbol that matches the regex (case insensitive).
 
         Args:
@@ -187,7 +186,7 @@ class SQLQuery:
 
         return None
 
-    def first_match_array(self, words: list[str]) -> Optional[str]:
+    def first_match_array(self, words: list[str]) -> str | None:
         """Find the first symbol that occurs in the list of words.
 
         Args:
