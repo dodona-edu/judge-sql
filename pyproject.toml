@@ -21,6 +21,5 @@ select = ["E", "W", "F", "D", "C90", "I", "ERA", "PL", "RUF100"]
 convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
-# Tests are linted like any other code; only docstrings are exempted, since nobody
-# writes docstrings on individual unittest methods.
-"tests/*" = ["D"]
+# Tests don't require docstrings on methods and functions (D102, D103), but docstring formatting rules still apply.
+"tests/*" = ["D102", "D103"]
