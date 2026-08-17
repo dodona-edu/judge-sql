@@ -6,7 +6,8 @@ from types import SimpleNamespace
 from typing import Any, Union
 
 
-class DodonaConfig(SimpleNamespace):  # noqa: R0902
+# Deliberately unhashable: this object is mutable, so it shouldn't define __hash__ alongside __eq__.
+class DodonaConfig(SimpleNamespace):  # noqa: PLW1641
     """a class for containing all Dodona Judge configuration.
 
     Attributes:

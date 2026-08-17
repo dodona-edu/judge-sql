@@ -22,5 +22,5 @@ jobs:
         run: ./devel/install_deps.sh
       - name: Install dev dependencies
         run: ./devel/install_dev_deps.sh
-      - name: Running pylama
+      - name: Run the linters
         run: ./devel/check.sh

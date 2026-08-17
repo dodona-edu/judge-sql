@@ -1,8 +1,10 @@
 {
     "editor.formatOnSave": true,
     "python.analysis.typeCheckingMode": "basic",
-    "python.formatting.provider": "black",
-    "python.formatting.blackArgs": [
-        "--line-length=120"
-    ]
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.codeActionsOnSave": {
+            "source.organizeImports.ruff": true
+        }
+    }
 }

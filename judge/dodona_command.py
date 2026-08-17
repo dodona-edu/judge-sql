@@ -22,7 +22,7 @@ class ErrorType(str, Enum):
     CORRECT = "correct"
     CORRECT_ANSWER = "correct answer"
 
-    def __str__(self) -> str:  # noqa: E0307
+    def __str__(self) -> str:
         """Convert enum to string.
 
         Returns:
@@ -38,7 +38,7 @@ class MessagePermission(str, Enum):
     STAFF = "staff"
     ZEUS = "zeus"
 
-    def __str__(self) -> str:  # noqa: E0307
+    def __str__(self) -> str:
         """Convert enum to string.
 
         Returns:
@@ -61,7 +61,7 @@ class MessageFormat(str, Enum):
     CODE = "code"
     SQL = "sql"
 
-    def __str__(self) -> str:  # noqa: E0307
+    def __str__(self) -> str:
         """Convert enum to string.
 
         Returns:
@@ -77,7 +77,7 @@ class AnnotationSeverity(str, Enum):
     WARNING = "warning"
     INFO = "info"
 
-    def __str__(self) -> str:  # noqa: E0307
+    def __str__(self) -> str:
         """Convert enum to string.
 
         Returns:

@@ -16,13 +16,8 @@ updates:
           - "pytest*"
       linters:
         patterns:
-          - "pylama*"
-          - "black"
-          - "isort"
+          - "ruff"
           - "mypy"
-          - "pylint"
-          - "pydocstyle"
-          - "pycodestyle"
   - package-ecosystem: github-actions
     directory: "/"
     schedule:

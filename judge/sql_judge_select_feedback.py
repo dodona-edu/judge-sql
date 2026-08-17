@@ -19,7 +19,7 @@ from .sql_query_result import SQLQueryResult
 from .translator import Translator
 
 
-def select_feedback(  # noqa: R0913
+def select_feedback(  # noqa: PLR0913, PLR0917
     config: DodonaConfig,
     testcase: SimpleNamespace,
     expected_output: SQLQueryResult,
@@ -45,7 +45,7 @@ def select_feedback(  # noqa: R0913
 
     # if SELECT is not ordered -> fix ordering by sorting all rows
     if config.order_unordered_rows and not solution_query.is_ordered:
-        sort_on = np.intersect1d(expected_output.columns, generated_output.columns)
+        sort_on = np.intersect1d(expected_output.columns, generated_output.columns).tolist()
         expected_output.sort_rows(sort_on)
         generated_output.sort_rows(sort_on)
 
@@ -86,7 +86,7 @@ def select_feedback(  # noqa: R0913
 
             # if SELECT is ordered -> check if rows are correct but order is wrong
             if solution_query.is_ordered:
-                sort_on = np.intersect1d(expected_output.columns, generated_output.columns)
+                sort_on = np.intersect1d(expected_output.columns, generated_output.columns).tolist()
                 expected_output.sort_rows(sort_on)
                 generated_output.sort_rows(sort_on)
 
