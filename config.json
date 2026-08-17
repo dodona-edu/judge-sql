@@ -1,4 +1,4 @@
 {
     "judge": "sql",
-    "image": "dodona-sql"
+    "image": "dodona-sqlite"
 }
