@@ -2,8 +2,6 @@
 
 from types import SimpleNamespace
 
-import numpy as np
-
 from .dodona_command import (
     Context,
     DodonaException,
@@ -27,7 +25,7 @@ def select_feedback(  # noqa: PLR0913, PLR0917
     solution_query: SQLQuery,
     submission_query: SQLQuery,
 ) -> None:
-    """Run tests based on database status after running a non-select query.
+    """Run tests based on execution results of a select query.
 
     Args:
         config: parsed config received from Dodona
@@ -45,7 +43,7 @@ def select_feedback(  # noqa: PLR0913, PLR0917
 
     # if SELECT is not ordered -> fix ordering by sorting all rows
     if config.order_unordered_rows and not solution_query.is_ordered:
-        sort_on = np.intersect1d(expected_output.columns, generated_output.columns).tolist()
+        sort_on = sorted(set(expected_output.columns) & set(generated_output.columns))
         expected_output.sort_rows(sort_on)
         generated_output.sort_rows(sort_on)
 
@@ -86,7 +84,7 @@ def select_feedback(  # noqa: PLR0913, PLR0917
 
             # if SELECT is ordered -> check if rows are correct but order is wrong
             if solution_query.is_ordered:
-                sort_on = np.intersect1d(expected_output.columns, generated_output.columns).tolist()
+                sort_on = sorted(set(expected_output.columns) & set(generated_output.columns))
                 expected_output.sort_rows(sort_on)
                 generated_output.sort_rows(sort_on)
 

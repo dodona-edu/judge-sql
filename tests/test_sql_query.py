@@ -251,7 +251,7 @@ class TestSQLQuery(unittest.TestCase):
         query = self.single_query("INSERT INTO table2 SELECT * FROM table1 WHERE condition;")
         self.assertEqual(query.query_type, "INSERT")
 
-    def test_match_keywords(self):
+    def test_match_keywords(self):  # noqa: PLR0915 -- one-off, splitting the assertions up would be artificial
         query = self.single_query('select * from users WHERE zip LIKE "test"')
         self.assertEqual(query.symbols, ["select", "*", "from", "users", "WHERE", "zip", "LIKE", '"test"'])
         self.assertEqual(query.first_match_regex("LIKE"), "LIKE")
