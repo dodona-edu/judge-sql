@@ -256,9 +256,9 @@ class DodonaCommand(ABC):
 
     def __exit__(
         self,
-        exc_type: type[BaseException],
-        exc_val: BaseException,
-        exc_tb: TracebackType,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
     ) -> bool:
         """Print the close message when exiting the 'with' block & handle enclosed exceptions.
 
