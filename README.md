@@ -18,7 +18,7 @@
 
 [![GitHub branch](https://img.shields.io/github/checks-status/dodona-edu/judge-sql/main)](https://github.com/dodona-edu/judge-sql/actions?query=branch%3Amain)
 [![codecov](https://codecov.io/gh/dodona-edu/judge-sql/branch/main/graph/badge.svg?token=yqUL5ee6tA)](https://codecov.io/gh/dodona-edu/judge-sql)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/dodona-edu/judge-sql.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/dodona-edu/judge-sql/context:python)
+[![CodeQL](https://github.com/dodona-edu/judge-sql/actions/workflows/codeql.yml/badge.svg)](https://github.com/dodona-edu/judge-sql/actions/workflows/codeql.yml)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-green.svg)](https://www.python.org/downloads/release/python-3129/)
 
 ## Judge features
