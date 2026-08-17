@@ -18,7 +18,7 @@ from .translator import Translator
 def non_select_feedback(  # noqa: C901
     config: DodonaConfig, testcase: SimpleNamespace, db_name: str, db_file: str, solution_query: SQLQuery
 ) -> None:
-    """Run tests based on execution results of a select query.
+    """Run tests based on database status after running a non-select query.
 
     Args:
         config: parsed config received from Dodona
