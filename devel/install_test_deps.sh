@@ -3,7 +3,4 @@ set -euo pipefail
 
 ROOT="$(dirname "$(dirname "$0")")"
 
-cd "$ROOT"
-
-isort .
-black . --line-length=120
+pip3 install -r "$ROOT/requirements-test.txt"

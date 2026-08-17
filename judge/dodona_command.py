@@ -100,7 +100,7 @@ class DodonaException(Exception):
     def __init__(
         self,
         status: dict[str, str],
-        recover_at: type = None,
+        recover_at: Optional[type] = None,
         **kwargs: Any,
     ) -> None:
         """Create DodonaException.

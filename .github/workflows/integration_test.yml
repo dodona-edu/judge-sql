@@ -1,0 +1,52 @@
+name: Integration test
+
+on:
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/dodona-edu/dodona-sqlite:latest
+      options: --user root
+
+    steps:
+      # The slim production image ships no git, so actions/checkout can't
+      # fetch the test-sql-judge submodule without it. Must run before checkout.
+      - name: Install git
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends git
+          rm -rf /var/lib/apt/lists/*
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+      # Job runs as root, but the runner created the workspace under a different
+      # uid; git refuses to operate on that ownership mismatch, which blocks the
+      # `git submodule update --init` that devel/run-tests.sh runs.
+      - name: Trust the checkout
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Install test dependencies
+        run: ./devel/install_test_deps.sh
+      - name: Run tests
+        run: ./devel/run-tests.sh
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage
+          path: coverage.xml
+
+  # codecov-action needs curl and gpg, which the slim production image doesn't ship.
+  # We'd rather not add packages to the environment the test is meant to exercise.
+  coverage:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: coverage
+      - name: Code Coverage
+        uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

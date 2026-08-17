@@ -18,7 +18,7 @@
 {
  "command": "append-message",
  "message": {
-  "description": "Startup script is not working (Exception):\n    Only PRAGMA queries are allowed in the startup script\nreceived 'SELECT 1 ;' instead.",
+  "description": "Startup script is not working (ValueError):\n    Only PRAGMA queries are allowed in the startup script\nreceived 'SELECT 1 ;' instead.",
   "format": "code",
   "permission": "staff"
  }

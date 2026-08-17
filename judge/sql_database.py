@@ -19,11 +19,11 @@ def sql_run_pragma_startup_queries(cursor: sqlite3.Cursor, script: str) -> None:
         script: script that should be executed on the database
 
     Raises:
-        Exception: something went wrong while executing startup queries
+        ValueError: something went wrong while executing startup queries
     """
     for query in SQLQuery.from_raw_input(script):
         if not query.is_pragma:
-            raise Exception(
+            raise ValueError(
                 f"Only PRAGMA queries are allowed in the startup script\nreceived '{query.canonical}' instead."
             )
 
