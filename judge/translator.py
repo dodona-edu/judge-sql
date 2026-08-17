@@ -1,7 +1,7 @@
 """translate judge output towards Dodona."""
 
 from enum import Enum, auto
-from typing import Any
+from typing import Any, ClassVar
 
 from .dodona_command import ErrorType
 
@@ -107,7 +107,7 @@ class Translator:
         """
         return self.text_translations[self.language][message].format(**kwargs)
 
-    error_translations = {
+    error_translations: ClassVar[dict[Language, dict[ErrorType, str]]] = {
         Language.EN: {
             ErrorType.INTERNAL_ERROR: "Internal error",
             ErrorType.COMPILATION_ERROR: "The query is not valid",
@@ -134,7 +134,7 @@ class Translator:
         },
     }
 
-    text_translations = {
+    text_translations: ClassVar[dict[Language, dict[Text, str]]] = {
         Language.EN: {
             Text.ADD_A_SEMICOLON: "Add a semicolon ';' at the end of each SQL query.",
             Text.INVALID_SINGLE_QUOTE_TABLE_NAME: "Error: "
