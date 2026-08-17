@@ -1,0 +1,31 @@
+name: Integration test
+
+on:
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/dodona-edu/dodona-sqlite:latest
+      options: --user root
+
+    steps:
+      # The slim production image ships no git, so actions/checkout can't
+      # fetch the test-sql-judge submodule without it. Must run before checkout.
+      - name: Install git
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends git
+          rm -rf /var/lib/apt/lists/*
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+      - name: Install test dependencies
+        run: ./devel/install_test_deps.sh
+      - name: Run tests
+        run: ./devel/run-tests.sh
+      - name: Code Coverage
+        uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
