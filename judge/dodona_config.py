@@ -3,7 +3,7 @@
 import json
 import os
 from types import SimpleNamespace
-from typing import Any, Union
+from typing import Any
 
 
 # Deliberately unhashable: this object is mutable, so it shouldn't define __hash__ alongside __eq__.
@@ -61,7 +61,7 @@ class DodonaConfig(SimpleNamespace):  # noqa: PLW1641
         return super().__eq__(other)
 
     @classmethod
-    def from_json(cls: type["DodonaConfig"], json_str: Union[str, bytes]) -> "DodonaConfig":
+    def from_json(cls: type["DodonaConfig"], json_str: str | bytes) -> "DodonaConfig":
         """Decode json string into a DodonaConfig object.
 
         Args:

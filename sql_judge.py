@@ -124,7 +124,7 @@ with Judgement():
         )
 
     # Parse solution query
-    with open(config.solution_sql, "r", encoding="utf-8") as sql_file:
+    with open(config.solution_sql, encoding="utf-8") as sql_file:
         config.raw_solution_file = sql_file.read()
         config.solution_queries = SQLQuery.from_raw_input(config.raw_solution_file)
 
@@ -137,7 +137,7 @@ with Judgement():
             )
 
     # Parse submission query
-    with open(config.source, "r", encoding="utf-8") as sql_file:
+    with open(config.source, encoding="utf-8") as sql_file:
         config.raw_submission_file = sql_file.read()
         config.submission_queries = SQLQuery.from_raw_input(config.raw_submission_file)
 
