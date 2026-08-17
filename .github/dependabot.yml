@@ -17,7 +17,7 @@ updates:
       linters:
         patterns:
           - "ruff"
-          - "mypy"
+          - "ty"
   - package-ecosystem: github-actions
     directory: "/"
     schedule:

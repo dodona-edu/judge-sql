@@ -1,4 +1,4 @@
 -r requirements-test.txt
 
 ruff==0.16.3
-mypy==2.3.1
+ty==0.0.72
