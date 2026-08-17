@@ -4,3 +4,35 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+      day: monday
+      time: "04:00"
+      timezone: Europe/Brussels
+    open-pull-requests-limit: 99
+    labels:
+      - dependencies
+    groups:
+      pytest:
+        patterns:
+          - "pytest*"
+      linters:
+        patterns:
+          - "pylama*"
+          - "black"
+          - "isort"
+          - "mypy"
+          - "pylint"
+          - "pydocstyle"
+          - "pycodestyle"
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "04:00"
+      timezone: Europe/Brussels
+    open-pull-requests-limit: 99
+    labels:
+      - dependencies
+# No gitsubmodule entry on purpose: bumping the test-sql-judge fixture repo
+# means regenerating the golden .stdout files by hand, so an automated PR
+# would always land red.
