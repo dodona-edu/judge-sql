@@ -1,6 +1,5 @@
 """sql judge main script."""
 
-import os
 import sys
 from pathlib import Path
 
@@ -71,11 +70,8 @@ with Judgement():
     config.post_execution_mandatory_fullregex = list(getattr(config, "post_execution_mandatory_fullregex", []))
 
     if hasattr(config, "database_files"):
-        # os.path.join, not pathlib: these paths are echoed back verbatim in the staff feedback below,
-        # and pathlib would normalise away the './' an exercise author wrote in the config.
         config.database_files = [
-            (str(filename), os.path.join(config.resources, filename))  # noqa: PTH118
-            for filename in config.database_files
+            (str(filename), str(Path(config.resources) / filename)) for filename in config.database_files
         ]
 
         for _, file in config.database_files:
@@ -89,7 +85,7 @@ with Judgement():
     else:
         # Set 'database_dir' to "." if not set
         config.database_dir = str(getattr(config, "database_dir", "."))
-        config.database_dir = os.path.join(config.resources, config.database_dir)  # noqa: PTH118
+        config.database_dir = str(Path(config.resources) / config.database_dir)
 
         if not Path(config.database_dir).exists():
             raise DodonaException(
@@ -115,7 +111,7 @@ with Judgement():
 
     # Set 'solution_sql' to "./solution.sql" if not set
     config.solution_sql = str(getattr(config, "solution_sql", "./solution.sql"))
-    config.solution_sql = os.path.join(config.resources, config.solution_sql)  # noqa: PTH118
+    config.solution_sql = str(Path(config.resources) / config.solution_sql)
 
     if not Path(config.solution_sql).exists():
         raise DodonaException(
