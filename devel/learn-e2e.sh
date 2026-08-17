@@ -1,6 +1,7 @@
 #!/bin/bash
+set -euo pipefail
 
-ROOT="$(dirname $(dirname $0))"
+ROOT="$(dirname "$(dirname "$0")")"
 
 cd "$ROOT"
 

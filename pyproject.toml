@@ -1,5 +1,22 @@
 [tool.isort]
 profile = "black"
+skip = ["tests/e2e_repos"]
 
 [tool.black]
 line-length = 120
+extend-exclude = "tests/e2e_repos"
+
+# pylama ships a pytest11 entry point that auto-loads whenever installed.
+# Its pytest_collect_file(path, parent) hook uses the path argument removed in pytest 8, causing PluginValidationError.
+[tool.pytest.ini_options]
+addopts = "-p no:pylama"
+
+[tool.coverage.run]
+omit = [
+    ".github/*",
+    "htmlcov/*",
+    "*/site-packages/*",
+    "tests/*",
+    "venv/*",
+]
+source = ["."]

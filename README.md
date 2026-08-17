@@ -19,7 +19,7 @@
 [![GitHub branch](https://img.shields.io/github/checks-status/dodona-edu/judge-sql/main)](https://github.com/dodona-edu/judge-sql/actions?query=branch%3Amain)
 [![codecov](https://codecov.io/gh/dodona-edu/judge-sql/branch/main/graph/badge.svg?token=yqUL5ee6tA)](https://codecov.io/gh/dodona-edu/judge-sql)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/dodona-edu/judge-sql.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/dodona-edu/judge-sql/context:python)
-[![Python 3.10](https://img.shields.io/badge/python-3.10-green.svg)](https://www.python.org/downloads/release/python-3100/)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-green.svg)](https://www.python.org/downloads/release/python-3129/)
 
 ## Judge features
 
@@ -432,12 +432,18 @@ connection.close()
 The following command can be used to run the tests:
 
 ```bash
-$ ./run-tests.sh
-.............
-----------------------------------------------------------------------
-Ran 13 tests in 0.069s
+$ devel/run-tests.sh
+============================= test session starts ==============================
+platform linux -- Python 3.12.9, pytest-9.1.1, pluggy-1.6.0
+...
+........................................................................ [ 94%]
+....                                                                     [100%]
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.12.9-final-0 ________________
 
-OK
+Coverage HTML written to dir htmlcov
+Coverage XML written to file coverage.xml
+============================== 76 passed in 4.85s ==============================
 ```
 
 ## Contributors

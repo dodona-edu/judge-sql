@@ -4,103 +4,123 @@ import json
 import os
 import runpy
 import shutil
-import tempfile
-import unittest
 from io import StringIO
+from pathlib import Path
+
+import pytest
 
 from .fake_in_out import fake_in_out
 
+ROOT_PATH = Path(__file__).resolve().parent.parent
+E2E_REPO_NAME = "test-sql-judge"
+EXERCISES_PATH = ROOT_PATH / "tests" / "e2e_repos" / E2E_REPO_NAME
+STDOUT_PATH = ROOT_PATH / "tests" / "e2e_stdout" / E2E_REPO_NAME
 
-class TestEndToEnd(unittest.TestCase):
-    """E2E TestCase."""
+LEARN_OUTPUT = os.environ.get("LEARN_OUTPUT", "NO") == "YES"
 
-    def __init__(self, methodName: str) -> None:
-        super().__init__(methodName=methodName)
-        self.maxDiff = None  # noqa: C0103
-        self.root_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
-    def run_sql_judge(self, exercise_path: str, submission_path: str, stdout_path: str, learning_mode: bool = False):
-        evaluation_path = os.path.join(exercise_path, "evaluation")
-        config_path = os.path.join(exercise_path, "config.json")
+def _discover_cases() -> list:
+    """Discover (exercise, submission) pairs from the e2e fixture repo.
 
-        config = {}
+    Returns:
+        One `pytest.param` per exercise/submission combination, carrying the
+        exercise directory and submission file as values and a readable
+        `<exercise>-<submission>` id.
+    """
+    if not EXERCISES_PATH.is_dir():
+        return []
 
-        with open(config_path, "r", encoding="utf-8") as config_file:
-            config.update(json.load(config_file).get("evaluation", {}))
+    cases = []
 
-        with tempfile.TemporaryDirectory() as cwd_path:
-            config.update(
-                {
-                    "memory_limit": "99999999",
-                    "time_limit": "99999999",
-                    "programming_language": "sql",
-                    "natural_language": "nl",
-                    "resources": evaluation_path,
-                    "source": submission_path,
-                    "judge": self.root_path,
-                    "workdir": cwd_path,
-                }
-            )
+    for exercise_path in sorted(EXERCISES_PATH.iterdir()):
+        if exercise_path.name.startswith("_") or not exercise_path.is_dir():
+            continue
 
-            os.chdir(cwd_path)
-            with fake_in_out(StringIO(json.dumps(config))) as (out, err):
-                runpy.run_path(os.path.join(self.root_path, "sql_judge.py"))
-
-        self.assertMultiLineEqual(err.getvalue().strip(), "")
-
-        if learning_mode:
-            with open(stdout_path, "w", encoding="utf-8") as stdout:
-                stdout.write(out.getvalue().strip().replace(exercise_path, "<exercise_path>"))
-        else:
-            if not os.path.exists(stdout_path):
-                raise FileNotFoundError(f"Missing stdout file: {stdout_path}")
-
-            with open(stdout_path, "r", encoding="utf-8") as stdout:
-                self.assertMultiLineEqual(
-                    out.getvalue().strip().replace(exercise_path, "<exercise_path>"),
-                    stdout.read(),
-                )
-
-    def run_all_repo_tests(self, repo_path: str):
-        test_exercises_path = os.path.join(self.root_path, "tests", "e2e_repos", repo_path)
-        test_stdout_path = os.path.join(self.root_path, "tests", "e2e_stdout", repo_path)
-
-        learning_mode = os.environ.get("LEARN_OUTPUT", "NO") == "YES"
-        if learning_mode:
-            print("\n------------------------------------------")
-            print("WARNING: LEARN_OUTPUT is enabled")
-            print("> 'stdout' and 'stderr' files will get updated to match the execution output")
-            print("------------------------------------------")
-
-            shutil.rmtree(test_stdout_path)
-
-        os.makedirs(test_stdout_path, exist_ok=True)
-
-        for folder in os.listdir(test_exercises_path):
-            if folder[0] == "_":
+        for submission_path in sorted((exercise_path / "solution").iterdir()):
+            if submission_path.suffix != ".sql":
                 continue
 
-            exercise_path = os.path.join(test_exercises_path, folder)
+            case_id = f"{exercise_path.name}-{submission_path.stem}"
+            cases.append(pytest.param(exercise_path, submission_path, id=case_id))
 
-            if not os.path.isdir(exercise_path):
-                continue
+    return cases
 
-            solution_path = os.path.join(exercise_path, "solution")
 
-            for submission in os.listdir(solution_path):
-                if not submission.endswith(".sql"):
-                    continue
+E2E_CASES = _discover_cases()
 
-                submission_path = os.path.join(solution_path, submission)
-                stdout_path = os.path.join(test_stdout_path, f"{folder}_{submission.removesuffix('.sql')}.stdout")
+if not E2E_CASES:
+    raise RuntimeError(
+        f"No e2e exercise/submission pairs found in {EXERCISES_PATH}. "
+        "Run `git submodule update --init` to fetch the e2e fixture submodule."
+    )
 
-                with self.subTest(exercise=folder, submission=submission):
-                    self.run_sql_judge(
-                        exercise_path,
-                        submission_path,
-                        stdout_path,
-                        learning_mode,
-                    )
 
-    def test_e2e(self):
-        self.run_all_repo_tests(os.path.join("test-sql-judge"))
+@pytest.fixture(scope="session", autouse=True)
+def _reset_stdout_goldens() -> None:
+    """Reset the golden stdout directory once per session when learning.
+
+    In learning mode (`LEARN_OUTPUT=YES`, see `devel/learn-e2e.sh`) the
+    golden `.stdout` files are regenerated from the observed judge output
+    instead of being compared against. The directory is wiped and recreated
+    exactly once here rather than per test case.
+
+    Learning mode is meant to be run single-process: `devel/learn-e2e.sh`
+    does not pass `-n`, since the wipe above would otherwise race across
+    xdist workers.
+    """
+    if LEARN_OUTPUT:
+        print("\n------------------------------------------")
+        print("WARNING: LEARN_OUTPUT is enabled")
+        print("> 'stdout' and 'stderr' files will get updated to match the execution output")
+        print("------------------------------------------")
+
+        shutil.rmtree(STDOUT_PATH, ignore_errors=True)
+
+    STDOUT_PATH.mkdir(parents=True, exist_ok=True)
+
+
+@pytest.mark.parametrize("exercise_path, submission_path", E2E_CASES)
+def test_e2e(exercise_path: Path, submission_path: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Run the SQL judge on one exercise/submission pair and check its output.
+
+    Args:
+        exercise_path: Directory of the exercise, e.g. `.../create_table`.
+        submission_path: Submission file to judge, e.g. `.../wrong_name.sql`.
+        tmp_path: Pytest-provided scratch directory, used as the judge workdir.
+        monkeypatch: Used to change into `tmp_path` for the duration of the run.
+    """
+    config_path = exercise_path / "config.json"
+
+    with config_path.open("r", encoding="utf-8") as config_file:
+        config = json.load(config_file).get("evaluation", {})
+
+    config.update(
+        {
+            "memory_limit": "99999999",
+            "time_limit": "99999999",
+            "programming_language": "sql",
+            "natural_language": "nl",
+            "resources": str(exercise_path / "evaluation"),
+            "source": str(submission_path),
+            "judge": str(ROOT_PATH),
+            "workdir": str(tmp_path),
+        }
+    )
+
+    monkeypatch.chdir(tmp_path)
+    with fake_in_out(StringIO(json.dumps(config))) as (out, err):
+        runpy.run_path(str(ROOT_PATH / "sql_judge.py"))
+
+    assert err.getvalue().strip() == ""
+
+    observed = out.getvalue().strip().replace(str(exercise_path), "<exercise_path>")
+    stdout_path = STDOUT_PATH / f"{exercise_path.name}_{submission_path.stem}.stdout"
+
+    if LEARN_OUTPUT:
+        stdout_path.write_text(observed, encoding="utf-8")
+        return
+
+    if not stdout_path.exists():
+        raise FileNotFoundError(f"Missing stdout file: {stdout_path}")
+
+    assert observed == stdout_path.read_text(encoding="utf-8")
