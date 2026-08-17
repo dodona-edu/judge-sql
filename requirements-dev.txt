@@ -1,7 +1,7 @@
 -r requirements-test.txt
 
-black==24.3.0
-isort==5.10.1
+black==26.5.1
+isort==8.0.1
 
 # pylama 8.4.1 (the final, unmaintained release) leaves its bundled linters unpinned; four years of
 # drift in those linters has now broken the lint job. Pin what it drags in unpinned:
@@ -11,7 +11,7 @@ pylama[all]==8.4.1
 setuptools<80.9.0
 # pydocstyle 6.2 inserted a `property_decorators` param that shifts pylama's positional call,
 # raising `TypeError` in `is_property()`. Range cap (already satisfied) so Dependabot leaves it alone.
-pydocstyle<6.2
+pydocstyle<6.4
 # pylama[all] also leaves mypy and pylint floating, so what CI enforces changes silently under us.
 # Pin them (exact, unlike the caps above) so the rule set is reproducible and the grouped Dependabot
 # PR surfaces each bump for review.
