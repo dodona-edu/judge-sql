@@ -8,7 +8,7 @@ isort==5.10.1
 pylama[all]==8.4.1
 # pylama 8.4.1 does `from pkg_resources import iter_entry_points`, removed in setuptools 82; 80.9.0
 # already emits that as a loud UserWarning. Range cap (already satisfied) so Dependabot leaves it alone.
-setuptools<80.9.0
+setuptools<84.1.0
 # pydocstyle 6.2 inserted a `property_decorators` param that shifts pylama's positional call,
 # raising `TypeError` in `is_property()`. Range cap (already satisfied) so Dependabot leaves it alone.
 pydocstyle<6.2
