@@ -7,7 +7,12 @@ import pandas as pd  # type: ignore
 
 NoneType = type(None)
 
-python_type_to_sqlite_type = {
+# The only column types 'from_cursor' can ever produce, since sqlite3 only maps rows to these five
+# Python types. Spelled out explicitly (instead of the broader 'type') so the type checker can verify
+# that every access into 'python_type_to_sqlite_type' below is exhaustive.
+SqliteColumnType = type[None] | type[int] | type[float] | type[str] | type[bytes]
+
+python_type_to_sqlite_type: dict[SqliteColumnType, str] = {
     NoneType: "NULL",
     int: "INTEGER",
     float: "REAL",
@@ -19,7 +24,7 @@ python_type_to_sqlite_type = {
 class SQLQueryResult:
     """a class for managing a query's results."""
 
-    def __init__(self, dataframe: pd.DataFrame, columns: list[str], types: list[type]) -> None:
+    def __init__(self, dataframe: pd.DataFrame, columns: list[str], types: list[SqliteColumnType]) -> None:
         """Create new SQLQueryResult.
 
         Should not be used directly (other than testing). Use 'from_cursor' instead.
