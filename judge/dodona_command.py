@@ -122,7 +122,7 @@ class DodonaException(Exception):
 
 
 class DodonaCommand:
-    """Abstract class, parent of all Dodona commands.
+    """Base class providing shared behaviour for the Dodona command context managers.
 
     This class provides all shared functionality for the Dodona commands. These commands
     should be used in a Python 'with' block.
@@ -191,7 +191,7 @@ class DodonaCommand:
 
     @staticmethod
     def __print_command(result: dict | None) -> None:
-        """Print the provided to stdout as JSON.
+        """Print the provided result to stdout as JSON.
 
         Args:
             result: dict that will be JSON encoded and printed to stdout
