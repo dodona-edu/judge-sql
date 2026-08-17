@@ -64,11 +64,25 @@ def _reset_stdout_goldens() -> None:
     instead of being compared against. The directory is wiped and recreated
     exactly once here rather than per test case.
 
-    Learning mode is meant to be run single-process: `devel/learn-e2e.sh`
-    does not pass `-n`, since the wipe above would otherwise race across
-    xdist workers.
+    This fixture is session-scoped, so under pytest-xdist it runs once per
+    worker process, not once overall. Since `devel/run-tests.sh` always
+    passes `-n auto`, running with `LEARN_OUTPUT=YES` under xdist would have
+    several workers concurrently wipe and recreate this directory, with one
+    worker deleting goldens another has just written. To prevent that, this
+    fixture refuses to run in learning mode under an xdist worker.
+
+    Raises:
+        RuntimeError: If `LEARN_OUTPUT` is enabled while running under an
+            xdist worker.
     """
     if LEARN_OUTPUT:
+        if "PYTEST_XDIST_WORKER" in os.environ:
+            raise RuntimeError(
+                "LEARN_OUTPUT=YES cannot run under pytest-xdist: every worker would wipe and "
+                "recreate the golden stdout directory concurrently, corrupting it. Use "
+                "`devel/learn-e2e.sh`, or drop `-n` from the pytest invocation."
+            )
+
         print("\n------------------------------------------")
         print("WARNING: LEARN_OUTPUT is enabled")
         print("> 'stdout' and 'stderr' files will get updated to match the execution output")

@@ -21,10 +21,11 @@ jobs:
       - uses: actions/checkout@v7
         with:
           submodules: true
-      # Job runs as root; runner created workspace with different uid.
-      # git refuses to operate on mismatched ownership, blocking submodule update.
+      # Job runs as root, but the runner created the workspace under a different
+      # uid; git refuses to operate on that ownership mismatch, which blocks the
+      # `git submodule update --init` that devel/run-tests.sh runs.
       - name: Trust the checkout
-        run: git config --global --add safe.directory '*'
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Install test dependencies
         run: ./devel/install_test_deps.sh
       - name: Run tests
