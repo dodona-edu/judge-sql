@@ -2,9 +2,8 @@
 
 import unittest
 
-from judge.dodona_command import AnnotationSeverity, ErrorType
+from judge.dodona_command import AnnotationSeverity, ErrorType, MessageFormat, MessagePermission
 from judge.dodona_command import Message as CommandMessage
-from judge.dodona_command import MessageFormat, MessagePermission
 from judge.dodona_command import TestCase as CommandTestCase
 
 
