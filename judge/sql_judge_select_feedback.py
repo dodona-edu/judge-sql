@@ -25,7 +25,7 @@ def select_feedback(  # noqa: PLR0913, PLR0917
     solution_query: SQLQuery,
     submission_query: SQLQuery,
 ) -> None:
-    """Run tests based on database status after running a non-select query.
+    """Run tests based on execution results of a select query.
 
     Args:
         config: parsed config received from Dodona
