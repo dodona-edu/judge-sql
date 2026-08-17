@@ -24,6 +24,7 @@ ignore = [
     "ANN201",   # return types on test methods
     "ANN401",   # **kwargs: Any is legitimate on the Dodona command constructors
     "FLY002",   # would undo the deliberate row-per-line CSV test data
+    "N818",     # DodonaException reaches student feedback by name, renaming it changes that output
     "S101",     # assert is fine here
     "T201",     # print is the learning-mode banner in tests/test_e2e.py
     "TRY003",   # long messages inside raise are fine

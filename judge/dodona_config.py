@@ -1,7 +1,7 @@
 """Dodona Judge configuration."""
 
 import json
-import os
+from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
@@ -46,7 +46,7 @@ class DodonaConfig(SimpleNamespace):  # noqa: PLW1641
         self.judge: str = str(self.judge)
         self.workdir: str = str(self.workdir)
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """Check equality.
 
         Args:
@@ -83,9 +83,8 @@ class DodonaConfig(SimpleNamespace):  # noqa: PLW1641
         located in the 'judge' dir.
         """
         # Make sure that the current working dir is the workdir
-        cwd = os.getcwd()
-        assert os.path.realpath(cwd) == os.path.realpath(self.workdir)
+        assert Path.cwd().resolve() == Path(self.workdir).resolve()
 
         # Make sure that this file is located in a subfolder of the judge folder
-        script_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-        assert os.path.realpath(script_path) == os.path.realpath(self.judge)
+        script_path = Path(__file__).resolve().parent.parent
+        assert script_path == Path(self.judge).resolve()

@@ -2,7 +2,7 @@
 
 import re
 
-import sqlparse  # type: ignore
+import sqlparse  # ty: ignore[unresolved-import]
 
 from .translator import Translator
 
@@ -195,7 +195,7 @@ class SQLQuery:
         Returns:
             the first symbol that matches, None if nothing matches
         """
-        lowercase_words = set(map(lambda w: w.lower(), words))
+        lowercase_words = {w.lower() for w in words}
         return next((symbol for symbol in self.symbols if symbol.lower() in lowercase_words), None)
 
     @classmethod

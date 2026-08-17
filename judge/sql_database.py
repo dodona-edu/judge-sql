@@ -1,9 +1,10 @@
 """Manage sqlite solution and submission database."""
 
-import os
 import sqlite3
+from pathlib import Path
 from shutil import copyfile
 from types import TracebackType
+from typing import Self
 
 from .dodona_config import DodonaConfig
 from .sql_query import SQLQuery
@@ -49,14 +50,14 @@ class SQLDatabase:
         """
         self.sourcefile = sourcefile
 
-        self.solutionfile = os.path.join(workdir, f"{db_name}.solution")
-        self.submissionfile = os.path.join(workdir, f"{db_name}.submission")
+        self.solutionfile = Path(workdir) / f"{db_name}.solution"
+        self.submissionfile = Path(workdir) / f"{db_name}.submission"
 
-        os.makedirs(os.path.dirname(self.solutionfile), exist_ok=True)
+        self.solutionfile.parent.mkdir(parents=True, exist_ok=True)
 
         self.connection: sqlite3.Connection | None = None
 
-    def __enter__(self) -> "SQLDatabase":
+    def __enter__(self) -> Self:
         """Create solutionfile and submissionfile.
 
         If no solutionfile/ submissionfile has been generated before
@@ -66,9 +67,9 @@ class SQLDatabase:
         Returns:
             current SQLDatabase instance
         """
-        if not os.path.isfile(self.solutionfile):
+        if not self.solutionfile.is_file():
             copyfile(self.sourcefile, self.solutionfile)
-        if not os.path.isfile(self.submissionfile):
+        if not self.submissionfile.is_file():
             copyfile(self.sourcefile, self.submissionfile)
         return self
 
@@ -155,9 +156,11 @@ class SQLDatabase:
             (solution_content, submission_content) containing the table contents
         """
         cursor = self.joined_cursor()
-        cursor.execute(f"SELECT * FROM solution.'{table}'")
+        # S608 is a false positive here: 'table' is a sqlite_master name, and 'diff' already rejects
+        # the ones containing a quote, so it can't break out of the quoted identifier.
+        cursor.execute(f"SELECT * FROM solution.'{table}'")  # noqa: S608
         solution_content = SQLQueryResult.from_cursor(config.max_rows, cursor)
-        cursor.execute(f"SELECT * FROM submission.'{table}'")
+        cursor.execute(f"SELECT * FROM submission.'{table}'")  # noqa: S608
         submission_content = SQLQueryResult.from_cursor(config.max_rows, cursor)
         return solution_content, submission_content
 

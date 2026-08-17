@@ -93,7 +93,7 @@ def _reset_stdout_goldens() -> None:
     STDOUT_PATH.mkdir(parents=True, exist_ok=True)
 
 
-@pytest.mark.parametrize("exercise_path, submission_path", E2E_CASES)
+@pytest.mark.parametrize(("exercise_path", "submission_path"), E2E_CASES)
 def test_e2e(exercise_path: Path, submission_path: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Run the SQL judge on one exercise/submission pair and check its output.
 

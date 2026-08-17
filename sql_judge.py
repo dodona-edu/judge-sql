@@ -2,6 +2,7 @@
 
 import os
 import sys
+from pathlib import Path
 
 from judge.dodona_command import (
     Annotation,
@@ -70,12 +71,15 @@ with Judgement():
     config.post_execution_mandatory_fullregex = list(getattr(config, "post_execution_mandatory_fullregex", []))
 
     if hasattr(config, "database_files"):
+        # os.path.join, not pathlib: these paths are echoed back verbatim in the staff feedback below,
+        # and pathlib would normalise away the './' an exercise author wrote in the config.
         config.database_files = [
-            (str(filename), os.path.join(config.resources, filename)) for filename in config.database_files
+            (str(filename), os.path.join(config.resources, filename))  # noqa: PTH118
+            for filename in config.database_files
         ]
 
         for _, file in config.database_files:
-            if not os.path.exists(file):
+            if not Path(file).exists():
                 raise DodonaException(
                     config.translator.error_status(ErrorType.INTERNAL_ERROR),
                     permission=MessagePermission.STAFF,
@@ -85,9 +89,9 @@ with Judgement():
     else:
         # Set 'database_dir' to "." if not set
         config.database_dir = str(getattr(config, "database_dir", "."))
-        config.database_dir = os.path.join(config.resources, config.database_dir)
+        config.database_dir = os.path.join(config.resources, config.database_dir)  # noqa: PTH118
 
-        if not os.path.exists(config.database_dir):
+        if not Path(config.database_dir).exists():
             raise DodonaException(
                 config.translator.error_status(ErrorType.INTERNAL_ERROR),
                 permission=MessagePermission.STAFF,
@@ -96,9 +100,7 @@ with Judgement():
             )
 
         config.database_files = [
-            (filename, os.path.join(config.database_dir, filename))
-            for filename in sorted(os.listdir(config.database_dir))
-            if filename.endswith(".sqlite")
+            (path.name, str(path)) for path in sorted(Path(config.database_dir).iterdir()) if path.suffix == ".sqlite"
         ]
 
     if len(config.database_files) == 0:
@@ -113,9 +115,9 @@ with Judgement():
 
     # Set 'solution_sql' to "./solution.sql" if not set
     config.solution_sql = str(getattr(config, "solution_sql", "./solution.sql"))
-    config.solution_sql = os.path.join(config.resources, config.solution_sql)
+    config.solution_sql = os.path.join(config.resources, config.solution_sql)  # noqa: PTH118
 
-    if not os.path.exists(config.solution_sql):
+    if not Path(config.solution_sql).exists():
         raise DodonaException(
             config.translator.error_status(ErrorType.INTERNAL_ERROR),
             permission=MessagePermission.STAFF,
@@ -124,7 +126,7 @@ with Judgement():
         )
 
     # Parse solution query
-    with open(config.solution_sql, encoding="utf-8") as sql_file:
+    with Path(config.solution_sql).open(encoding="utf-8") as sql_file:
         config.raw_solution_file = sql_file.read()
         config.solution_queries = SQLQuery.from_raw_input(config.raw_solution_file)
 
@@ -137,7 +139,7 @@ with Judgement():
             )
 
     # Parse submission query
-    with open(config.source, encoding="utf-8") as sql_file:
+    with Path(config.source).open(encoding="utf-8") as sql_file:
         config.raw_submission_file = sql_file.read()
         config.submission_queries = SQLQuery.from_raw_input(config.raw_submission_file)
 
