@@ -4,7 +4,7 @@
 {
  "command": "append-message",
  "message": {
-  "description": "Could not find database file: '<exercise_path>/evaluation/./databases/does_not_exist.sqlite'.",
+  "description": "Could not find database file: '<exercise_path>/evaluation/databases/does_not_exist.sqlite'.",
   "format": "text",
   "permission": "staff"
  }

@@ -15,7 +15,21 @@ extend-exclude = ["tests/e2e_repos"]
 target-version = "py312"
 
 [tool.ruff.lint]
-select = ["E", "W", "F", "D", "C90", "I", "ERA", "PL", "RUF", "PYI036", "UP", "B"]
+# Opt out rather than opt in, so new ruff rules arrive enabled instead of staying off unnoticed.
+select = ["ALL"]
+ignore = [
+    "PT009",    # the suite is unittest style, converting every assertion is a separate decision
+    "COM812",   # conflicts with the formatter
+    "CPY001",   # this repo has no copyright headers
+    "ANN201",   # return types on test methods
+    "ANN401",   # **kwargs: Any is legitimate on the Dodona command constructors
+    "N818",     # DodonaException reaches student feedback by name, renaming it changes that output
+    "S101",     # assert is fine here
+    "T201",     # print is the learning-mode banner in tests/test_e2e.py
+    "TRY003",   # long messages inside raise are fine
+    "EM101",    # idem, for a string literal
+    "EM102",    # idem, for an f-string
+]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

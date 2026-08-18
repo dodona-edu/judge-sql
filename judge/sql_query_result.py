@@ -3,7 +3,7 @@
 import io
 from sqlite3 import Cursor
 
-import pandas as pd  # type: ignore
+import pandas as pd  # ty: ignore[unresolved-import]
 
 NoneType = type(None)
 
@@ -74,7 +74,7 @@ class SQLQueryResult:
         if self.dataframe.empty or len(sort_on) == 0:
             return
         indices = [i for i, x in enumerate(self.columns) if x in sort_on]
-        self.dataframe.sort_values(by=self.dataframe.columns[indices].tolist(), inplace=True)
+        self.dataframe = self.dataframe.sort_values(by=self.dataframe.columns[indices].tolist())
 
     def index_columns(self, column_index: list[str]) -> None:
         """Change order of columns based on provided list of columns.
@@ -121,7 +121,6 @@ class SQLQueryResult:
         Returns:
             string representation of all returned column names and their types
         """
-        type_description = "\n".join(
+        return "\n".join(
             f"{c} [{python_type_to_sqlite_type[t]}]" for (c, t) in zip(self.columns, self.types, strict=True)
         )
-        return type_description

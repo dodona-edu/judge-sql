@@ -273,10 +273,7 @@ class DodonaCommand:
         Returns:
             if True, the exception is not propagated
         """
-        if isinstance(exc_val, DodonaException):
-            handled = self.handle_dodona_exception(exc_val)
-        else:
-            handled = False
+        handled = self.handle_dodona_exception(exc_val) if isinstance(exc_val, DodonaException) else False
 
         self.__print_command(self.close_msg())
         return handled
