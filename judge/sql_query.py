@@ -2,7 +2,7 @@
 
 import re
 
-import sqlparse  # ty: ignore[unresolved-import]
+import sqlparse
 
 from .translator import Translator
 

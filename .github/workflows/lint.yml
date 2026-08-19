@@ -15,8 +15,14 @@ jobs:
           python-version: "3.12"
           cache: "pip"
           cache-dependency-path: |
+            requirements.txt
             requirements-dev.txt
             requirements-test.txt
+      # ty has to be able to import pandas and sqlparse to resolve them. Without the runtime deps it
+      # reports unresolved-import, and silently types everything they return as Unknown, so the
+      # type check stops checking.
+      - name: Install dependencies
+        run: ./devel/install_deps.sh
       - name: Install dev dependencies
         run: ./devel/install_dev_deps.sh
       - name: Run the linters
