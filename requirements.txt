@@ -4,5 +4,5 @@ pandas==2.1.1
 # Nothing in the judge imports numpy, but the image installs it alongside pandas on purpose:
 # pandas 2.1.1 is built against numpy 1.x, so an unpinned install pulls numpy 2.x and fails at
 # import with "ValueError: numpy.dtype size changed".
-numpy==1.26.4
+numpy==2.5.2
 sqlparse==0.4.4
