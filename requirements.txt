@@ -1,6 +1,6 @@
 # These mirror dodona-edu/docker-images/dodona-sqlite.dockerfile: the judge runs with
 # whatever that image ships, so a pin that differs from it is a lie about production.
-pandas==2.1.1
+pandas==3.0.5
 # Nothing in the judge imports numpy, but the image installs it alongside pandas on purpose:
 # pandas 2.1.1 is built against numpy 1.x, so an unpinned install pulls numpy 2.x and fails at
 # import with "ValueError: numpy.dtype size changed".
