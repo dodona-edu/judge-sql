@@ -1,0 +1,19 @@
+# Paths Dodona leaves out when syncing this repository to the judge's files
+# directory, which is copied into the sandbox for every submission. Only
+# run, sql_judge.py and the judge/ package are read at judging time.
+# Patterns are rsync exclude patterns, anchored to the repository root.
+# See https://github.com/dodona-edu/dodona/issues/8763
+
+/tests/
+/devel/
+/.github/
+/.vscode/
+/.gitignore
+/.gitmodules
+/.editorconfig
+/.tool-versions
+/codecov.yaml
+/pyproject.toml
+/requirements-dev.txt
+/requirements-test.txt
+/judge-sql.png
