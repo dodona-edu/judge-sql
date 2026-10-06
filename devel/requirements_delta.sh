@@ -14,7 +14,7 @@ report() {
 }
 
 if [ ! -f /requirements.txt ]; then
-    echo "The running image ships no /requirements.txt, so it predates the baked dependency list and there is nothing to compare requirements.txt against. Expected until the image carrying that file is published (dodona-edu/docker-images#PRNUMBER, plus a publish run)." | report
+    echo "The running image ships no /requirements.txt, so it predates the baked dependency list and there is nothing to compare requirements.txt against. Expected until the image carrying that file is published (dodona-edu/docker-images#483, plus a publish run)." | report
     exit 1
 fi
 
