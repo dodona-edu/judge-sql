@@ -1,0 +1,16 @@
+name: Requirements
+
+on:
+  push:
+
+jobs:
+  requirements-match-image:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/dodona-edu/dodona-sqlite:latest
+      options: --user root
+
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check requirements.txt against the image's dependency list
+        run: ./devel/requirements_delta.sh
