@@ -1,5 +1,5 @@
-# These mirror dodona-edu/docker-images/dodona-sqlite.dockerfile: the judge runs with
-# whatever that image ships, so a pin that differs from it is a lie about production.
+# Copy of dodona-sqlite/requirements.txt in dodona-edu/docker-images, the source of
+# truth. CI checks this file against the image; PR changes there to ship them.
 pandas==2.1.1
 # Nothing in the judge imports numpy, but the image installs it alongside pandas on purpose:
 # pandas 2.1.1 is built against numpy 1.x, so an unpinned install pulls numpy 2.x and fails at
