@@ -1,9 +1,31 @@
-name: Lint
+name: Test
 
 on:
   push:
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: ".tool-versions"
+          cache: "pip"
+          cache-dependency-path: |
+            requirements.txt
+            requirements-test.txt
+      - name: Install the packages requirements.txt lists
+        run: ./devel/install_deps.sh
+      - name: Install test dependencies
+        run: ./devel/install_test_deps.sh
+      - name: Run tests
+        run: ./devel/run-tests.sh
+
   lint:
     runs-on: ubuntu-latest
 
@@ -12,7 +34,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          python-version-file: ".tool-versions"
           cache: "pip"
           cache-dependency-path: |
             requirements.txt
@@ -21,7 +43,7 @@ jobs:
       # ty has to be able to import pandas and sqlparse to resolve them. Without the runtime deps it
       # reports unresolved-import, and silently types everything they return as Unknown, so the
       # type check stops checking.
-      - name: Install dependencies
+      - name: Install the packages requirements.txt lists
         run: ./devel/install_deps.sh
       - name: Install dev dependencies
         run: ./devel/install_dev_deps.sh
