@@ -17,7 +17,7 @@
 }
 {
  "command": "start-test",
- "description": "Vergelijken van de query output in csv formaat",
+ "description": "Resultaten vergelijken",
  "expected": "RATE,DISCOUNT_CODE\n16,H\n11,M\n7,L\n0,N",
  "format": "csv"
 }
@@ -38,7 +38,7 @@
 }
 {
  "command": "start-test",
- "description": "Vergelijken van de query output SQL types",
+ "description": "Data types vergelijken",
  "expected": "RATE [INTEGER]\nDISCOUNT_CODE [TEXT]"
 }
 {

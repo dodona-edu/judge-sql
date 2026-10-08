@@ -17,7 +17,7 @@
 }
 {
  "command": "start-test",
- "description": "Vergelijken van de query output in csv formaat",
+ "description": "Resultaten vergelijken",
  "expected": "DESCRIPTION,DESCRIPTION\nComputer Tool Kit,Misc\nUltra Spacr 999Mhz Computer,Hardware\n686 7Ghz Computer,Hardware\nJax WS Application Development Environment,Software\nJava EE 6 Application Development Environment,Software\nJava Application Development Environment,Software\nNetBeans Development Environment,Software\nNetwork Cable,Cables\nLearn Solaris 10,Books\nClient Server Testing,Books\nLearn Java in 1/2 hour,Books\nWriting Web Service Applications,Books\nIdentity Server,Software\nCorporate Expense Survey,Misc\nAccounting Application,Software\n1Ghz Sun Blade Computer,Hardware\n10Gb Ram,Firmware\nSun Studio C++,Software\nSound Card,Firmware\nSolaris x86 Computer,Hardware\nLearn NetBeans,Books\n300Mhz Pentium Computer,Hardware\nFlat screen Monitor,Hardware\n24 inch Digital Monitor,Hardware\nDirectory Server,Software\nPrinter Cable,Cables\n512X IDE DVD-ROM,Hardware\nA1 900 watts Speakers,Hardware\nMini Computer Speakers,Hardware\n104-Key Keyboard,Hardware",
  "format": "csv"
 }
@@ -31,7 +31,7 @@
 }
 {
  "command": "start-test",
- "description": "Vergelijken van de query output SQL types",
+ "description": "Data types vergelijken",
  "expected": "DESCRIPTION [TEXT]\nDESCRIPTION [TEXT]"
 }
 {
