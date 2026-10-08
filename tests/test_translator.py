@@ -16,6 +16,16 @@ class TestTranslator(unittest.TestCase):
         )
 
         self.assertEqual(
+            Translator.from_str("nl").translate(Translator.Text.COMPARING_QUERY_OUTPUT_CSV_CONTENT),
+            "Resultaten vergelijken",
+        )
+
+        self.assertEqual(
+            Translator.from_str("nl").translate(Translator.Text.COMPARING_QUERY_OUTPUT_TYPES),
+            "Data types vergelijken",
+        )
+
+        self.assertEqual(
             Translator.from_str("en").translate(Translator.Text.ADD_A_SEMICOLON),
             "Add a semicolon ';' at the end of each SQL query.",
         )
