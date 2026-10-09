@@ -40,9 +40,9 @@ jobs:
             requirements.txt
             requirements-dev.txt
             requirements-test.txt
-      # ty has to be able to import pandas and sqlparse to resolve them. Without the runtime deps it
-      # reports unresolved-import, and silently types everything they return as Unknown, so the
-      # type check stops checking.
+      # ty has to be able to import sqlparse to resolve it. Without the runtime deps it reports
+      # unresolved-import, and silently types everything it returns as Unknown, so the type check
+      # stops checking.
       - name: Install the packages requirements.txt lists
         run: ./devel/install_deps.sh
       - name: Install dev dependencies
