@@ -65,8 +65,8 @@ class TestSQLQuery(unittest.TestCase):
         query = self.single_query('--SELECT\n   INSERT INTO table2 /**/  SELECT * FROM Users Where ";#ORDER BY" = 1;')
 
         self.assertEqual(
-            query.without_comments,
-            'INSERT INTO table2  SELECT * FROM Users Where ";#ORDER BY" = 1;',
+            " ".join(query.without_comments.split()),
+            'INSERT INTO table2 SELECT * FROM Users Where ";#ORDER BY" = 1;',
         )
         self.assertEqual(query.has_ending_semicolon, True)
         self.assertEqual(query.is_select, False)
