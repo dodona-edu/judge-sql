@@ -1,9 +1,8 @@
 """sql query tabular result utils."""
 
+import csv
 import io
 from sqlite3 import Cursor
-
-import pandas as pd
 
 NoneType = type(None)
 
@@ -11,6 +10,9 @@ NoneType = type(None)
 # Python types. Spelled out explicitly (instead of the broader 'type') so the type checker can verify
 # that every access into 'python_type_to_sqlite_type' below is exhaustive.
 SqliteColumnType = type[None] | type[int] | type[float] | type[str] | type[bytes]
+
+# A single value in a row, as returned by sqlite3.
+SqliteValue = int | float | str | bytes | None
 
 python_type_to_sqlite_type: dict[SqliteColumnType, str] = {
     NoneType: "NULL",
@@ -21,32 +23,49 @@ python_type_to_sqlite_type: dict[SqliteColumnType, str] = {
 }
 
 
+def _sort_key(value: SqliteValue) -> tuple[int, SqliteValue]:
+    """Sort key for a single value that also orders values of different types.
+
+    Numbers come first, then text, then blobs, with NULL last.
+
+    Args:
+        value: the value to compute the sort key for
+
+    Returns:
+        a tuple that compares the type group first and the value second
+    """
+    if value is None:
+        return (3, 0)
+    if isinstance(value, str):
+        return (1, value)
+    if isinstance(value, bytes):
+        return (2, value)
+    return (0, value)
+
+
 class SQLQueryResult:
     """a class for managing a query's results."""
 
-    def __init__(self, dataframe: pd.DataFrame, columns: list[str], types: list[SqliteColumnType]) -> None:
+    def __init__(self, rows: list[tuple[SqliteValue, ...]], columns: list[str], types: list[SqliteColumnType]) -> None:
         """Create new SQLQueryResult.
 
         Should not be used directly (other than testing). Use 'from_cursor' instead.
 
         Args:
-            dataframe: pandas dataframe containing query's result content
+            rows: list of rows containing query's result content, each row a tuple with one value per column
             columns: list of column names (used for csv header)
             types: list of column types (used for checking sql types)
         """
-        assert len(dataframe.columns) == len(columns)
-        assert len(dataframe.columns) == len(types)
+        assert all(len(row) == len(columns) for row in rows)
+        assert len(types) == len(columns)
 
-        self.dataframe = dataframe
+        self.rows = rows
         self.columns = columns
         self.types = types
 
     @classmethod
     def from_cursor(cls: type["SQLQueryResult"], max_rows: int, cursor: Cursor) -> "SQLQueryResult":
         """Process sql query results and wrap in SQLQueryResult.
-
-        The column names are stored separate from the dataframe, because an
-        sql query might return multiple columns with the same name.
 
         Args:
             max_rows: max number of rows to retrieve
@@ -57,24 +76,44 @@ class SQLQueryResult:
         """
         rows = cursor.fetchmany(max_rows)
 
-        dataframe = pd.DataFrame(rows)
         columns, types = [], []
         if len(rows) > 0:
             columns = [column[0].upper() for column in cursor.description or []]
             types = [type(x) for x in rows[0]]
 
-        return cls(dataframe, columns, types)
+        return cls(rows, columns, types)
+
+    @property
+    def column_count(self) -> int:
+        """Number of columns in the query result (zero if there are no rows).
+
+        Returns:
+            the number of columns
+        """
+        return len(self.columns)
+
+    @property
+    def row_count(self) -> int:
+        """Number of rows in the query result.
+
+        Returns:
+            the number of rows
+        """
+        return len(self.rows)
 
     def sort_rows(self, sort_on: list[str]) -> None:
         """Sort the rows based on a list of column names.
 
+        The columns are compared in the order they appear in the result, not in
+        the order of 'sort_on'. NULL values are placed last.
+
         Args:
             sort_on: list of column names to sort on
         """
-        if self.dataframe.empty or len(sort_on) == 0:
+        if len(self.rows) == 0 or len(sort_on) == 0:
             return
         indices = [i for i, x in enumerate(self.columns) if x in sort_on]
-        self.dataframe = self.dataframe.sort_values(by=self.dataframe.columns[indices].tolist())
+        self.rows = sorted(self.rows, key=lambda row: tuple(_sort_key(row[i]) for i in indices))
 
     def index_columns(self, column_index: list[str]) -> None:
         """Change order of columns based on provided list of columns.
@@ -101,7 +140,7 @@ class SQLQueryResult:
 
         self.columns = [self.columns[i] for i in argsort]
         self.types = [self.types[i] for i in argsort]
-        self.dataframe = self.dataframe.reindex(columns=self.dataframe.columns[argsort])
+        self.rows = [tuple(row[i] for i in argsort) for row in self.rows]
 
     @property
     def csv_out(self) -> str:
@@ -111,7 +150,9 @@ class SQLQueryResult:
             a csv encoded version of the retrieved sql rows, including a header
         """
         csv_output = io.StringIO()
-        self.dataframe.to_csv(csv_output, header=self.columns, index=False)
+        writer = csv.writer(csv_output, lineterminator="\n")
+        writer.writerow(self.columns)
+        writer.writerows(self.rows)
         return csv_output.getvalue().strip()
 
     @property

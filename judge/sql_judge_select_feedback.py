@@ -54,24 +54,24 @@ def select_feedback(  # noqa: PLR0913, PLR0917
     ) as test:
         test.generated = generated_output.csv_out
 
-        if len(expected_output.dataframe.columns) != len(generated_output.dataframe.columns):
+        if expected_output.column_count != generated_output.column_count:
             with Message(
                 format=MessageFormat.CALLOUT_DANGER,
                 description=config.translator.translate(
                     Translator.Text.DIFFERENT_COLUMN_COUNT,
-                    expected=len(expected_output.dataframe.columns),
-                    submitted=len(generated_output.dataframe.columns),
+                    expected=expected_output.column_count,
+                    submitted=generated_output.column_count,
                 ),
             ):
                 pass
 
-        if len(expected_output.dataframe.index) != len(generated_output.dataframe.index):
+        if expected_output.row_count != generated_output.row_count:
             with Message(
                 format=MessageFormat.CALLOUT_DANGER,
                 description=config.translator.translate(
                     Translator.Text.DIFFERENT_ROW_COUNT,
-                    expected=len(expected_output.dataframe.index),
-                    submitted=len(generated_output.dataframe.index),
+                    expected=expected_output.row_count,
+                    submitted=generated_output.row_count,
                 ),
             ):
                 pass
