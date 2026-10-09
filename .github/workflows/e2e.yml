@@ -1,0 +1,58 @@
+name: E2E
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: Judge image to run the suite in
+        type: string
+        default: ghcr.io/dodona-edu/dodona-sqlite:latest
+      ref:
+        description: judge-sql ref to test
+        type: string
+        default: main
+  workflow_dispatch:
+    inputs:
+      image:
+        description: Judge image to run the suite in
+        type: string
+        default: ghcr.io/dodona-edu/dodona-sqlite:latest
+      ref:
+        description: judge-sql ref to test
+        type: string
+        default: main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ inputs.image }}
+      options: --user root
+
+    steps:
+      # The slim production image ships no git, so actions/checkout can't
+      # fetch the test-sql-judge submodule without it. Must run before checkout.
+      - name: Install git
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends git
+          rm -rf /var/lib/apt/lists/*
+      - uses: actions/checkout@v7
+        with:
+          repository: dodona-edu/judge-sql
+          ref: ${{ inputs.ref }}
+          submodules: true
+      # Job runs as root, but the runner created the workspace under a different
+      # uid; git refuses to operate on that ownership mismatch, which blocks the
+      # `git submodule update --init` that devel/run-tests.sh runs.
+      - name: Trust the checkout
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Install test dependencies
+        run: ./devel/install_test_deps.sh
+      - name: Run tests
+        run: ./devel/run-tests.sh
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage
+          path: coverage.xml
