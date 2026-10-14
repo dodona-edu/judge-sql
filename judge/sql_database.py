@@ -3,12 +3,12 @@
 import sqlite3
 from pathlib import Path
 from shutil import copyfile
-from types import TracebackType
 from typing import Self
+lazy from types import TracebackType
 
-from .dodona_config import DodonaConfig
 from .sql_query import SQLQuery
 from .sql_query_result import SQLQueryResult
+lazy from .dodona_config import DodonaConfig
 
 
 def sql_run_pragma_startup_queries(cursor: sqlite3.Cursor, script: str) -> None:

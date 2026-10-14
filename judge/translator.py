@@ -52,7 +52,7 @@ class Translator:
         self.language = language
 
     @classmethod
-    def from_str(cls: type["Translator"], language: str) -> "Translator":
+    def from_str(cls: type[Translator], language: str) -> Translator:
         """Create a Translator instance.
 
         If the language is not detected correctly or not supported

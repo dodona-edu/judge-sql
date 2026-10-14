@@ -61,7 +61,7 @@ class DodonaConfig(SimpleNamespace):  # noqa: PLW1641
         return super().__eq__(other)
 
     @classmethod
-    def from_json(cls: type["DodonaConfig"], json_str: str | bytes) -> "DodonaConfig":
+    def from_json(cls: type[DodonaConfig], json_str: str | bytes) -> DodonaConfig:
         """Decode json string into a DodonaConfig object.
 
         Args:

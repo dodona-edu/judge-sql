@@ -1,6 +1,6 @@
 """sql feedback for select queries."""
 
-from types import SimpleNamespace
+lazy from types import SimpleNamespace
 
 from .dodona_command import (
     Context,
@@ -11,10 +11,10 @@ from .dodona_command import (
     MessagePermission,
     Test,
 )
-from .dodona_config import DodonaConfig
-from .sql_query import SQLQuery
-from .sql_query_result import SQLQueryResult
 from .translator import Translator
+lazy from .dodona_config import DodonaConfig
+lazy from .sql_query import SQLQuery
+lazy from .sql_query_result import SQLQueryResult
 
 
 def select_feedback(  # noqa: PLR0913, PLR0917
