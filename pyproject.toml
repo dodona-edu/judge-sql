@@ -12,7 +12,7 @@ source = ["."]
 line-length = 120
 extend-exclude = ["tests/e2e_repos"]
 # Keep in step with .tool-versions; ruff defaults to py310 and can't infer it without a [project] table.
-target-version = "py312"
+target-version = "py315"
 
 [tool.ruff.lint]
 # Opt out rather than opt in, so new ruff rules arrive enabled instead of staying off unnoticed.

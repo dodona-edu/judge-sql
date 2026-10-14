@@ -1,6 +1,6 @@
 """sql feedback for non-select queries."""
 
-from types import SimpleNamespace
+lazy from types import SimpleNamespace
 
 from .dodona_command import (
     DodonaException,
@@ -9,10 +9,10 @@ from .dodona_command import (
     MessagePermission,
     Test,
 )
-from .dodona_config import DodonaConfig
 from .sql_database import SQLDatabase
-from .sql_query import SQLQuery
 from .translator import Translator
+lazy from .dodona_config import DodonaConfig
+lazy from .sql_query import SQLQuery
 
 
 def non_select_feedback(

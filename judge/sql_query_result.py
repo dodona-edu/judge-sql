@@ -2,7 +2,7 @@
 
 import csv
 import io
-from sqlite3 import Cursor
+lazy from sqlite3 import Cursor
 
 NoneType = type(None)
 
@@ -64,7 +64,7 @@ class SQLQueryResult:
         self.types = types
 
     @classmethod
-    def from_cursor(cls: type["SQLQueryResult"], max_rows: int, cursor: Cursor) -> "SQLQueryResult":
+    def from_cursor(cls: type[SQLQueryResult], max_rows: int, cursor: Cursor) -> SQLQueryResult:
         """Process sql query results and wrap in SQLQueryResult.
 
         Args:
