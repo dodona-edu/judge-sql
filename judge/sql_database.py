@@ -30,6 +30,20 @@ def sql_run_pragma_startup_queries(cursor: sqlite3.Cursor, script: str) -> None:
     cursor.executescript(script)
 
 
+def _connect(database: str | Path) -> sqlite3.Connection:
+    """Open a connection that decodes TEXT that is not valid UTF-8 instead of raising.
+
+    Args:
+        database: path of the database to open, or ':memory:'
+
+    Returns:
+        a connection whose TEXT values are decoded with errors='replace'
+    """
+    connection = sqlite3.connect(database)
+    connection.text_factory = lambda value: value.decode("utf-8", errors="replace")
+    return connection
+
+
 class SQLDatabase:
     """Wrapper class for the sqlite3 connections & file management.
 
@@ -102,7 +116,7 @@ class SQLDatabase:
             a cursor for the solutionfile database
         """
         self.close()
-        self.connection = sqlite3.connect(self.solutionfile)
+        self.connection = _connect(self.solutionfile)
         return self.connection.cursor()
 
     def submission_cursor(self) -> sqlite3.Cursor:
@@ -112,7 +126,7 @@ class SQLDatabase:
             a cursor for the submissionfile database
         """
         self.close()
-        self.connection = sqlite3.connect(self.submissionfile)
+        self.connection = _connect(self.submissionfile)
         return self.connection.cursor()
 
     def joined_cursor(self) -> sqlite3.Cursor:
@@ -122,7 +136,7 @@ class SQLDatabase:
             a cursor for the a database in which both the solution and submission are attached
         """
         self.close()
-        self.connection = sqlite3.connect(":memory:")
+        self.connection = _connect(":memory:")
         cursor = self.connection.cursor()
         cursor.execute(f'ATTACH "{self.solutionfile}" as solution')
         cursor.execute(f'ATTACH "{self.submissionfile}" as submission')
