@@ -6,6 +6,8 @@ from types import NoneType
 from typing import Self
 lazy from sqlite3 import Cursor
 
+from sqlparse import lexer, tokens
+
 # Spelled out instead of the broader 'type' so the type checker can check exhaustiveness.
 type SqliteColumnType = type[int | float | str | bytes | None]
 
@@ -39,6 +41,40 @@ def _sort_key(value: SqliteValue) -> tuple[int, SqliteValue]:
     if isinstance(value, bytes):
         return (2, value)
     return (0, value)
+
+
+_QUOTE_PAIRS = {"`": "`", '"': '"', "[": "]"}
+
+
+def _normalize_column_name(name: str) -> str:
+    """Normalize a column name so equivalent spellings of the same expression compare equal.
+
+    Strips identifier quotes (`x`, "x", [x]) but not those of string literals, drops whitespace next to
+    punctuation or operators, and uppercases the result.
+
+    Args:
+        name: column name as reported by sqlite3
+
+    Returns:
+        the normalized column name
+    """
+    flat = list(lexer.tokenize(name))
+
+    parts: list[str] = []
+    for i, (ttype, value) in enumerate(flat):
+        if ttype in tokens.Whitespace:
+            neighbours = flat[max(i - 1, 0) : i] + flat[i + 1 : i + 2]
+            if any(t in tokens.Punctuation or t in tokens.Operator for t, _ in neighbours):
+                continue
+        elif (
+            (ttype in tokens.Name or ttype in tokens.Literal.String.Symbol)
+            and len(value) > 1
+            and _QUOTE_PAIRS.get(value[0]) == value[-1]
+        ):
+            parts.append(value[1:-1])
+            continue
+        parts.append(value)
+    return "".join(parts).upper()
 
 
 class SQLQueryResult:
@@ -76,7 +112,7 @@ class SQLQueryResult:
 
         columns, types = [], []
         if len(rows) > 0:
-            columns = [column[0].upper() for column in cursor.description or []]
+            columns = [_normalize_column_name(column[0]) for column in cursor.description or []]
             types = [type(x) for x in rows[0]]
 
         return cls(rows, columns, types)
