@@ -17,7 +17,7 @@
 }
 {
  "command": "start-test",
- "description": "Vergelijken van de query output in csv formaat",
+ "description": "Resultaten vergelijken",
  "expected": "NAME\nSmall Bill Company\nEarly CentralComp\nJohn Valley Computers\nOld Media Productions\nWest Valley Inc.",
  "format": "csv"
 }
@@ -31,7 +31,7 @@
 }
 {
  "command": "start-test",
- "description": "Vergelijken van de query output SQL types",
+ "description": "Data types vergelijken",
  "expected": "NAME [TEXT]"
 }
 {

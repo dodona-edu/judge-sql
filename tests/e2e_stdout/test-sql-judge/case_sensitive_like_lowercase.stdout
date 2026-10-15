@@ -17,7 +17,7 @@
 }
 {
  "command": "start-test",
- "description": "Vergelijken van de query output in csv formaat",
+ "description": "Resultaten vergelijken",
  "expected": "CITY\nSanta Clara\nSan Jose\nSan Mateo\nSan David\nSan Alfred\nSanta Clara",
  "format": "csv"
 }
@@ -45,7 +45,7 @@
 }
 {
  "command": "start-test",
- "description": "Vergelijken van de query output SQL types",
+ "description": "Data types vergelijken",
  "expected": "CITY [TEXT]"
 }
 {
