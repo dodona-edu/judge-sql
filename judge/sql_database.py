@@ -139,9 +139,13 @@ class SQLDatabase:
             (solution_layout, submission_layout) containing the pragma table info
         """
         cursor = self.joined_cursor()
-        cursor.execute(f"PRAGMA solution.table_info('{table}')")
+        # Declared types are case-insensitive in sqlite, so show them upper-cased like 'diff' compares them.
+        layout_sql = (
+            "SELECT cid, name, upper(type) AS type, \"notnull\", dflt_value, pk FROM pragma_table_info(?, '{schema}')"
+        )
+        cursor.execute(layout_sql.format(schema="solution"), (table,))
         solution_layout = SQLQueryResult.from_cursor(config.max_rows, cursor)
-        cursor.execute(f"PRAGMA submission.table_info('{table}')")
+        cursor.execute(layout_sql.format(schema="submission"), (table,))
         submission_layout = SQLQueryResult.from_cursor(config.max_rows, cursor)
         return solution_layout, submission_layout
 
@@ -198,7 +202,7 @@ class SQLDatabase:
                 pragma_table_info(s.name, 'submission') subTable
             WHERE
                 solTable.name=subTable.name AND
-                solTable.type=subTable.type AND
+                upper(solTable.type)=upper(subTable.type) AND
                 solTable.'notnull'=subTable.'notnull' AND
                 (
                     solTable.dflt_value=subTable.dflt_value OR
