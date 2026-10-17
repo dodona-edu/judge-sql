@@ -1,6 +1,7 @@
 """input query parsing."""
 
 import re
+from typing import Self
 
 import sqlparse
 
@@ -199,7 +200,7 @@ class SQLQuery:
         return next((symbol for symbol in self.symbols if symbol.lower() in lowercase_words), None)
 
     @classmethod
-    def from_raw_input(cls: type[SQLQuery], raw_input: str) -> list[SQLQuery]:
+    def from_raw_input(cls, raw_input: str) -> list[Self]:
         """Create list of SQLQuery objects starting from raw query input.
 
         Args:

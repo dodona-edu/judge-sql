@@ -124,8 +124,8 @@ class SQLDatabase:
         self.close()
         self.connection = sqlite3.connect(":memory:")
         cursor = self.connection.cursor()
-        cursor.execute(f'ATTACH "{self.solutionfile}" as solution')
-        cursor.execute(f'ATTACH "{self.submissionfile}" as submission')
+        cursor.execute("ATTACH ? AS solution", (str(self.solutionfile),))
+        cursor.execute("ATTACH ? AS submission", (str(self.submissionfile),))
         return cursor
 
     def get_table_layout(self, config: DodonaConfig, table: str) -> tuple[SQLQueryResult, SQLQueryResult]:
