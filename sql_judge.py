@@ -15,7 +15,7 @@ from judge.dodona_command import (
     Tab,
     TestCase,
 )
-from judge.dodona_config import DodonaConfig
+from judge.dodona_config import UNSET, DodonaConfig
 from judge.sql_database import SQLDatabase, sql_run_pragma_startup_queries
 from judge.sql_judge_non_select_feedback import non_select_feedback
 from judge.sql_judge_select_feedback import select_feedback
@@ -29,52 +29,14 @@ config = DodonaConfig.from_json(sys.stdin.read())
 with Judgement():
     config.sanity_check()
 
-    # Initiate translator
-    config.translator = Translator.from_str(config.natural_language)
+    config.coerce_evaluation_options()
 
-    # Set 'max_rows' to 100 if not set
-    config.max_rows = int(getattr(config, "max_rows", 100))
-
-    # Set 'semicolon_warning' to True if not set
-    config.semicolon_warning = bool(getattr(config, "semicolon_warning", True))
-
-    # Set 'order_unordered_rows' to False if not set
-    config.order_unordered_rows = bool(getattr(config, "order_unordered_rows", False))
-
-    # Set 'strict_identical_order_by' to True if not set
-    config.strict_identical_order_by = bool(getattr(config, "strict_identical_order_by", True))
-
-    # Set 'allow_different_column_order' to True if not set
-    config.allow_different_column_order = bool(getattr(config, "allow_different_column_order", True))
-
-    # Set 'pragma_startup_queries' to "" if not set
-    config.pragma_startup_queries = str(getattr(config, "pragma_startup_queries", ""))
-
-    # Set 'pre_execution_forbidden_symbolregex' to [".*sqlite_(temp_)?(master|schema).*", "pragma"] if not set
-    defaults = [".*sqlite_(temp_)?(master|schema).*", "pragma"]
-    config.pre_execution_forbidden_symbolregex = list(getattr(config, "pre_execution_forbidden_symbolregex", defaults))
-    # Set 'pre_execution_mandatory_symbolregex' to [] if not set
-    config.pre_execution_mandatory_symbolregex = list(getattr(config, "pre_execution_mandatory_symbolregex", []))
-    # Set 'pre_execution_forbidden_fullregex' to [] if not set
-    config.pre_execution_forbidden_fullregex = list(getattr(config, "pre_execution_forbidden_fullregex", []))
-    # Set 'pre_execution_mandatory_fullregex' to [] if not set
-    config.pre_execution_mandatory_fullregex = list(getattr(config, "pre_execution_mandatory_fullregex", []))
-
-    # Set 'post_execution_forbidden_symbolregex' to [] if not set
-    config.post_execution_forbidden_symbolregex = list(getattr(config, "post_execution_forbidden_symbolregex", []))
-    # Set 'post_execution_mandatory_symbolregex' to [] if not set
-    config.post_execution_mandatory_symbolregex = list(getattr(config, "post_execution_mandatory_symbolregex", []))
-    # Set 'post_execution_forbidden_fullregex' to [] if not set
-    config.post_execution_forbidden_fullregex = list(getattr(config, "post_execution_forbidden_fullregex", []))
-    # Set 'post_execution_mandatory_fullregex' to [] if not set
-    config.post_execution_mandatory_fullregex = list(getattr(config, "post_execution_mandatory_fullregex", []))
-
-    if hasattr(config, "database_files"):
-        config.database_files = [
+    if config.database_files is not UNSET:
+        config.databases = [
             (str(filename), str(Path(config.resources) / filename)) for filename in config.database_files
         ]
 
-        for _, file in config.database_files:
+        for _, file in config.databases:
             if not Path(file).exists():
                 raise DodonaException(
                     config.translator.error_status(ErrorType.INTERNAL_ERROR),
@@ -83,8 +45,6 @@ with Judgement():
                     format=MessageFormat.TEXT,
                 )
     else:
-        # Set 'database_dir' to "." if not set
-        config.database_dir = str(getattr(config, "database_dir", "."))
         config.database_dir = str(Path(config.resources) / config.database_dir)
 
         if not Path(config.database_dir).exists():
@@ -95,11 +55,11 @@ with Judgement():
                 format=MessageFormat.TEXT,
             )
 
-        config.database_files = [
+        config.databases = [
             (path.name, str(path)) for path in sorted(Path(config.database_dir).iterdir()) if path.suffix == ".sqlite"
         ]
 
-    if len(config.database_files) == 0:
+    if len(config.databases) == 0:
         raise DodonaException(
             config.translator.error_status(ErrorType.INTERNAL_ERROR),
             permission=MessagePermission.STAFF,
@@ -109,8 +69,6 @@ with Judgement():
             format=MessageFormat.TEXT,
         )
 
-    # Set 'solution_sql' to "./solution.sql" if not set
-    config.solution_sql = str(getattr(config, "solution_sql", "./solution.sql"))
     config.solution_sql = str(Path(config.resources) / config.solution_sql)
 
     if not Path(config.solution_sql).exists():
@@ -205,7 +163,7 @@ with Judgement():
                     format=MessageFormat.CALLOUT_DANGER,
                 )
 
-            for db_name, db_file in config.database_files:
+            for db_name, db_file in config.databases:
                 with (
                     Context(),
                     TestCase(

@@ -1,14 +1,22 @@
 """Dodona Judge configuration."""
 
 import json
+from dataclasses import dataclass, field, fields
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any, Self, override
+from typing import Self
+
+from .translator import Translator
+lazy from .sql_query import SQLQuery
+
+UNSET = sentinel("UNSET")
 
 
-# Deliberately unhashable: this object is mutable, so it shouldn't define __hash__ alongside __eq__.
-class DodonaConfig(SimpleNamespace):  # noqa: PLW1641
+@dataclass
+class DodonaConfig:
     """a class for containing all Dodona Judge configuration.
+
+    Teacher evaluation options (see the README) follow the Dodona-provided fields.
 
     Attributes:
         memory_limit:           An integer, the memory limit in bytes. The docker container
@@ -28,38 +36,61 @@ class DodonaConfig(SimpleNamespace):  # noqa: PLW1641
         source:                 Full path to a file containing the code the user submitted.
         judge:                  Full path to a directory containing a copy of the judge repository.
         workdir:                Full path to the directory in which all user code should be executed.
+        translator:             Translator for `natural_language`.
+        databases:              `(name, path)` of every database to run the queries on.
+        raw_solution_file:      Contents of the solution file.
+        solution_queries:       Queries parsed from the solution file.
+        raw_submission_file:    Contents of the submission file.
+        submission_queries:     Queries parsed from the submission file.
     """
 
-    def __init__(self, **kwargs: Any) -> None:
-        """Store all parameters & set correct type for 'known' Dodona judge configuration fields.
+    memory_limit: int
+    time_limit: int
+    programming_language: str
+    natural_language: str
+    resources: str
+    source: str
+    judge: str
+    workdir: str
 
-        Args:
-            kwargs: the named parameters in the form of a dict
-        """
-        super().__init__(**kwargs)
-        self.memory_limit: int = int(self.memory_limit)
-        self.time_limit: int = int(self.time_limit)
-        self.programming_language: str = str(self.programming_language)
-        self.natural_language: str = str(self.natural_language)
-        self.resources: str = str(self.resources)
-        self.source: str = str(self.source)
-        self.judge: str = str(self.judge)
-        self.workdir: str = str(self.workdir)
+    max_rows: int = 100
+    semicolon_warning: bool = True
+    order_unordered_rows: bool = False
+    strict_identical_order_by: bool = True
+    allow_different_column_order: bool = True
+    pragma_startup_queries: str = ""
+    pre_execution_forbidden_symbolregex: list[str] = field(
+        default_factory=lambda: [".*sqlite_(temp_)?(master|schema).*", "pragma"]
+    )
+    pre_execution_mandatory_symbolregex: list[str] = field(default_factory=list)
+    pre_execution_forbidden_fullregex: list[str] = field(default_factory=list)
+    pre_execution_mandatory_fullregex: list[str] = field(default_factory=list)
+    post_execution_forbidden_symbolregex: list[str] = field(default_factory=list)
+    post_execution_mandatory_symbolregex: list[str] = field(default_factory=list)
+    post_execution_forbidden_fullregex: list[str] = field(default_factory=list)
+    post_execution_mandatory_fullregex: list[str] = field(default_factory=list)
+    database_files: list[str] | UNSET = UNSET
+    database_dir: str = "."
+    solution_sql: str = "./solution.sql"
 
-    @override
-    def __eq__(self, other: object) -> bool:
-        """Check equality.
+    translator: Translator = field(init=False, repr=False, compare=False)
+    databases: list[tuple[str, str]] = field(init=False, repr=False, compare=False)
+    raw_solution_file: str = field(init=False, repr=False, compare=False)
+    solution_queries: list[SQLQuery] = field(init=False, repr=False, compare=False)
+    raw_submission_file: str = field(init=False, repr=False, compare=False)
+    submission_queries: list[SQLQuery] = field(init=False, repr=False, compare=False)
 
-        Args:
-            other: other object to compare self against
-        """
-        if isinstance(other, str):
-            return super().__eq__(DodonaConfig.from_json(other))
-
-        if isinstance(other, dict):
-            return super().__eq__(DodonaConfig(**other))
-
-        return super().__eq__(other)
+    def __post_init__(self) -> None:
+        """Set the correct type for the Dodona-provided fields."""
+        self.memory_limit = int(self.memory_limit)
+        self.time_limit = int(self.time_limit)
+        self.programming_language = str(self.programming_language)
+        self.natural_language = str(self.natural_language)
+        self.resources = str(self.resources)
+        self.source = str(self.source)
+        self.judge = str(self.judge)
+        self.workdir = str(self.workdir)
+        self.translator = Translator.from_str(self.natural_language)
 
     @classmethod
     def from_json(cls, json_str: str | bytes) -> Self:
@@ -71,8 +102,34 @@ class DodonaConfig(SimpleNamespace):  # noqa: PLW1641
         Returns:
             decoded Dodona judge config
         """
-        simple = json.loads(json_str, object_hook=lambda d: SimpleNamespace(**d))
-        return cls(**simple.__dict__)
+        # Nested objects stay SimpleNamespace: str(), list() and bool() of a dict give different results.
+        decoded = json.loads(json_str, object_hook=lambda d: SimpleNamespace(**d))
+        known = {f.name for f in fields(cls) if f.init}
+        # Dodona and teachers send keys this judge doesn't use: ignore them.
+        return cls(**{key: value for key, value in vars(decoded).items() if key in known})
+
+    def coerce_evaluation_options(self) -> None:
+        """Set the correct type for the teacher's evaluation options.
+
+        Not part of `__post_init__`: the judge calls this inside its Judgement, so a value that
+        can't be coerced still ends the judgement on stdout.
+        """
+        self.max_rows = int(self.max_rows)
+        self.semicolon_warning = bool(self.semicolon_warning)
+        self.order_unordered_rows = bool(self.order_unordered_rows)
+        self.strict_identical_order_by = bool(self.strict_identical_order_by)
+        self.allow_different_column_order = bool(self.allow_different_column_order)
+        self.pragma_startup_queries = str(self.pragma_startup_queries)
+        self.pre_execution_forbidden_symbolregex = list(self.pre_execution_forbidden_symbolregex)
+        self.pre_execution_mandatory_symbolregex = list(self.pre_execution_mandatory_symbolregex)
+        self.pre_execution_forbidden_fullregex = list(self.pre_execution_forbidden_fullregex)
+        self.pre_execution_mandatory_fullregex = list(self.pre_execution_mandatory_fullregex)
+        self.post_execution_forbidden_symbolregex = list(self.post_execution_forbidden_symbolregex)
+        self.post_execution_mandatory_symbolregex = list(self.post_execution_mandatory_symbolregex)
+        self.post_execution_forbidden_fullregex = list(self.post_execution_forbidden_fullregex)
+        self.post_execution_mandatory_fullregex = list(self.post_execution_mandatory_fullregex)
+        self.database_dir = str(self.database_dir)
+        self.solution_sql = str(self.solution_sql)
 
     def sanity_check(self) -> None:
         """Perform sanity checks.
