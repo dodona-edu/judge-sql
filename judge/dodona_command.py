@@ -4,7 +4,7 @@ import json
 import sys
 from enum import StrEnum
 from types import SimpleNamespace, TracebackType
-from typing import Any
+from typing import Any, override
 
 
 class ErrorType(StrEnum):
@@ -21,14 +21,6 @@ class ErrorType(StrEnum):
     CORRECT = "correct"
     CORRECT_ANSWER = "correct answer"
 
-    def __str__(self) -> str:
-        """Convert enum to string.
-
-        Returns:
-            string representation of enum
-        """
-        return self
-
 
 class MessagePermission(StrEnum):
     """Dodona permission for a message."""
@@ -36,14 +28,6 @@ class MessagePermission(StrEnum):
     STUDENT = "student"
     STAFF = "staff"
     ZEUS = "zeus"
-
-    def __str__(self) -> str:
-        """Convert enum to string.
-
-        Returns:
-            string representation of enum
-        """
-        return self
 
 
 class MessageFormat(StrEnum):
@@ -60,14 +44,6 @@ class MessageFormat(StrEnum):
     CODE = "code"
     SQL = "sql"
 
-    def __str__(self) -> str:
-        """Convert enum to string.
-
-        Returns:
-            string representation of enum
-        """
-        return self
-
 
 class AnnotationSeverity(StrEnum):
     """Dodona severity of an annotation."""
@@ -75,14 +51,6 @@ class AnnotationSeverity(StrEnum):
     ERROR = "error"
     WARNING = "warning"
     INFO = "info"
-
-    def __str__(self) -> str:
-        """Convert enum to string.
-
-        Returns:
-            string representation of enum
-        """
-        return self
 
 
 class DodonaException(Exception):
@@ -282,6 +250,7 @@ class DodonaCommand:
 class DodonaCommandWithAccepted(DodonaCommand):
     """abstract class, parent of all Dodona commands that have an accepted field."""
 
+    @override
     def handle_dodona_exception(self, exception: DodonaException) -> bool:
         """Update the accepted parameter based on the exception status.
 
@@ -300,6 +269,7 @@ class DodonaCommandWithAccepted(DodonaCommand):
 class DodonaCommandWithStatus(DodonaCommandWithAccepted):
     """abstract class, parent of all Dodona commands that have a status field."""
 
+    @override
     def handle_dodona_exception(self, exception: DodonaException) -> bool:
         """Update the status of the object.
 
@@ -420,6 +390,7 @@ class Message(DodonaCommand):
         else:
             super().__init__(message=kwargs)
 
+    @override
     def start_msg(self) -> dict:
         """Print the "append-message" command and parameters when entering the 'with' block.
 
@@ -428,6 +399,7 @@ class Message(DodonaCommand):
         """
         return {"command": "append-message", **self.start_args.__dict__}
 
+    @override
     def close_msg(self) -> None:
         """Don't print anything when exiting the 'with' block."""
 
@@ -445,6 +417,7 @@ class Annotation(DodonaCommand):
         """
         super().__init__(row=row, text=text, **kwargs)
 
+    @override
     def start_msg(self) -> dict:
         """Print the "annotate-code" command and parameters when entering the 'with' block.
 
@@ -453,5 +426,6 @@ class Annotation(DodonaCommand):
         """
         return {"command": "annotate-code", **self.start_args.__dict__}
 
+    @override
     def close_msg(self) -> None:
         """Don't print anything when exiting the 'with' block."""

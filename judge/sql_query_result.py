@@ -2,17 +2,17 @@
 
 import csv
 import io
+from types import NoneType
+from typing import Self
 lazy from sqlite3 import Cursor
-
-NoneType = type(None)
 
 # The only column types 'from_cursor' can ever produce, since sqlite3 only maps rows to these five
 # Python types. Spelled out explicitly (instead of the broader 'type') so the type checker can verify
 # that every access into 'python_type_to_sqlite_type' below is exhaustive.
-SqliteColumnType = type[None] | type[int] | type[float] | type[str] | type[bytes]
+type SqliteColumnType = type[int | float | str | bytes | None]
 
 # A single value in a row, as returned by sqlite3.
-SqliteValue = int | float | str | bytes | None
+type SqliteValue = int | float | str | bytes | None
 
 python_type_to_sqlite_type: dict[SqliteColumnType, str] = {
     NoneType: "NULL",
@@ -64,7 +64,7 @@ class SQLQueryResult:
         self.types = types
 
     @classmethod
-    def from_cursor(cls: type[SQLQueryResult], max_rows: int, cursor: Cursor) -> SQLQueryResult:
+    def from_cursor(cls, max_rows: int, cursor: Cursor) -> Self:
         """Process sql query results and wrap in SQLQueryResult.
 
         Args:

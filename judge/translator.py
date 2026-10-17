@@ -1,7 +1,7 @@
 """translate judge output towards Dodona."""
 
 from enum import Enum, auto
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Self
 
 from .dodona_command import ErrorType
 
@@ -52,7 +52,7 @@ class Translator:
         self.language = language
 
     @classmethod
-    def from_str(cls: type[Translator], language: str) -> Translator:
+    def from_str(cls, language: str) -> Self:
         """Create a Translator instance.
 
         If the language is not detected correctly or not supported

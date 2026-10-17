@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any
+from typing import Any, Self, override
 
 
 # Deliberately unhashable: this object is mutable, so it shouldn't define __hash__ alongside __eq__.
@@ -46,6 +46,7 @@ class DodonaConfig(SimpleNamespace):  # noqa: PLW1641
         self.judge: str = str(self.judge)
         self.workdir: str = str(self.workdir)
 
+    @override
     def __eq__(self, other: object) -> bool:
         """Check equality.
 
@@ -61,7 +62,7 @@ class DodonaConfig(SimpleNamespace):  # noqa: PLW1641
         return super().__eq__(other)
 
     @classmethod
-    def from_json(cls: type[DodonaConfig], json_str: str | bytes) -> DodonaConfig:
+    def from_json(cls, json_str: str | bytes) -> Self:
         """Decode json string into a DodonaConfig object.
 
         Args:
