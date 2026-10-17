@@ -7,7 +7,6 @@ from types import SimpleNamespace
 from typing import Self
 
 from .translator import Translator
-lazy from .sql_query import SQLQuery
 
 UNSET = sentinel("UNSET")
 
@@ -37,11 +36,6 @@ class DodonaConfig:
         judge:                  Full path to a directory containing a copy of the judge repository.
         workdir:                Full path to the directory in which all user code should be executed.
         translator:             Translator for `natural_language`.
-        databases:              `(name, path)` of every database to run the queries on.
-        raw_solution_file:      Contents of the solution file.
-        solution_queries:       Queries parsed from the solution file.
-        raw_submission_file:    Contents of the submission file.
-        submission_queries:     Queries parsed from the submission file.
     """
 
     memory_limit: int
@@ -74,11 +68,6 @@ class DodonaConfig:
     solution_sql: str = "./solution.sql"
 
     translator: Translator = field(init=False, repr=False, compare=False)
-    databases: list[tuple[str, str]] = field(init=False, repr=False, compare=False)
-    raw_solution_file: str = field(init=False, repr=False, compare=False)
-    solution_queries: list[SQLQuery] = field(init=False, repr=False, compare=False)
-    raw_submission_file: str = field(init=False, repr=False, compare=False)
-    submission_queries: list[SQLQuery] = field(init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         """Set the correct type for the Dodona-provided fields."""
