@@ -6,7 +6,7 @@
  "message": {
   "description": "Solution file is empty.",
   "format": "text",
-  "permission": "staff"
+  "permission": "educator"
  }
 }
 {

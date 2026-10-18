@@ -20,7 +20,7 @@
  "message": {
   "description": "Solution is not working (OperationalError):\n    near \"FRM\": syntax error",
   "format": "code",
-  "permission": "staff"
+  "permission": "educator"
  }
 }
 {

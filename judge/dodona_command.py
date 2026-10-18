@@ -17,16 +17,14 @@ class ErrorType(StrEnum):
     OUTPUT_LIMIT_EXCEEDED = "output limit exceeded"
     RUNTIME_ERROR = "runtime error"
     WRONG = "wrong"
-    WRONG_ANSWER = "wrong answer"
     CORRECT = "correct"
-    CORRECT_ANSWER = "correct answer"
 
 
 class MessagePermission(StrEnum):
     """Dodona permission for a message."""
 
     STUDENT = "student"
-    STAFF = "staff"
+    EDUCATOR = "educator"
     ZEUS = "zeus"
 
 
@@ -58,7 +56,7 @@ class DodonaException(Exception):
 
     When thrown inside a Dodona 'with' block, an error message will be created on the current
     Dodona object (eg. Test, Context ...). Blocks that extend the DodonaCommandWithAccepted class
-    will have their accepted field set to True (if CORRECT or CORRECT_ANSWER) and to False otherwise.
+    will have their accepted field set to True (if CORRECT) and to False otherwise.
     If the block also extends DodonaCommandWithStatus, its status is updated with this exception's
     status. A with block with a type that matches recover_at will silently catch the exception; and
     if the class is not Judgement, an escalate status message will be sent.
@@ -260,7 +258,7 @@ class DodonaCommandWithAccepted(DodonaCommand):
         Returns:
             if True, the exception is not propagated
         """
-        accepted = exception.status["enum"] == ErrorType.CORRECT or exception.status["enum"] == ErrorType.CORRECT_ANSWER
+        accepted = exception.status["enum"] == ErrorType.CORRECT
         self.close_args.accepted = accepted
 
         return super().handle_dodona_exception(exception)

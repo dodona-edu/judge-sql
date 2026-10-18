@@ -6,7 +6,7 @@
  "message": {
   "description": "Could not find database directory: '<exercise_path>/evaluation/databases'.",
   "format": "text",
-  "permission": "staff"
+  "permission": "educator"
  }
 }
 {
