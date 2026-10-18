@@ -116,9 +116,7 @@ class Translator:
             ErrorType.OUTPUT_LIMIT_EXCEEDED: "Output limit exceeded",
             ErrorType.RUNTIME_ERROR: "Crashed while testing",
             ErrorType.WRONG: "Test failed",
-            ErrorType.WRONG_ANSWER: "Test failed",
             ErrorType.CORRECT: "All tests succeeded",
-            ErrorType.CORRECT_ANSWER: "All tests succeeded",
         },
         Language.NL: {
             ErrorType.INTERNAL_ERROR: "Interne fout",
@@ -128,9 +126,7 @@ class Translator:
             ErrorType.OUTPUT_LIMIT_EXCEEDED: "Outputlimiet overschreden",
             ErrorType.RUNTIME_ERROR: "Gecrasht bij testen",
             ErrorType.WRONG: "Test gefaald",
-            ErrorType.WRONG_ANSWER: "Test gefaald",
             ErrorType.CORRECT: "Alle testen geslaagd",
-            ErrorType.CORRECT_ANSWER: "Alle testen geslaagd",
         },
     }
 

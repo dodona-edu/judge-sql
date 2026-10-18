@@ -28,11 +28,11 @@ from judge.translator import Translator
 def _internal_error(
     config: DodonaConfig, description: str, *, message_format: MessageFormat = MessageFormat.TEXT
 ) -> DodonaException:
-    """Create an internal error that only staff can read.
+    """Create an internal error that only educators can read.
 
     Args:
         config: parsed config received from Dodona
-        description: message for staff
+        description: message for educators
         message_format: format of the message
 
     Returns:
@@ -40,7 +40,7 @@ def _internal_error(
     """
     return DodonaException(
         config.translator.error_status(ErrorType.INTERNAL_ERROR),
-        permission=MessagePermission.STAFF,
+        permission=MessagePermission.EDUCATOR,
         description=description,
         format=message_format,
     )

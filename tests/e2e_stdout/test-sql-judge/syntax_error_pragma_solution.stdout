@@ -20,7 +20,7 @@
  "message": {
   "description": "Startup script is not working (OperationalError):\n    unrecognized token: \"';\"",
   "format": "code",
-  "permission": "staff"
+  "permission": "educator"
  }
 }
 {

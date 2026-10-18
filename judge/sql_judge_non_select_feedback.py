@@ -34,7 +34,7 @@ def _retrieving(config: DodonaConfig, what: str) -> Iterator[None]:
     except Exception as err:
         raise DodonaException(
             config.translator.error_status(ErrorType.INTERNAL_ERROR),
-            permission=MessagePermission.STAFF,
+            permission=MessagePermission.EDUCATOR,
             description=f"Could not retrieve solution {what} ({type(err).__name__}):\n    {err}",
             format=MessageFormat.CODE,
         ) from err
