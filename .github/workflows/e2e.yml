@@ -22,6 +22,9 @@ on:
         type: string
         default: main
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -42,6 +45,7 @@ jobs:
           repository: dodona-edu/judge-sql
           ref: ${{ inputs.ref }}
           submodules: true
+          persist-credentials: false
       # Job runs as root, but the runner created the workspace under a different
       # uid; git refuses to operate on that ownership mismatch, which blocks the
       # `git submodule update --init` that devel/run-tests.sh runs.

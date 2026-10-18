@@ -3,6 +3,9 @@ name: Requirements
 on:
   push:
 
+permissions:
+  contents: read
+
 jobs:
   requirements-match-image:
     runs-on: ubuntu-latest
@@ -12,5 +15,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: Check requirements.txt against the image's dependency list
         run: ./devel/requirements_delta.sh
