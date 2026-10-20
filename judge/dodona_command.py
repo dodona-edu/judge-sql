@@ -95,7 +95,7 @@ class DodonaCommand:
 
     Example:
         >>> with Judgement() as judgement:
-        ...     with Tab():
+        ...     with Tab(title="example tab"):
         ...         pass
 
     A JSON message will be printed to stdout when entering the 'with' block. The contents of
@@ -191,7 +191,6 @@ class DodonaCommand:
 
         This function prints a Dodona message and removes the message from
         the exception, so it is not also printed by the parent 'with' blocks.
-        The function return True if self is of the type recover_at.
 
         Args:
             exception: exception thrown in the enclosed 'with' block
@@ -289,15 +288,6 @@ class Judgement(DodonaCommandWithStatus):
 class Tab(DodonaCommand):
     """Dodona Tab."""
 
-    def __init__(self, title: str, **kwargs: Any) -> None:
-        """Create Tab.
-
-        Args:
-            title: title of the tab
-            **kwargs: additional named arguments
-        """
-        super().__init__(title=title, **kwargs)
-
 
 class Context(DodonaCommandWithAccepted):
     """Dodona Context."""
@@ -306,21 +296,10 @@ class Context(DodonaCommandWithAccepted):
 class TestCase(DodonaCommandWithAccepted):
     """Dodona TestCase."""
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         """Create TestCase.
 
-        If a single positional argument is passed, this is assumed to be the message.
-
-        Example:
-            >>> with TestCase("This is the message"):
-            ...     pass
-            >>> with TestCase({
-            ...     "format": MessageFormat.SQL,
-            ...     "description": "This is the message"
-            ... }):
-            ...     pass
-
-        If keyword arguments are passed, these are assumed to be the message's content.
+        The keyword arguments are the content of the test case's description.
 
         Example:
             >>> with TestCase(
@@ -330,13 +309,9 @@ class TestCase(DodonaCommandWithAccepted):
             ...     pass
 
         Args:
-            *args: positional args (if length == 1, is assumed to be the description)
             **kwargs: dict is assumed to be the description object
         """
-        if len(args) == 1:
-            super().__init__(description=args[0])
-        else:
-            super().__init__(description=kwargs)
+        super().__init__(description=kwargs)
 
 
 class Test(DodonaCommandWithStatus):
@@ -356,21 +331,10 @@ class Test(DodonaCommandWithStatus):
 class Message(DodonaCommand):
     """Dodona Message."""
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         """Create Message.
 
-        If a single positional argument is passed, this is assumed to be the message.
-
-        Example:
-        >>> with Message("This is the message"):
-        ...     pass
-        >>> with Message({
-        ...     "format": MessageFormat.SQL,
-        ...     "description": "This is the message"
-        ... }):
-        ...     pass
-
-        If keyword arguments are passed, these are assumed to be the message's content.
+        The keyword arguments are the content of the message.
 
         Example:
         >>> with Message(
@@ -380,13 +344,9 @@ class Message(DodonaCommand):
         ...     pass
 
         Args:
-            *args: positional args (if length == 1, is assumed to be message)
             **kwargs: dict is assumed to be the message object
         """
-        if len(args) == 1:
-            super().__init__(message=args[0])
-        else:
-            super().__init__(message=kwargs)
+        super().__init__(message=kwargs)
 
     @override
     def start_msg(self) -> dict:
