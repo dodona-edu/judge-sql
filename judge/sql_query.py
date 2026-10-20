@@ -1,6 +1,7 @@
 """input query parsing."""
 
 import re
+from functools import cached_property
 from typing import Self
 
 import sqlparse
@@ -19,16 +20,9 @@ def flatten_symbols(parsed: sqlparse.sql.Statement) -> list[str]:
     Returns:
         list of symbols
     """
-
-    def _flatten_symbols(statement: sqlparse.sql.Statement) -> list[str]:
-        if not statement.is_group:
-            return [statement.value]
-
-        return [item for group in statement.tokens for item in _flatten_symbols(group)]
-
     symbols: list[str] = []
     in_brackets = False
-    for symbol in _flatten_symbols(parsed):
+    for symbol in [token.value for token in parsed.flatten()]:
         if in_brackets and len(symbols) > 0:
             symbols[-1] += symbol
         else:
@@ -77,8 +71,6 @@ class SQLQuery:
         self.symbols = flatten_symbols(self.parsed)
         self.canonical = format_join_symbols(self.symbols)
 
-        self._is_ordered: bool | None = None
-
     @property
     def query_type(self) -> str:
         """Return query type.
@@ -95,7 +87,7 @@ class SQLQuery:
         Returns:
             True if query type is "SELECT".
         """
-        return str(self.parsed.get_type()) == "SELECT"
+        return self.query_type == "SELECT"
 
     @property
     def is_pragma(self) -> bool:
@@ -107,17 +99,14 @@ class SQLQuery:
         # self.parsed.get_type() would return "UNKNOWN" here
         return self.canonical.upper().startswith("PRAGMA")
 
-    @property
+    @cached_property
     def is_ordered(self) -> bool:
         """Check if query orders its results.
 
         Returns:
             True if query contains "ORDER BY".
         """
-        if self._is_ordered is not None:
-            return self._is_ordered
-        self._is_ordered = any(part.match(sqlparse.tokens.Keyword, r"ORDER\s+BY", regex=True) for part in self.parsed)
-        return self._is_ordered
+        return any(part.match(sqlparse.tokens.Keyword, r"ORDER\s+BY", regex=True) for part in self.parsed)
 
     @property
     def has_ending_semicolon(self) -> bool:
@@ -157,15 +146,11 @@ class SQLQuery:
                 return Translator.Text.SUBMISSION_MANDATORY_SYMBOLREGEX, regex
 
         for regex in forbidden_fullregex:
-            reg = re.compile(regex, re.IGNORECASE)
-
-            if reg.fullmatch(self.canonical):
+            if re.fullmatch(regex, self.canonical, re.IGNORECASE):
                 return Translator.Text.SUBMISSION_FORBIDDEN_FULLREGEX, regex
 
         for regex in mandatory_fullregex:
-            reg = re.compile(regex, re.IGNORECASE)
-
-            if not reg.fullmatch(self.canonical):
+            if not re.fullmatch(regex, self.canonical, re.IGNORECASE):
                 return Translator.Text.SUBMISSION_MANDATORY_FULLREGEX, regex
 
         return None
@@ -179,13 +164,7 @@ class SQLQuery:
         Returns:
             the first symbol that matches, None if nothing matches
         """
-        reg = re.compile(regex, re.IGNORECASE)
-
-        for symbol in self.symbols:
-            if reg.fullmatch(symbol):
-                return symbol
-
-        return None
+        return next((symbol for symbol in self.symbols if re.fullmatch(regex, symbol, re.IGNORECASE)), None)
 
     def first_match_array(self, words: list[str]) -> str | None:
         """Find the first symbol that occurs in the list of words.

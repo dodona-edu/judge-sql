@@ -77,14 +77,8 @@ class DodonaException(Exception):
         """
         super().__init__()
         self.status = status
-        if recover_at is None:
-            # class Judgement is not yet defined, use this hack to retrieve the class at runtime
-            self.recover_at = globals()["Judgement"]
-            self.escalate_status = False
-        else:
-            self.recover_at = recover_at
-            self.escalate_status = True
-        self.message = Message(**kwargs) if len(kwargs) > 0 else None
+        self.recover_at = recover_at
+        self.message = Message(**kwargs) if kwargs else None
 
 
 class DodonaCommand:
@@ -205,8 +199,8 @@ class DodonaCommand:
 
             exception.message = None
 
-        if isinstance(self, exception.recover_at):
-            if exception.escalate_status:
+        if isinstance(self, exception.recover_at or Judgement):
+            if exception.recover_at is not None:
                 self.__print_command(
                     {
                         "command": "escalate-status",

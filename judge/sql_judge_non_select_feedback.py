@@ -95,7 +95,7 @@ def non_select_feedback(
 
         for table in diff_layout:
             with _retrieving(config, "layout"):
-                solution_layout, submission_layout = database.get_table_layout(config, table)
+                solution_layout, submission_layout = database.get_table_layout(config.max_rows, table)
 
             description = config.translator.translate(Translator.Text.COMPARING_TABLE_LAYOUT, table=table)
             _table_test(config, description, solution_layout, submission_layout, ErrorType.WRONG)
@@ -103,7 +103,7 @@ def non_select_feedback(
 
         for table in diff_content:
             with _retrieving(config, "content"):
-                solution_content, submission_content = database.get_table_content(config, table)
+                solution_content, submission_content = database.get_table_content(config.max_rows, table)
 
             description = config.translator.translate(Translator.Text.COMPARING_TABLE_CONTENT, table=table)
             _table_test(config, description, solution_content, submission_content, ErrorType.WRONG)
@@ -118,8 +118,8 @@ def non_select_feedback(
             return
 
         with _retrieving(config, "layout & content"):
-            solution_layout, submission_layout = database.get_table_layout(config, affected_table)
-            solution_content, submission_content = database.get_table_content(config, affected_table)
+            solution_layout, submission_layout = database.get_table_layout(config.max_rows, affected_table)
+            solution_content, submission_content = database.get_table_content(config.max_rows, affected_table)
 
         description = config.translator.translate(Translator.Text.COMPARING_TABLE_LAYOUT, table=affected_table)
         _table_test(config, description, solution_layout, submission_layout, ErrorType.CORRECT)
