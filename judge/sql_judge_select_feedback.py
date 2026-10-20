@@ -1,16 +1,7 @@
 """sql feedback for select queries."""
 
-lazy from types import SimpleNamespace
-
-from .dodona_command import (
-    Context,
-    DodonaException,
-    ErrorType,
-    Message,
-    MessageFormat,
-    MessagePermission,
-    Test,
-)
+from .dodona_command import Context, ErrorType, Message, MessageFormat, Test
+from .errors import student_error
 from .translator import Translator
 lazy from .dodona_config import DodonaConfig
 lazy from .sql_query import SQLQuery
@@ -29,27 +20,30 @@ def _sort_on_common_columns(expected_output: SQLQueryResult, generated_output: S
     generated_output.sort_rows(sort_on)
 
 
-def select_feedback(  # noqa: PLR0913, PLR0917
+def select_feedback(
     config: DodonaConfig,
-    testcase: SimpleNamespace,
     expected_output: SQLQueryResult,
     generated_output: SQLQueryResult,
     solution_query: SQLQuery,
     submission_query: SQLQuery,
-) -> None:
+) -> bool:
     """Run tests based on execution results of a select query.
 
     Args:
         config: parsed config received from Dodona
-        testcase: testcase object used to return values to Dodona
         expected_output: select query expected output
         generated_output: select query generated output
         solution_query: the parsed solution query
         submission_query: the parsed submission query
 
+    Returns:
+        whether the output and its types match the solution
+
     Raises:
         DodonaException: custom exception that is automatically handled by the 'with' blocks
     """
+    accepted = True
+
     if config.allow_different_column_order:
         expected_output.index_columns(generated_output.columns)
 
@@ -90,7 +84,7 @@ def select_feedback(  # noqa: PLR0913, PLR0917
             test.status = config.translator.error_status(ErrorType.CORRECT)
         else:
             test.status = config.translator.error_status(ErrorType.WRONG)
-            testcase.accepted = False  # Signal that following on-success tests should not run
+            accepted = False
 
             # if SELECT is ordered -> check if rows are correct but order is wrong
             if solution_query.is_ordered:
@@ -113,21 +107,22 @@ def select_feedback(  # noqa: PLR0913, PLR0917
             test.status = config.translator.error_status(ErrorType.CORRECT)
         else:
             test.status = config.translator.error_status(ErrorType.WRONG)
-            testcase.accepted = False  # Signal that following on-success tests should not run
+            accepted = False
 
     if (
         config.strict_identical_order_by
-        and getattr(testcase, "accepted", True)  # Only run if all other tests are OK
+        and accepted
         and submission_query.is_ordered != solution_query.is_ordered  # Only run if result is wrong
     ):
-        raise DodonaException(
-            config.translator.error_status(ErrorType.WRONG),
-            recover_at=Context,  # Continue testing all other contexts
-            permission=MessagePermission.STUDENT,
-            description=config.translator.translate(
+        raise student_error(
+            config,
+            ErrorType.WRONG,
+            config.translator.translate(
                 Translator.Text.QUERY_SHOULD_ORDER_ROWS
                 if solution_query.is_ordered
                 else Translator.Text.QUERY_SHOULD_NOT_ORDER_ROWS
             ),
-            format=MessageFormat.CALLOUT_DANGER,
+            recover_at=Context,  # Continue testing all other contexts
         )
+
+    return accepted
