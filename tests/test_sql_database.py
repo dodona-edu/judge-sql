@@ -22,8 +22,8 @@ class TestSQLDatabase(unittest.TestCase):
         sqlite3.connect(source).close()
         self.database = self.enterContext(SQLDatabase(str(source), str(self.workdir), "test"))
 
-    def run_statement(self, cursor: sqlite3.Cursor, statement: str):
-        cursor.execute(statement)
+    def run_statement(self, cursor: sqlite3.Cursor, statement: str, parameters: tuple = ()):
+        cursor.execute(statement, parameters)
         cursor.connection.commit()
 
     # SQLite upper-cases standard type names itself, so these tests use varchar, which keeps its declared case.
@@ -43,6 +43,21 @@ class TestSQLDatabase(unittest.TestCase):
         self.run_statement(self.database.submission_cursor(), "CREATE TABLE t (id VARCHAR(30))")
 
         self.assertEqual(self.database.diff()[1], ["t"])
+
+    def test_diff_compares_tables_starting_with_sqlite(self):
+        for make_cursor, value in ((self.database.solution_cursor, "1"), (self.database.submission_cursor, "2")):
+            cursor = make_cursor()
+            self.run_statement(cursor, "CREATE TABLE sqlitedata (id INTEGER)")
+            self.run_statement(cursor, "INSERT INTO sqlitedata VALUES (?)", (value,))
+            self.run_statement(cursor, "CREATE TABLE same (id INTEGER)")
+            self.run_statement(cursor, "INSERT INTO same VALUES (1)")
+
+        incorrect_name, diff_layout, diff_content, correct = self.database.diff()
+
+        self.assertEqual(incorrect_name, [])
+        self.assertEqual(diff_layout, [])
+        self.assertEqual(diff_content, ["sqlitedata"])
+        self.assertEqual(correct, ["same"])
 
     def test_table_layout_ignores_column_type_case(self):
         self.run_statement(self.database.solution_cursor(), "CREATE TABLE t (id VARCHAR(20))")

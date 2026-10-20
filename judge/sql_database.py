@@ -168,7 +168,7 @@ class SQLDatabase:
         submission_content = SQLQueryResult.from_cursor(config.max_rows, cursor)
         return solution_content, submission_content
 
-    count_identical_columns_sql = """
+    count_identical_columns_sql = r"""
     --- ONLY IN SOLUTION ---
     SELECT
         sol.name,
@@ -219,7 +219,7 @@ class SQLDatabase:
         solution.sqlite_master as s
     WHERE
         s.type = 'table' AND
-        s.name NOT LIKE 'sqlite_%'
+        s.name NOT LIKE 'sqlite\_%' ESCAPE '\'
     """
 
     count_different_rows_sql = """
