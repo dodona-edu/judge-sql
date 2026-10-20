@@ -2,15 +2,9 @@
 
 from contextlib import contextmanager
 lazy from collections.abc import Iterator
-lazy from types import SimpleNamespace
 
-from .dodona_command import (
-    DodonaException,
-    ErrorType,
-    MessageFormat,
-    MessagePermission,
-    Test,
-)
+from .dodona_command import ErrorType, MessageFormat, Test
+from .errors import internal_error, student_error
 from .sql_database import SQLDatabase
 from .translator import Translator
 lazy from .dodona_config import DodonaConfig
@@ -32,11 +26,10 @@ def _retrieving(config: DodonaConfig, what: str) -> Iterator[None]:
     try:
         yield
     except Exception as err:
-        raise DodonaException(
-            config.translator.error_status(ErrorType.INTERNAL_ERROR),
-            permission=MessagePermission.EDUCATOR,
-            description=f"Could not retrieve solution {what} ({type(err).__name__}):\n    {err}",
-            format=MessageFormat.CODE,
+        raise internal_error(
+            config,
+            f"Could not retrieve solution {what} ({type(err).__name__}):\n    {err}",
+            message_format=MessageFormat.CODE,
         ) from err
 
 
@@ -64,17 +57,17 @@ def _table_test(
         test.status = config.translator.error_status(status)
 
 
-def non_select_feedback(
-    config: DodonaConfig, testcase: SimpleNamespace, db_name: str, db_file: str, solution_query: SQLQuery
-) -> None:
+def non_select_feedback(config: DodonaConfig, db_name: str, db_file: str, solution_query: SQLQuery) -> bool:
     """Run tests based on database status after running a non-select query.
 
     Args:
         config: parsed config received from Dodona
-        testcase: testcase object used to return values to Dodona
         db_name: the name of the database
         db_file: the location of the database file
         solution_query: the parsed solution query
+
+    Returns:
+        whether every table matches the solution
 
     Raises:
         DodonaException: custom exception that is automatically handled by the 'with' blocks
@@ -83,14 +76,13 @@ def non_select_feedback(
         incorrect_name, diff_layout, diff_content, correct = database.diff()
 
         if len(incorrect_name) > 0:
-            raise DodonaException(
-                config.translator.error_status(ErrorType.COMPILATION_ERROR),
-                permission=MessagePermission.STUDENT,
-                description=config.translator.translate(
+            raise student_error(
+                config,
+                ErrorType.COMPILATION_ERROR,
+                config.translator.translate(
                     Translator.Text.INVALID_SINGLE_QUOTE_TABLE_NAME,
                     table=incorrect_name[0],
                 ),
-                format=MessageFormat.CALLOUT_DANGER,
             )
 
         for table in diff_layout:
@@ -99,7 +91,6 @@ def non_select_feedback(
 
             description = config.translator.translate(Translator.Text.COMPARING_TABLE_LAYOUT, table=table)
             _table_test(config, description, solution_layout, submission_layout, ErrorType.WRONG)
-            testcase.accepted = False  # Signal that following on-success tests should not run
 
         for table in diff_content:
             with _retrieving(config, "content"):
@@ -107,15 +98,14 @@ def non_select_feedback(
 
             description = config.translator.translate(Translator.Text.COMPARING_TABLE_CONTENT, table=table)
             _table_test(config, description, solution_content, submission_content, ErrorType.WRONG)
-            testcase.accepted = False  # Signal that following on-success tests should not run
 
         if diff_layout or diff_content:
-            return
+            return False
 
         affected_table = solution_query.first_match_array(correct)
 
         if affected_table is None:
-            return
+            return True
 
         with _retrieving(config, "layout & content"):
             solution_layout, submission_layout = database.get_table_layout(config.max_rows, affected_table)
@@ -125,3 +115,4 @@ def non_select_feedback(
         _table_test(config, description, solution_layout, submission_layout, ErrorType.CORRECT)
         description = config.translator.translate(Translator.Text.COMPARING_TABLE_CONTENT, table=affected_table)
         _table_test(config, description, solution_content, submission_content, ErrorType.CORRECT)
+        return True

@@ -8,60 +8,20 @@ from judge.dodona_command import (
     Annotation,
     AnnotationSeverity,
     Context,
-    DodonaException,
     ErrorType,
     Judgement,
     MessageFormat,
-    MessagePermission,
     Tab,
     TestCase,
 )
 from judge.dodona_config import UNSET, DodonaConfig
+from judge.errors import internal_error, student_error
 from judge.sql_database import SQLDatabase, sql_run_pragma_startup_queries
 from judge.sql_judge_non_select_feedback import non_select_feedback
 from judge.sql_judge_select_feedback import select_feedback
 from judge.sql_query import SQLQuery
 from judge.sql_query_result import SQLQueryResult
 from judge.translator import Translator
-
-
-def _internal_error(
-    config: DodonaConfig, description: str, *, message_format: MessageFormat = MessageFormat.TEXT
-) -> DodonaException:
-    """Create an internal error that only educators can read.
-
-    Args:
-        config: parsed config received from Dodona
-        description: message for educators
-        message_format: format of the message
-
-    Returns:
-        exception that ends the judgement with an internal error
-    """
-    return DodonaException(
-        config.translator.error_status(ErrorType.INTERNAL_ERROR),
-        permission=MessagePermission.EDUCATOR,
-        description=description,
-        format=message_format,
-    )
-
-
-def _runtime_error(config: DodonaConfig, description: str) -> DodonaException:
-    """Create a runtime error that the student reads as a danger callout.
-
-    Args:
-        config: parsed config received from Dodona
-        description: message for the student
-
-    Returns:
-        exception that ends the judgement with a runtime error
-    """
-    return DodonaException(
-        config.translator.error_status(ErrorType.RUNTIME_ERROR),
-        permission=MessagePermission.STUDENT,
-        description=description,
-        format=MessageFormat.CALLOUT_DANGER,
-    )
 
 
 def _resolve_databases(config: DodonaConfig) -> list[tuple[str, str]]:
@@ -81,17 +41,17 @@ def _resolve_databases(config: DodonaConfig) -> list[tuple[str, str]]:
 
         for _, file in databases:
             if not Path(file).exists():
-                raise _internal_error(config, f"Could not find database file: '{file}'.")
+                raise internal_error(config, f"Could not find database file: '{file}'.")
     else:
         database_dir = Path(config.resources) / config.database_dir
 
         if not database_dir.exists():
-            raise _internal_error(config, f"Could not find database directory: '{database_dir}'.")
+            raise internal_error(config, f"Could not find database directory: '{database_dir}'.")
 
         databases = [(path.name, str(path)) for path in sorted(database_dir.iterdir()) if path.suffix == ".sqlite"]
 
     if not databases:
-        raise _internal_error(
+        raise internal_error(
             config,
             "Could not find database files. "
             "Make sure that the database directory contains '*.sqlite' "
@@ -116,12 +76,12 @@ def _read_solution(config: DodonaConfig) -> list[SQLQuery]:
     solution_sql = Path(config.resources) / config.solution_sql
 
     if not solution_sql.exists():
-        raise _internal_error(config, f"Could not find solution file: '{solution_sql}'.")
+        raise internal_error(config, f"Could not find solution file: '{solution_sql}'.")
 
     solution_queries = SQLQuery.from_raw_input(solution_sql.read_text(encoding="utf-8"))
 
     if not solution_queries:
-        raise _internal_error(config, "Solution file is empty.")
+        raise internal_error(config, "Solution file is empty.")
 
     return solution_queries
 
@@ -143,8 +103,9 @@ def _read_submission(config: DodonaConfig, solution_queries: list[SQLQuery]) -> 
     submission_queries = SQLQuery.from_raw_input(raw_submission)
 
     if len(submission_queries) > len(solution_queries):
-        raise _runtime_error(
+        raise student_error(
             config,
+            ErrorType.RUNTIME_ERROR,
             config.translator.translate(
                 Translator.Text.SUBMISSION_CONTAINS_MORE_QUERIES,
                 submitted=len(submission_queries),
@@ -175,8 +136,9 @@ def _check_before_execution(config: DodonaConfig, solution_query: SQLQuery, subm
         DodonaException: the query type differs or a pre-execution regex fails
     """
     if solution_query.query_type != submission_query.query_type:
-        raise _runtime_error(
+        raise student_error(
             config,
+            ErrorType.RUNTIME_ERROR,
             config.translator.translate(
                 Translator.Text.SUBMISSION_WRONG_QUERY_TYPE,
                 submitted=submission_query.query_type,
@@ -190,7 +152,7 @@ def _check_before_execution(config: DodonaConfig, solution_query: SQLQuery, subm
         config.pre_execution_mandatory_fullregex,
     )
     if match is not None:
-        raise _runtime_error(config, config.translator.translate(match[0], value=match[1]))
+        raise student_error(config, ErrorType.RUNTIME_ERROR, config.translator.translate(match[0], value=match[1]))
 
 
 def _check_after_execution(config: DodonaConfig, submission_query: SQLQuery) -> None:
@@ -210,12 +172,11 @@ def _check_after_execution(config: DodonaConfig, submission_query: SQLQuery) -> 
         config.post_execution_mandatory_fullregex,
     )
     if match is not None:
-        raise DodonaException(
-            config.translator.error_status(ErrorType.WRONG),
+        raise student_error(
+            config,
+            ErrorType.WRONG,
+            config.translator.translate(match[0], value=match[1]),
             recover_at=Context,
-            permission=MessagePermission.STUDENT,
-            description=config.translator.translate(match[0], value=match[1]),
-            format=MessageFormat.CALLOUT_DANGER,
         )
 
 
@@ -235,7 +196,7 @@ def _run_startup_script(config: DodonaConfig, cursor: sqlite3.Cursor) -> None:
     try:
         sql_run_pragma_startup_queries(cursor, config.pragma_startup_queries)
     except Exception as err:
-        raise _internal_error(
+        raise internal_error(
             config,
             f"Startup script is not working ({type(err).__name__}):\n    {err}",
             message_format=MessageFormat.CODE,
@@ -267,7 +228,7 @@ def _judge_database(
             try:
                 solution_cursor.execute(solution_query.without_comments)
             except Exception as err:
-                raise _internal_error(
+                raise internal_error(
                     config,
                     f"Solution is not working ({type(err).__name__}):\n    {err}",
                     message_format=MessageFormat.CODE,
@@ -279,21 +240,23 @@ def _judge_database(
             try:
                 submission_cursor.execute(submission_query.without_comments)
             except Exception as err:
-                raise DodonaException(
-                    config.translator.error_status(ErrorType.COMPILATION_ERROR),
-                    permission=MessagePermission.STUDENT,
-                    description=f"{type(err).__name__}:\n    {err}",
-                    format=MessageFormat.CODE,
+                raise student_error(
+                    config,
+                    ErrorType.COMPILATION_ERROR,
+                    f"{type(err).__name__}:\n    {err}",
+                    message_format=MessageFormat.CODE,
                 ) from err
             generated_output = SQLQueryResult.from_cursor(config.max_rows, submission_cursor)
 
         if not solution_query.is_select:
-            non_select_feedback(config, testcase, db_name, db_file, solution_query)
+            accepted = non_select_feedback(config, db_name, db_file, solution_query)
         else:
-            select_feedback(config, testcase, expected_output, generated_output, solution_query, submission_query)
+            accepted = select_feedback(config, expected_output, generated_output, solution_query, submission_query)
 
-        if getattr(testcase, "accepted", True):  # Only run if all other tests are OK
+        if accepted:
             _check_after_execution(config, submission_query)
+        else:
+            testcase.accepted = False
 
 
 def _judge_query(
@@ -316,8 +279,9 @@ def _judge_query(
 
     with Tab(title=f"Query {1 + query_nr}"):
         if query_nr >= len(submission_queries):
-            raise _runtime_error(
+            raise student_error(
                 config,
+                ErrorType.RUNTIME_ERROR,
                 config.translator.translate(
                     Translator.Text.SUBMISSION_CONTAINS_LESS_QUERIES,
                     expected=len(solution_queries),
