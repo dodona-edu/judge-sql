@@ -8,7 +8,6 @@ lazy from types import TracebackType
 
 from .sql_query import SQLQuery
 from .sql_query_result import SQLQueryResult
-lazy from .dodona_config import DodonaConfig
 
 
 def sql_run_pragma_startup_queries(cursor: sqlite3.Cursor, script: str) -> None:
@@ -128,11 +127,11 @@ class SQLDatabase:
         cursor.execute("ATTACH ? AS submission", (str(self.submissionfile),))
         return cursor
 
-    def get_table_layout(self, config: DodonaConfig, table: str) -> tuple[SQLQueryResult, SQLQueryResult]:
+    def get_table_layout(self, max_rows: int, table: str) -> tuple[SQLQueryResult, SQLQueryResult]:
         """Retrieve the table layout for both the solution and submission.
 
         Args:
-            config: the Dodona judge config
+            max_rows: maximum number of rows to retrieve
             table: name of table to request layout for
 
         Returns:
@@ -144,16 +143,16 @@ class SQLDatabase:
             "SELECT cid, name, upper(type) AS type, \"notnull\", dflt_value, pk FROM pragma_table_info(?, '{schema}')"
         )
         cursor.execute(layout_sql.format(schema="solution"), (table,))
-        solution_layout = SQLQueryResult.from_cursor(config.max_rows, cursor)
+        solution_layout = SQLQueryResult.from_cursor(max_rows, cursor)
         cursor.execute(layout_sql.format(schema="submission"), (table,))
-        submission_layout = SQLQueryResult.from_cursor(config.max_rows, cursor)
+        submission_layout = SQLQueryResult.from_cursor(max_rows, cursor)
         return solution_layout, submission_layout
 
-    def get_table_content(self, config: DodonaConfig, table: str) -> tuple[SQLQueryResult, SQLQueryResult]:
+    def get_table_content(self, max_rows: int, table: str) -> tuple[SQLQueryResult, SQLQueryResult]:
         """Retrieve the table content for both the solution and submission.
 
         Args:
-            config: the Dodona judge config
+            max_rows: maximum number of rows to retrieve
             table: name of table to request content for
 
         Returns:
@@ -163,9 +162,9 @@ class SQLDatabase:
         # S608 is a false positive here: 'table' is a sqlite_master name, and 'diff' already rejects
         # the ones containing a quote, so it can't break out of the quoted identifier.
         cursor.execute(f"SELECT * FROM solution.'{table}'")  # noqa: S608
-        solution_content = SQLQueryResult.from_cursor(config.max_rows, cursor)
+        solution_content = SQLQueryResult.from_cursor(max_rows, cursor)
         cursor.execute(f"SELECT * FROM submission.'{table}'")  # noqa: S608
-        submission_content = SQLQueryResult.from_cursor(config.max_rows, cursor)
+        submission_content = SQLQueryResult.from_cursor(max_rows, cursor)
         return solution_content, submission_content
 
     count_identical_columns_sql = """
@@ -256,15 +255,13 @@ class SQLDatabase:
         cursor.execute(self.count_identical_columns_sql)
 
         incorrect_name, diff_layout, check_content, correct = [], [], [], []
-        for row in cursor.fetchall():
-            table, identical, solution, submission = row
-
+        for table, identical, solution, submission in cursor.fetchall():
             if "'" in table:
-                incorrect_name += [table]
+                incorrect_name.append(table)
             elif solution != submission or solution != identical:
-                diff_layout += [table]
+                diff_layout.append(table)
             else:
-                check_content += [(table, identical)]
+                check_content.append((table, identical))
 
         cursor.execute(
             "UNION ALL\n".join(
@@ -279,10 +276,10 @@ class SQLDatabase:
 
         counts = [count for (count,) in cursor.fetchall()]
         diff_content = []
-        for i, (table, _) in enumerate(check_content):
-            if counts[i] != 0:
-                diff_content += [table]
+        for (table, _), count in zip(check_content, counts, strict=True):
+            if count != 0:
+                diff_content.append(table)
             else:
-                correct += [table]
+                correct.append(table)
 
         return incorrect_name, diff_layout, diff_content, correct

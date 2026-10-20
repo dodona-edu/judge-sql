@@ -4,11 +4,8 @@ import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
-from types import SimpleNamespace
-from typing import cast
 
 from judge.sql_database import SQLDatabase
-lazy from judge.dodona_config import DodonaConfig
 
 
 class TestSQLDatabase(unittest.TestCase):
@@ -48,8 +45,7 @@ class TestSQLDatabase(unittest.TestCase):
         self.run_statement(self.database.solution_cursor(), "CREATE TABLE t (id VARCHAR(20))")
         self.run_statement(self.database.submission_cursor(), "CREATE TABLE t (id varchar(20))")
 
-        config = cast("DodonaConfig", SimpleNamespace(max_rows=100))
-        solution_layout, submission_layout = self.database.get_table_layout(config, "t")
+        solution_layout, submission_layout = self.database.get_table_layout(100, "t")
 
         self.assertMultiLineEqual(solution_layout.csv_out, submission_layout.csv_out)
         self.assertIn("VARCHAR(20)", submission_layout.csv_out)
