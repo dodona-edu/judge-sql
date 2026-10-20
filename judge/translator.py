@@ -37,8 +37,6 @@ class Translator:
         COMPARING_QUERY_OUTPUT_TYPES = auto()
         QUERY_SHOULD_ORDER_ROWS = auto()
         QUERY_SHOULD_NOT_ORDER_ROWS = auto()
-        ROWS_ARE_BEING_ORDERED = auto()
-        ROWS_ARE_NOT_BEING_ORDERED = auto()
         CORRECT_ROWS_WRONG_ORDER = auto()
         COMPARING_TABLE_LAYOUT = auto()
         COMPARING_TABLE_CONTENT = auto()

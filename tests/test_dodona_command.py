@@ -22,28 +22,7 @@ class TestDodonaCommand(unittest.TestCase):
         self.assertEqual(str(AnnotationSeverity.ERROR), "error")
 
     def test_constructors(self):
-        self.assertDictEqual(
-            CommandTestCase(
-                format=MessageFormat.SQL,
-                description="test",
-            ).start_args.__dict__,
-            CommandTestCase(
-                {
-                    "format": MessageFormat.SQL,
-                    "description": "test",
-                }
-            ).start_args.__dict__,
-        )
+        content = {"format": MessageFormat.SQL, "description": "test"}
 
-        self.assertDictEqual(
-            CommandMessage(
-                format=MessageFormat.SQL,
-                description="test",
-            ).start_args.__dict__,
-            CommandMessage(
-                {
-                    "format": MessageFormat.SQL,
-                    "description": "test",
-                }
-            ).start_args.__dict__,
-        )
+        self.assertDictEqual(CommandTestCase(**content).start_args.__dict__, {"description": content})
+        self.assertDictEqual(CommandMessage(**content).start_args.__dict__, {"message": content})

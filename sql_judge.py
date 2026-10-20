@@ -314,7 +314,7 @@ def _judge_query(
     """
     solution_query = solution_queries[query_nr]
 
-    with Tab(f"Query {1 + query_nr}"):
+    with Tab(title=f"Query {1 + query_nr}"):
         if query_nr >= len(submission_queries):
             raise _runtime_error(
                 config,

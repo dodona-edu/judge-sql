@@ -27,9 +27,9 @@ class DodonaConfig:
                                 to for instance specify the specific test case the limit would be exceeded,
                                 instead of just "Time limit exceeded."
         programming_language:   The full name (e.g. "python", "haskell") of the
-                                programming language the student submitted his code for.
+                                programming language the student submitted their code for.
         natural_language:       The natural language (e.g. "nl", "en") in which the
-                                student submitted his code.
+                                student submitted their code.
         resources:              Full path to a directory containing the resources for the evaluation.
                                 This is the "evaluation" directory of an exercise.
         source:                 Full path to a file containing the code the user submitted.
@@ -127,7 +127,7 @@ class DodonaConfig:
         The current working dir should be the same directory that is
         passed as the 'workdir' property in the Dodona config. Also,
         this Python file (and all other Python judge files) should be
-        located in the 'judge' dir.
+        located in the judge repository.
         """
         # Make sure that the current working dir is the workdir
         assert Path.cwd().resolve() == Path(self.workdir).resolve()
