@@ -179,3 +179,34 @@ class TestSQLQueryResult(unittest.TestCase):
         )
         query_result.sort_rows(["A"])
         self.assertEqual(query_result.csv_out, "A,B\n1,3\n2,2\n2,4\n,1")
+
+    def test_column_name_ignores_identifier_quotes(self):
+        for quote_open, quote_close in [("", ""), ("`", "`"), ('"', '"'), ("[", "]")]:
+            with self.subTest(quote=quote_open):
+                a, b, t, n = (f"{quote_open}{x}{quote_close}" for x in "abtn")
+                query_result = run_query(
+                    f"SELECT SUM({a}), {a} + {b}, {t}.{a}, 1 AS {n} FROM (SELECT 1 AS a, 2 AS b) AS t"  # noqa: S608
+                )
+                self.assertSequenceEqual(query_result.columns, ["SUM(A)", "A+B", "A", "N"])
+
+    def test_column_name_ignores_spacing(self):
+        self.assertEqual(run_query("SELECT 1+2").columns, run_query("SELECT 1 + 2").columns)
+        self.assertEqual(run_query("SELECT SUM( 1 )").columns, ["SUM(1)"])
+
+    def test_column_name_keeps_space_in_alias(self):
+        self.assertEqual(run_query('SELECT 1 AS "Totaal bedrag"').columns, ["TOTAAL BEDRAG"])
+
+    def test_column_name_keeps_string_literal_quotes(self):
+        self.assertEqual(run_query("SELECT UPPER('a`b\"c[d]')").columns, ["UPPER('A`B\"C[D]')"])
+        self.assertEqual(run_query("SELECT 'it''s' || 'x'").columns, ["'IT''S'||'X'"])
+
+    def test_index_columns_uses_normalized_name(self):
+        query_result = run_query("SELECT 1 AS b, SUM(`a`) FROM (SELECT 1 AS a)")
+        query_result.index_columns(["SUM(A)"])
+        self.assertSequenceEqual(query_result.columns, ["SUM(A)", "B"])
+
+    def test_column_name_empty(self):
+        self.assertEqual(run_query('SELECT 1 AS ""').columns, [""])
+
+    def test_column_name_unparseable_does_not_crash(self):
+        self.assertEqual(run_query('SELECT 1 AS "it\'s"').columns, ["IT'S"])
