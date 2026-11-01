@@ -1,4 +1,4 @@
 -r requirements-test.txt
 
-ruff==0.17.1
-ty==0.0.84
+ruff==0.17.3
+ty==0.0.94
