@@ -1,7 +1,7 @@
 """sql feedback for non-select queries."""
 
 from contextlib import contextmanager
-lazy from collections.abc import Iterator
+lazy from collections.abc import Generator
 
 from .dodona_command import ErrorType, MessageFormat, Test
 from .errors import internal_error, student_error
@@ -13,7 +13,7 @@ lazy from .sql_query_result import SQLQueryResult
 
 
 @contextmanager
-def _retrieving(config: DodonaConfig, what: str) -> Iterator[None]:
+def _retrieving(config: DodonaConfig, what: str) -> Generator[None]:
     """Turn an error while retrieving table data into an internal error.
 
     Args:
