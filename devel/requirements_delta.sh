@@ -14,7 +14,7 @@ report() {
 }
 
 if [ ! -f /requirements.txt ]; then
-    echo "The running image ships no /requirements.txt, so it predates the baked dependency list and there is nothing to compare requirements.txt against. Expected until the image carrying that file is published (dodona-edu/docker-images#483, plus a publish run)." | report
+    echo "The running image ships no /requirements.txt, so it predates the baked dependency list and there is nothing to compare requirements.txt against. Expected until the image carrying that file is live (dodona-edu/docker-images#483, plus a publish and a rollout)." | report
     exit 1
 fi
 
@@ -30,7 +30,7 @@ if diff -u --label 'image /requirements.txt' --label 'requirements.txt' /tmp/ima
 fi
 
 {
-    echo "requirements.txt does not match the dependency list the image ships. Either this branch proposes a dependency change the image has not shipped yet, in which case the PR becomes mergeable once docker-images has published it; or main's requirements.txt went stale after a publish, in which case merging the Dependabot sync PR closes the gap."
+    echo "requirements.txt does not match the dependency list the image ships. Either this branch proposes a dependency change the image has not shipped yet, in which case the PR becomes mergeable once the new image is live; or main's requirements.txt went stale after a new image went live, in which case merging the Dependabot sync PR closes the gap."
     echo
     echo '```diff'
     cat /tmp/requirements.diff

@@ -6,7 +6,7 @@ on:
       image:
         description: Judge image to run the suite in
         type: string
-        default: ghcr.io/dodona-edu/dodona-sqlite:latest
+        default: ghcr.io/dodona-edu/dodona-sqlite:live
       ref:
         description: judge-sql ref to test
         type: string
@@ -16,7 +16,7 @@ on:
       image:
         description: Judge image to run the suite in
         type: string
-        default: ghcr.io/dodona-edu/dodona-sqlite:latest
+        default: ghcr.io/dodona-edu/dodona-sqlite:live
       ref:
         description: judge-sql ref to test
         type: string
