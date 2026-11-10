@@ -12,7 +12,7 @@ jobs:
   requirements-match-image:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/dodona-edu/dodona-sqlite:latest
+      image: ghcr.io/dodona-edu/dodona-sqlite:live
       options: --user root
 
     steps:
